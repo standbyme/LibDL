@@ -1,0 +1,18 @@
+package com.jstarcraft.module.data.convertor;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+@RunWith(Suite.class)
+@SuiteClasses({
+
+		ArffDataConvertorTestCase.class,
+
+		CsvDataConvertorTestCase.class,
+
+})
+
+public class ConvertorTestSuite {
+
+}
