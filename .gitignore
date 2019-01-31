@@ -1,5 +1,9 @@
+.gradle
+gradle
+
 .idea
 *.iml
 
+out
 output
 target
