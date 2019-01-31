@@ -1,17 +1,24 @@
 package com.jstarcraft.module.datatran.transform.rawdataset;
 
-import com.jstarcraft.module.datatran.entity.RawDataSet;
+import com.jstarcraft.module.datatran.RawDataSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class BalanceLabelTransform<F, L> implements RDSTransform<F,L> {
-
-    @SuppressWarnings("unchecked")
+/**
+ * 用于平衡{@link RawDataSet}中各个标签对应的数据条数 经过该变换得到的{@link RawDataSet} 各个标签对应的数据条数相等
+ * @param <F>
+ * @param <L>
+ */
+public class BalanceLabelTransform<F, L> extends RDSTransform<F,L> {
+    /**
+     * 传入原{@link RawDataSet}变量 返回经过删减后变得平衡了的{@link RawDataSet}变量
+     * @param oriDataSet
+     * @return
+     */
     @Override
-    public RawDataSet<F, L> tran(Object in) {
-        RawDataSet<F, L> oriDataSet = (RawDataSet<F, L>) in;
+    public RawDataSet<F, L> tran2(RawDataSet<F, L> oriDataSet) {
         ArrayList<L> oriLabels = oriDataSet.getLabels();
         ArrayList<F> oriFeatures = oriDataSet.getFeatures();
         HashMap<L, ArrayList<Integer>> staMap = new HashMap<>();

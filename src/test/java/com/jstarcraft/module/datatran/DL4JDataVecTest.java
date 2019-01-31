@@ -1,4 +1,4 @@
-package com.jstarcraft;
+package com.jstarcraft.module.datatran;
 
 
 import org.datavec.image.loader.BaseImageLoader;
@@ -37,23 +37,24 @@ public class DL4JDataVecTest {
     private static final int channels = 3;
 
     public static void main(String[] args) throws Exception {
-        // nyTest();
-        System.out.println(Nd4j.ones(1,1).muli(0.4));
-        int[] is = new int[5];
-        for (int i=0;i<is.length;i++)is[i] = i;
-
+        Integer i1 = 1,i0 = 0;
+        System.out.println(i1/i0);
+        //nyTest();
     }
 
     public static void nyTest() throws Exception {
         System.out.println("start");
-        File parentDir = new File("F:/Programs/moduleimage/ImagePipeline");
+        File parentDir = new File("F:/Programs/moduleimage/ImagePipeline/label3");
         FileSplit filesInDir = new FileSplit(parentDir, allowedExtensions, randNumGen);
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
         BalancedPathFilter pathFilter = new BalancedPathFilter(randNumGen, allowedExtensions, labelMaker);
         InputSplit[] filesInDirSplit = filesInDir.sample(pathFilter, 50);
         InputSplit trainData = filesInDirSplit[0];
         ImageRecordReader recordReader = new ImageRecordReader(height,width,channels,labelMaker);
-        ImageTransform transform = new MultiImageTransform(randNumGen,new FlipImageTransform(), new ShowImageTransform("After transform"));
+        ImageTransform transform = new MultiImageTransform(randNumGen
+                //, new FlipImageTransform()
+                //, new ShowImageTransform("After transform")
+        );
         //ImageTransform transform = new MultiImageTransform(randNumGen,new ShowImageTransform("Display - before "));
         recordReader.initialize(trainData,transform);
 

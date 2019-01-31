@@ -1,4 +1,4 @@
-package com.jstarcraft;
+package com.jstarcraft.module.datatran;
 
 import static org.bytedeco.javacpp.opencv_core.FONT_HERSHEY_PLAIN;
 import static org.bytedeco.javacpp.opencv_core.flip;
@@ -22,14 +22,11 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameConverter.ToMat;
 
-/**功能说明：JavaCV工具类
- * 为中国羸弱的技术,
- * 撑起一片自立自强的天空!
- *
+/**
+ * JavaCV工具类
  */
 class JavaCVUtil {
     /**
-     *
      * 功能说明:显示图像
      * @param mat
      * 要显示的mat类型图像
@@ -44,13 +41,11 @@ class JavaCVUtil {
         canvas.showImage(converter.convert(mat));
     }
     /**
-     *
      * 功能说明:保存mat到指定路径
      * @param mat
      * 要保存的Mat
      * @param filePath
      * 保存路径
-     *
      */
     public static boolean imWrite(Mat mat,String filePath){
         //不包含中文，直接使用opencv原生方法进行保存
@@ -74,11 +69,9 @@ class JavaCVUtil {
         return false;
     }
     /**
-     *
      * 功能说明:判断字符是否包含中文
      * @param inputString
      * @return boolean
-     *
      */
     private static boolean containChinese(String inputString){
         //四段范围，包含全面
@@ -88,10 +81,6 @@ class JavaCVUtil {
         return matcher.find();
     }
 }
-/**
- * 现实就是实现理想的过程。
- *
- */
 public class JavaCVTest {
     public static void main(String[] args) {
         //以彩色模式读取图像
@@ -101,7 +90,7 @@ public class JavaCVTest {
             return;
         }
         System.out.println("图像宽x高" + image.cols() + " x " + image.rows());
-        /**
+        /*
          * 显示图像,opencv自带的显示方法，跨平台性能不好，转换为java2D显示图像
          * windows下可以使用如下代码进行显示
          * opencv_highgui.imshow("原始图像", image);
@@ -110,7 +99,7 @@ public class JavaCVTest {
         //创建空mat，保存处理图像
         Mat result = new Mat();
         int flipCode = 1;
-        /**
+        /*
          * flipCode
          * >0	水平翻转
          * =0	垂直翻转
@@ -120,14 +109,14 @@ public class JavaCVTest {
         flip(image, result, flipCode);
         //显示处理过的图像
         JavaCVUtil.imShow(result, "水平翻转");
-        /**
+        /*
          * 保存图像
          * 也可使用opencv原生方法 opencv_imgcodecs. imwrite("output.bmp", result);
          */
         JavaCVUtil.imWrite(result, "data/javacv/lakeResult.jpg");
         //克隆图像
         Mat imageCircle = image.clone();
-        /**
+        /*
          * 在图像上画圆
          */
         circle(imageCircle, // 目标图像
