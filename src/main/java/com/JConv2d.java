@@ -13,9 +13,10 @@ public class JConv2d {
         double[][] test= new double[100][100];
         double[][] core= new double[10][10];
         //for (int i=0;i<=100;i++) {
-            INDArray result1 = conv2d(setINDArray(test), setINDArray(core), 1, "origin");
+        INDArray result1 = conv2d(setINDArray(test), setINDArray(core), 1, "origin");
         //}
     }
+
     @Test
     public void test2()
     {
@@ -28,20 +29,35 @@ public class JConv2d {
 
     public static void main(String[] args)
     {
-        double[][] test= new double[][]{{0,1,2},{3,4,5},{6,7,8}};
+        double[][] test= new double[][]{{0,1,2,3},{4,5,6,7},{8,9,10,11},{12,13,14,15}};
         double[][] core= new double[][]{{0,1},{2,3}};
         System.out.println("Target:"+Arrays.deepToString(test));
      //   INDArray result1=conv2d(setINDArray(test),setINDArray(core),1,"origin");
         INDArray result2=conv2d(setINDArray(test),setINDArray(core),1,
-                "sliding");
+                "origin");
  //       INDArray result=conv2d(setINDArray(test),setINDArray(core),1);
 //        assert result != null;
 //        result=result.mmul(result);
-
-
     }
+
     // 相关资料网页 https://blog.csdn.net/mrhiuser/article/details/52672824
-    public static INDArray col2m(INDArray target,INDArray core,String type,int step)
+    public static INDArray col2im(INDArray target,INDArray core, String type, int step) {
+        double[][] targetData = getArray(target);
+        int x = (int) Math.sqrt(targetData.length);
+        int y = (int) Math.sqrt(targetData[0].length);
+        double[][] tranData = new double[x + y - 1][x + y - 1];
+        for (int i = 0; i < targetData.length; i++) {
+            for (int j = 0; j < targetData[0].length; j++) {
+                try {
+                    tranData[j / x + i / y][j % x + i % y] += targetData[i][j];
+                } catch (Exception ignored) {
+
+                }
+            }
+        }
+        return setINDArray(tranData);
+    }
+    public static INDArray im2col(INDArray target,INDArray core,String type,int step)
     {
         double[][] tranData = new double[(target.rows() - core.rows() + 1) * (target
                 .columns() - core.columns() + 1)][core.rows() * core.columns()];
@@ -62,18 +78,19 @@ public class JConv2d {
         {
             int x1=target.rows() - core.rows()+1;
             int x2=core.rows();
-            //在这里进行滑动操作
 
+            //在这里进行滑动操作
 //            System.out.println(x1+"_"+x2);
             //滑动操作的起点x坐标
-            if (step>1)
-            {
-                // 对于滑动步长非整数倍的情况，外圈补0 TODO 该步骤暂时存疑资料不足
-                tranData=new double[(target.rows() - core.rows() + 1) * (target
-                    .columns() - core.columns() + 1)+(target.rows() - core
-                    .rows())%step][core.rows() * core.columns()+(target.columns() -
-                        core.columns())%step];
-            }
+
+//            if (step>1)
+//            {
+//                // 对于滑动步长非整数倍的情况，外圈补0 TODO 该步骤暂时存疑资料不足
+//                tranData=new double[(target.rows() - core.rows() + 1) * (target
+//                    .columns() - core.columns() + 1)+(target.rows() - core
+//                    .rows())%step][core.rows() * core.columns()+(target.columns() -
+//                        core.columns())%step];
+//            }
 
             for (int j=0;j<tranData[0].length;j+=step) {
                 for (int i = 0; i < tranData.length; i+=step) {
@@ -93,7 +110,7 @@ public class JConv2d {
         System.out.println("TargetTran:"+ Arrays.deepToString(tranData));
         return setINDArray(tranData);
     }
-    public static INDArray col2mc(INDArray core)
+    public static INDArray im2colc(INDArray core)
     {
         double[][] coreData=getArray(core);
         double[][] tranCore=new double[1][coreData.length*coreData[0].length];
@@ -117,8 +134,8 @@ public class JConv2d {
         {
             return conv2d(target,core,step);
         }
-        INDArray tranTarget=col2m(target,core,type,step);
-        INDArray tranCore=col2mc(core);
+        INDArray tranTarget=im2col(target,core,type,step);
+        INDArray tranCore=im2colc(core);
         INDArray result=tranTarget.mul(tranCore);
         //INDArray result=tranCore.mul(target);
         System.out.println("MulResult:"+Arrays.deepToString(getArray(result)));
