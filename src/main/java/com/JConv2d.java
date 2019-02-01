@@ -27,27 +27,29 @@ public class JConv2d {
         //}
     }
 
-    public static void main(String[] args)
+    @Test
+    public void test_main()
     {
         double[][] test= new double[][]{{0,1,2,3},{4,5,6,7},{8,9,10,11},{12,13,14,15}};
         double[][] core= new double[][]{{0,1},{2,3}};
         System.out.println("Target:"+Arrays.deepToString(test));
+        INDArray result1=conv2dR(setINDArray(test),1,"sliding");
+        System.out.println(Arrays.deepToString(getArray(result1)));
      //   INDArray result1=conv2d(setINDArray(test),setINDArray(core),1,"origin");
-        INDArray result2=conv2d(setINDArray(test),setINDArray(core),1,
-                "origin");
+        INDArray result2=conv2d(setINDArray(test),setINDArray(core),1, "sliding");
  //       INDArray result=conv2d(setINDArray(test),setINDArray(core),1);
 //        assert result != null;
 //        result=result.mmul(result);
     }
 
     // 相关资料网页 https://blog.csdn.net/mrhiuser/article/details/52672824
-    public static INDArray col2im(INDArray target,INDArray core, String type, int step) {
+    public static INDArray col2im(INDArray target, int step) {
         double[][] targetData = getArray(target);
         int x = (int) Math.sqrt(targetData.length);
         int y = (int) Math.sqrt(targetData[0].length);
         double[][] tranData = new double[x + y - 1][x + y - 1];
-        for (int i = 0; i < targetData.length; i++) {
-            for (int j = 0; j < targetData[0].length; j++) {
+        for (int i = 0; i < targetData.length; i+=step) {
+            for (int j = 0; j < targetData[0].length; j+=step) {
                 try {
                     tranData[j / x + i / y][j % x + i % y] += targetData[i][j];
                 } catch (Exception ignored) {
@@ -57,8 +59,9 @@ public class JConv2d {
         }
         return setINDArray(tranData);
     }
-    public static INDArray im2col(INDArray target,INDArray core,String type,int step)
+    public static INDArray im2col(INDArray target,INDArray core,int step)
     {
+        String type="sliding";
         double[][] tranData = new double[(target.rows() - core.rows() + 1) * (target
                 .columns() - core.columns() + 1)][core.rows() * core.columns()];
         double[][] targetData=getArray(target);
@@ -127,14 +130,13 @@ public class JConv2d {
         return setINDArray(tranCore);
     }
 
-    public static INDArray conv2d(INDArray target, INDArray core,int step,
-                                 String type)
+    public static INDArray conv2d(INDArray target, INDArray core,int step, String type)
     {
-        if (type.equals("origin"))
-        {
-            return conv2d(target,core,step);
-        }
-        INDArray tranTarget=im2col(target,core,type,step);
+//        if (type.equals("origin"))
+//        {
+//            return conv2d(target,core,step);
+//        }
+        INDArray tranTarget=im2col(target,core,step);
         INDArray tranCore=im2colc(core);
         INDArray result=tranTarget.mul(tranCore);
         //INDArray result=tranCore.mul(target);
@@ -154,6 +156,14 @@ public class JConv2d {
         System.out.println("Result:"+Arrays.deepToString(dealData));
         return setINDArray(dealData);
     }
+
+    public static INDArray conv2dR(INDArray target,int step, String type)
+    {
+        INDArray result=col2im(target,step);
+        //INDArray result=tranCore.mul(target);
+        System.out.println("Result:"+Arrays.deepToString(getArray(result)));
+        return result;
+    }
     public static double sum(double... input)
     {
         double sum=0;
@@ -161,33 +171,34 @@ public class JConv2d {
         return sum;
     }
 
-    public static INDArray conv2d(INDArray target, INDArray core,int step)
-            //对输入的矩阵通过卷积核进行卷积
-    {
-        double[][] t=getArray(target);
-        double[][] c=getArray(core);
-        trans(c);
-        double[][] r=new double[t.length-c.length+1][t[0].length-c[0].length+1];
-        if (t.length<c.length) return null;
-        if (t[0].length<c[0].length) return null;
-        for (int i=0;i<t.length-c.length+1;i+=step)
-        {
-            for (int j=0;j<t.length-c.length+1;j++)
-            {
-                double v=0f;
-                for (int i1=0;i1<c.length;i1++)
-                {
-                    for(int j1=0;j1<c.length;j1++)
-                    {
-                        v =v +  t[i + i1][j + j1] * c[i1][j1];
-                    }
-                }
-                r[i][j]=v;
-            }
-        }
-        System.out.println("Result:"+Arrays.deepToString(r));
-        return setINDArray(r);
-    }
+//    public static INDArray conv2d(INDArray target, INDArray core,int step)
+//            //对输入的矩阵通过卷积核进行卷积
+//    {
+//        double[][] t=getArray(target);
+//        double[][] c=getArray(core);
+//        trans(c);
+//        double[][] r=new double[t.length-c.length+1][t[0].length-c[0].length+1];
+//        if (t.length<c.length) return null;
+//        if (t[0].length<c[0].length) return null;
+//        for (int i=0;i<t.length-c.length+1;i+=step)
+//        {
+//            for (int j=0;j<t.length-c.length+1;j++)
+//            {
+//                double v=0f;
+//                for (int i1=0;i1<c.length;i1++)
+//                {
+//                    for(int j1=0;j1<c.length;j1++)
+//                    {
+//                        v =v +  t[i + i1][j + j1] * c[i1][j1];
+//                    }
+//                }
+//                r[i][j]=v;
+//            }
+//        }
+//        System.out.println("Result:"+Arrays.deepToString(r));
+//        return setINDArray(r);
+//    }
+
     public static INDArray[] convn(INDArray[] targets, INDArray[]
             core,int step)
     {
