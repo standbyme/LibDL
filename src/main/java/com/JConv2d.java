@@ -32,7 +32,8 @@ public class JConv2d {
         double[][] core= new double[][]{{0,1},{2,3}};
         System.out.println("Target:"+Arrays.deepToString(test));
      //   INDArray result1=conv2d(setINDArray(test),setINDArray(core),1,"origin");
-        INDArray result2=conv2d(setINDArray(test),setINDArray(core),1, "sliding");
+        INDArray result2=conv2d(setINDArray(test),setINDArray(core),1,
+                "sliding");
  //       INDArray result=conv2d(setINDArray(test),setINDArray(core),1);
 //        assert result != null;
 //        result=result.mmul(result);
@@ -42,14 +43,25 @@ public class JConv2d {
     // 相关资料网页 https://blog.csdn.net/mrhiuser/article/details/52672824
     public static INDArray col2m(INDArray target,INDArray core,String type,int step)
     {
-        double[][] tranData = null;
+        double[][] tranData = new double[(target.rows() - core.rows() + 1) * (target
+                .columns() - core.columns() + 1)][core.rows() * core.columns()];
         double[][] targetData=getArray(target);
-        if (type.equals("sliding")) {
+        if (type.equals("distinct")) {
+            double[][] targetClone=new double[targetData.length+targetData
+                    .length%core.rows()][targetData[0].length+targetData[0]
+                    .length%core.columns()];
+            for(int i=0;i<targetData.length;i++)
+                for(int j=0;j<targetData[0].length;j++)
+                {
+                    targetClone[i][j]=targetData[i][j];
+                }
+            targetData=targetClone;
+            System.out.println("CloneResult:"+ Arrays.deepToString(targetData));
+        }
+       // if (type.equals("sliding"))
+        {
             int x1=target.rows() - core.rows()+1;
             int x2=core.rows();
-
-            tranData = new double[(target.rows() - core.rows() + 1) * (target
-                    .columns() - core.columns() + 1)][core.rows() * core.columns()];
             //在这里进行滑动操作
 
 //            System.out.println(x1+"_"+x2);
@@ -77,11 +89,7 @@ public class JConv2d {
                 }
             }
         }
-        if (type.equals("distinct")) {
-            tranData=new double[(target.rows() - core.rows() + 1) * (target
-                    .columns() - core.columns() + 1)+(target.rows())%step]
-                    [core.rows() * core.columns()+(target.columns())%core.columns()];
-        }
+
         System.out.println("TargetTran:"+ Arrays.deepToString(tranData));
         return setINDArray(tranData);
     }
