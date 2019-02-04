@@ -84,7 +84,7 @@ class JavaCVUtil {
 public class JavaCVTest {
     public static void main(String[] args) {
         //以彩色模式读取图像
-        Mat image = imread("F:\\Programs\\moduleimage\\ImagePipeline\\label1\\2.jpg", IMREAD_COLOR);
+        Mat image = imread("C:/Index/Program/datatran/img/label1/1.jpg", IMREAD_COLOR);
         if (image == null || image.empty()) {
             System.out.println("读取图像失败，图像为空");
             return;
