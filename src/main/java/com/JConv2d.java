@@ -1,8 +1,8 @@
 package com;
+
 import org.junit.jupiter.api.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-
 import java.util.Arrays;
 
 public class JConv2d {
@@ -28,7 +28,7 @@ public class JConv2d {
     }
 
     @Test
-    public void test_main()
+    public void test_()
     {
         double[][] test= new double[][]{{0,1,2,3},{4,5,6,7},{8,9,10,11},{12,13,14,15}};
         double[][] core= new double[][]{{0,1},{2,3}};
@@ -37,7 +37,7 @@ public class JConv2d {
         System.out.println(Arrays.deepToString(getArray(result1)));
      //   INDArray result1=conv2d(setINDArray(test),setINDArray(core),1,"origin");
         INDArray result2=conv2d(setINDArray(test),setINDArray(core),1, "sliding");
- //       INDArray result=conv2d(setINDArray(test),setINDArray(core),1);
+//        INDArray result=conv2d(setINDArray(test),setINDArray(core),1);
 //        assert result != null;
 //        result=result.mmul(result);
     }
@@ -136,6 +136,7 @@ public class JConv2d {
 //        {
 //            return conv2d(target,core,step);
 //        }
+
         INDArray tranTarget=im2col(target,core,step);
         INDArray tranCore=im2colc(core);
         INDArray result=tranTarget.mul(tranCore);
@@ -199,15 +200,18 @@ public class JConv2d {
 //        return setINDArray(r);
 //    }
 
-    public static INDArray[] convn(INDArray[] targets, INDArray[]
-            core,int step)
+    public static INDArray convn(INDArray[] targets, INDArray[]
+            core,int step,String type)
     {
         INDArray[] results=new INDArray[targets.length];
         for (int i = 0; i < targets.length; i++) {
 //            INDArray Scanner = targets[i];
-            results[i] = conv2d(targets[i], core[i],step);
+            results[i] = conv2d(targets[i], core[i],step,type);
         }
-        return results;
+        INDArray result=results[0];
+        for (int i=1;i<results.length;i++)
+            result=result.add(results[i]);
+        return result;
     }
     public static double[][] getArray(INDArray m)
     {
