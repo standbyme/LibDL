@@ -15,7 +15,7 @@ public class Sum extends OperatorTensor {
     public Sum(Tensor tensor) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> Nd4j.ones(tensor.out.shape())),
+                new OperandInfo(tensor, () -> Nd4j.onesLike(tensor.out)),
         };
 
         Supplier<INDArray> forward = () -> tensor.out.sum();
