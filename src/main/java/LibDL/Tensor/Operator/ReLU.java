@@ -1,23 +1,21 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperatorInfo;
+import LibDL.ND4JUtil;
 import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.function.Supplier;
 
-public class BroadcastAdd extends OperatorTensor {
-
-    public BroadcastAdd(Tensor mat1, Tensor mat2) {
-
+public class ReLU extends OperatorTensor {
+    public ReLU(Tensor tensor) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1,()->dout),
-                new OperandInfo(mat2,()->dout.mean(0)),
+                new OperandInfo(tensor, () -> ND4JUtil.Step(tensor.out).muli(dout)),
         };
 
-        Supplier<INDArray> forward = () -> mat1.out.addRowVector(mat2.out);
+        Supplier<INDArray> forward = () -> ND4JUtil.ReLU(tensor.out);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

@@ -4,7 +4,7 @@ public abstract class LayerTensor extends Tensor {
 
     protected Tensor X = null;
 
-    public final void setX(Tensor x) {
+    final public void setX(Tensor x) {
         X = x;
         core = core();
         requires_grad = core.requires_grad;
@@ -15,19 +15,19 @@ public abstract class LayerTensor extends Tensor {
     abstract protected Tensor core();
 
     @Override
-    public void forward() {
+    final public void forward() {
         core.forward();
         out = core.out;
     }
 
     @Override
-    public void backward() {
+    final public void backward() {
         core.dout = dout;
         core.backward();
     }
 
     @Override
-    public Constant[] parameters() {
+    final public Constant[] parameters() {
         return core.parameters();
     }
 }

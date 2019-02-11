@@ -3,6 +3,7 @@ package LibDL.Tensor.Layer;
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
+import org.apache.commons.math3.util.FastMath;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Linear extends LayerTensor {
@@ -18,15 +19,13 @@ public class Linear extends LayerTensor {
     }
 
     public Linear(int in_features, int out_features) {
-        W = new Constant(Nd4j.ones(in_features, out_features), true);
-        B = new Constant(Nd4j.ones(1, out_features), true);
-        bias = true;
+        this(in_features, out_features, true);
     }
 
     public Linear(int in_features, int out_features, boolean bias) {
-        W = new Constant(Nd4j.ones(in_features, out_features), true);
+        W = new Constant(Nd4j.randn(in_features, out_features).muli(FastMath.sqrt(2.0 / (in_features + out_features))), true);
         if (bias) {
-            B = new Constant(Nd4j.ones(1, out_features), true);
+            B = new Constant(Nd4j.randn(1, out_features).muli(FastMath.sqrt(2.0 / (in_features + out_features))), true);
         } else {
             B = null;
         }
