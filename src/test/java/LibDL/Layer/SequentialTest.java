@@ -21,14 +21,14 @@ public class SequentialTest {
         nn.setX(data);
         nn.dout = Nd4j.create(new double[]{1.0});
 
-        SGD optimizer = new SGD(nn.parameters(),0.03f);
+        SGD optimizer = new SGD(nn.parameters(), 0.03f);
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 760; i++) {
             nn.forward();
             nn.backward();
             optimizer.step();
         }
 
-        Assert.assertEquals(nn.out.toString(), "2.5307e-10");
+        Assert.assertEquals("2.5307e-10", nn.out.toString());
     }
 }
