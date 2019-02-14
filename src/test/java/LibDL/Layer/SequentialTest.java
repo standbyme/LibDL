@@ -24,8 +24,6 @@ public class SequentialTest {
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
-        loss.dout = Nd4j.create(new double[]{1.0});
-
         SGD optimizer = new SGD(nn.parameters(), 0.03f);
 
         for (int i = 1; i <= 800; i++) {
@@ -50,8 +48,6 @@ public class SequentialTest {
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
-        loss.dout = Nd4j.create(new double[]{1.0});
-
         SGD optimizer = new SGD(nn.parameters(), 0.03f, 0.8f);
 
         for (int i = 1; i <= 160; i++) {
@@ -75,8 +71,6 @@ public class SequentialTest {
 
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
-
-        loss.dout = Nd4j.create(new double[]{1.0});
 
         SGD optimizer = new SGD(nn.parameters(), 0.03f);
 

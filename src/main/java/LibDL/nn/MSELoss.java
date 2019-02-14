@@ -1,10 +1,9 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Operator.Sum;
 import LibDL.Tensor.Tensor;
 
-public class MSELoss extends LayerTensor {
+public class MSELoss extends LossTensor {
 
     private final Tensor target;
 
