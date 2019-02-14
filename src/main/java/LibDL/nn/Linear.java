@@ -1,4 +1,4 @@
-package LibDL.Tensor.Layer;
+package LibDL.nn;
 
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.LayerTensor;

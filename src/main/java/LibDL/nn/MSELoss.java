@@ -1,14 +1,14 @@
-package LibDL.Tensor.Layer;
+package LibDL.nn;
 
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Operator.Sum;
 import LibDL.Tensor.Tensor;
 
-public class MSE extends LayerTensor {
+public class MSELoss extends LayerTensor {
 
     private final Tensor target;
 
-    public MSE(Tensor target) {
+    public MSELoss(Tensor target) {
         this.target = target;
     }
 

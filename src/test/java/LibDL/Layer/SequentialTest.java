@@ -1,9 +1,9 @@
 package LibDL.Layer;
 
-import LibDL.Tensor.Layer.Linear;
-import LibDL.Tensor.Layer.MSE;
-import LibDL.Tensor.Layer.ReLU;
-import LibDL.Tensor.Layer.Sequential;
+import LibDL.nn.Linear;
+import LibDL.nn.MSELoss;
+import LibDL.nn.ReLU;
+import LibDL.nn.Sequential;
 import LibDL.Tensor.Constant;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
@@ -21,7 +21,7 @@ public class SequentialTest {
         Sequential nn = new Sequential(new Linear(2, 1));
         nn.setX(data);
 
-        MSE loss = new MSE(target);
+        MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
         loss.dout = Nd4j.create(new double[]{1.0});
@@ -47,7 +47,7 @@ public class SequentialTest {
         Sequential nn = new Sequential(new Linear(2, 1));
         nn.setX(data);
 
-        MSE loss = new MSE(target);
+        MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
         loss.dout = Nd4j.create(new double[]{1.0});
@@ -73,7 +73,7 @@ public class SequentialTest {
         Sequential nn = new Sequential(new Linear(2, 3), new ReLU(), new Linear(3, 1));
         nn.setX(data);
 
-        MSE loss = new MSE(target);
+        MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
         loss.dout = Nd4j.create(new double[]{1.0});
