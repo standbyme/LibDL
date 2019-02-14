@@ -37,14 +37,20 @@ public class DL4JDataVecTest {
     private static final int channels = 3;
 
     public static void main(String[] args) throws Exception {
-        Integer i1 = 1,i0 = 0;
-        System.out.println(i1/i0);
         //nyTest();
+
+        List<Integer> arr = new ArrayList<>();
+        for (int i=0;i<10;i++)arr.add(i);
+        System.out.println(arr.toString());
+        arr = arr.subList(0,5);
+        System.out.println(arr.toString());
+        arr.add(6);
+        System.out.println(arr.toString());
     }
 
     public static void nyTest() throws Exception {
         System.out.println("start");
-        File parentDir = new File("F:/Programs/moduleimage/ImagePipeline/label3");
+        File parentDir = new File("C:/Index/Program/datatran/img");
         FileSplit filesInDir = new FileSplit(parentDir, allowedExtensions, randNumGen);
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
         BalancedPathFilter pathFilter = new BalancedPathFilter(randNumGen, allowedExtensions, labelMaker);
