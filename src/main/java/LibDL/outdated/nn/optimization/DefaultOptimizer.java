@@ -1,6 +1,6 @@
-package LibDL.nn.optimization;
+package LibDL.outdated.nn.optimization;
 
-import LibDL.nn.model.Model;
+import LibDL.outdated.nn.model.Model;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.lossfunctions.ILossFunction;
 

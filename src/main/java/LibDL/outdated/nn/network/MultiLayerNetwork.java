@@ -1,10 +1,10 @@
-package LibDL.nn.network;
+package LibDL.outdated.nn.network;
 
-import LibDL.nn.layer.DenseLayer;
-import LibDL.nn.layer.Layer;
-import LibDL.nn.layer.OutputLayer;
-import LibDL.nn.model.listeners.Listener;
-import LibDL.nn.optimization.SGDOptimizer;
+import LibDL.outdated.nn.layer.DenseLayer;
+import LibDL.outdated.nn.layer.Layer;
+import LibDL.outdated.nn.layer.OutputLayer;
+import LibDL.outdated.nn.model.listeners.Listener;
+import LibDL.outdated.nn.optimization.SGDOptimizer;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.activations.impl.ActivationReLU;
 import org.nd4j.linalg.api.ndarray.INDArray;

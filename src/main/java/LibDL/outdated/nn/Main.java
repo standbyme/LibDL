@@ -1,7 +1,7 @@
-package LibDL.nn;
+package LibDL.outdated.nn;
 
-import LibDL.nn.layer.DenseLayer;
-import LibDL.nn.layer.OutputLayer;
+import LibDL.outdated.nn.layer.DenseLayer;
+import LibDL.outdated.nn.layer.OutputLayer;
 import org.apache.commons.math3.util.FastMath;
 import org.nd4j.linalg.activations.impl.ActivationReLU;
 import org.nd4j.linalg.activations.impl.ActivationSigmoid;

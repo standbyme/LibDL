@@ -1,7 +1,7 @@
-package LibDL.nn.optimization;
+package LibDL.outdated.nn.optimization;
 
-import LibDL.nn.model.Model;
-import LibDL.nn.model.listeners.IterationListener;
+import LibDL.outdated.nn.model.Model;
+import LibDL.outdated.nn.model.listeners.IterationListener;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public class SGDOptimizer extends DefaultOptimizer {

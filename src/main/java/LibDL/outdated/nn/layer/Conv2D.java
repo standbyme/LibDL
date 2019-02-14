@@ -1,10 +1,8 @@
-package LibDL.nn.layer;
+package LibDL.outdated.nn.layer;
 
 import org.nd4j.linalg.activations.impl.ActivationIdentity;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-
-import static LibDL.nn.layer.Utils.*;
 
 public class Conv2D extends DefaultLayer {
     private int outHeight;
@@ -35,9 +33,9 @@ public class Conv2D extends DefaultLayer {
         INDArray temp = activationFunction.backprop(preOutput, error).getFirst();
         rotatedKernel = weight.dup();
         for (int i = 0; i < rotatedKernel.shape()[2]; i++) {
-            INDArray t = getZ(rotatedKernel, i);
+            INDArray t = Utils.getZ(rotatedKernel, i);
             t = Nd4j.reverse(t);
-            putZ(rotatedKernel, i, t);
+            Utils.putZ(rotatedKernel, i, t);
         }
         INDArray paddedRotatedKernel = Nd4j.pad(rotatedKernel, new int[]{1, 1, 0}, Nd4j.PadMode.CONSTANT);
         epsilon = conv2D(paddedRotatedKernel, temp);
@@ -64,14 +62,14 @@ public class Conv2D extends DefaultLayer {
     private INDArray conv2D(INDArray input, INDArray kernel) {
         INDArray result = Nd4j.zeros(outHeight, outWidth, kernel.shape()[2]);
         for (int z = 0; z < kernel.shape()[2]; z++) {
-            INDArray k = getZ(kernel, z);
+            INDArray k = Utils.getZ(kernel, z);
             INDArray channelSum = Nd4j.zeros(outHeight, outWidth);
             for (int c = 0; c < input.shape()[2]; c++) {
-                INDArray channel = getZ(input, c);
+                INDArray channel = Utils.getZ(input, c);
                 INDArray convChannel = Nd4j.zeros(outHeight, outWidth);
                 for (int i = 0; i < outHeight; i++) {
                     for (int j = 0; j < outWidth; j++) {
-                        INDArray subArr = subArray(channel, i * stride, j * stride, k.shape()[0], k.shape()[1]);
+                        INDArray subArr = Utils.subArray(channel, i * stride, j * stride, k.shape()[0], k.shape()[1]);
                         double item = subArr
                                 .muli(k)
                                 .sumNumber().doubleValue();
@@ -80,7 +78,7 @@ public class Conv2D extends DefaultLayer {
                 }
                 channelSum.addi(convChannel);
             }
-            putZ(result, z, channelSum);
+            Utils.putZ(result, z, channelSum);
         }
         return result;
     }

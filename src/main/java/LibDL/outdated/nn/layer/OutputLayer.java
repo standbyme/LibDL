@@ -1,8 +1,8 @@
-package LibDL.nn.layer;
+package LibDL.outdated.nn.layer;
 
-import LibDL.nn.model.Model;
-import LibDL.nn.model.listeners.Listener;
-import LibDL.nn.optimization.Optimizer;
+import LibDL.outdated.nn.model.Model;
+import LibDL.outdated.nn.model.listeners.Listener;
+import LibDL.outdated.nn.optimization.Optimizer;
 import org.apache.commons.math3.util.FastMath;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.api.ndarray.INDArray;

@@ -1,6 +1,6 @@
-package LibDL.nn.model;
+package LibDL.outdated.nn.model;
 
-import LibDL.nn.model.listeners.Listener;
+import LibDL.outdated.nn.model.listeners.Listener;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;

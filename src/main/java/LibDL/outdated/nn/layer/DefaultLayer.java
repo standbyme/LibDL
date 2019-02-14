@@ -1,4 +1,4 @@
-package LibDL.nn.layer;
+package LibDL.outdated.nn.layer;
 
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.api.ndarray.INDArray;
