@@ -1,16 +1,54 @@
-# 图像处理（DataTran模块）
-## 2019.02.04 13:00 :fire:
-大重构，放弃了在这个模块使用面向对象的思想进行设计。
+# 图像读取+MINST读取 部分方法介绍
 
-新版本的实现也更加简洁，代码量更小。代码和文档均已更新。
-## 2019.02.01 03:41 😫
+## ```FlatRoot::fileFR```
+读取某```dirName```路径下所有满足```allowedExtensions```后缀名的文件 返回```ArrayList<File>```变量
+### 函数原型
+```{java}
+public static ArrayList<File> fileFR(String dirName, String[] allowedExtensions)
+```
+### 例程
+```{java}
+String[] allowedExtensions = {"tif", "jpg", "png", "jpeg", "bmp", "JPEG", "JPG", "TIF", "PNG"};
+List<File> files = FlatRoot.fileFR("F:/Programs/moduleimage/ImageDemo", allowedExtensions);
+```
+## ```ImageRead::files2INDArray```
+将```List<File> files```中的文件作为图片读入```INDArray```中
+### 函数原型
+```{java}
+public static INDArray files2INDArray(List<File> files, int channel, int row, int col, Function<BufferedImage, BufferedImage>... functions)
+```
+### 参数说明
+#### ```functions```
+该方法的读取过程是 先从文件中读图像数据到```BufferedImage```对象 然后再将读取到的一组```BufferedImage```对象转换成```INDArray```
 
-更新了代码注释，重构了部分代码。
+在从文件中读图像数据到```BufferedImage```对象之后 将读取到的一组```BufferedImage```对象转换成```INDArray```之前
+该方法将对每个```BufferedImage```对象按照数组顺序执行```functions```中储存的操作
+#### ```row``` / ```col```
+将该组图片以宽×高为```col```×```row```的尺寸读入 与原图尺寸有差异的将自动对图片宽高进行伸缩
+#### ```channel```
+指定了以什么模式将图片转换成```INDArray``` 该参数取值必须为 1/3/4 中的一个 代表了图片的通道数
 
-## 2019.01.30 18:03 :rage:
+* 如果```channel```取值为1 则该方法返回```shape```为```[files.size(), row, col]```的```INDArray``` 该方法会以灰度图模式读取图片
 
-在周日（2019.01.27）发现我前任负责这个模块的同学，给我留下的代码全盘照搬DL4J的DataVec模块。这当然是不被允许的，我也无法容忍将那份代码提交到我们的项目中，所以开始从头设计并实现图像处理模块。真无奈。
+* 如果```channel```取值为3 则该方法返回```shape```为```[files.size(), 3, row, col]```的```INDArray``` 该方法会以RGB模式读取图片<br>
+在返回值```[x, 0]```处的二维矩阵为改组图像数据中第```x```张图像的B矩阵<br>
+在返回值```[x, 1]```处的二维矩阵为改组图像数据中第```x```张图像的G矩阵<br>
+在返回值```[x, 2]```处的二维矩阵为改组图像数据中第```x```张图像的R矩阵
 
-目前建立了一个处理框架，添加了最基础的图像处理功能，更多的功能可以在后续开发中遇到新的需求时进行扩展。
-
-还没有添加注释。
+* 如果```channel```取值为4 则该方法返回```shape```为```[files.size(), 4, row, col]```的```INDArray``` 该方法会以ARGB模式读取图片<br>
+在返回值```[x, 0]```处的二维矩阵为改组图像数据中第```x```张图像的B矩阵<br>
+在返回值```[x, 1]```处的二维矩阵为改组图像数据中第```x```张图像的G矩阵<br>
+在返回值```[x, 2]```处的二维矩阵为改组图像数据中第```x```张图像的R矩阵<br>
+在返回值```[x, 3]```处的二维矩阵为改组图像数据中第```x```张图像的A矩阵
+### 例程
+```{java}
+INDArray features0 = ImageRead.files2INDArray(files, 4, 300, 300);
+INDArray features1 = ImageRead.files2INDArray(files, 4, 300, 300, ImageTran::toGray, ImageTran::inverse);
+```
+## IdxUbyteRead::fromFile
+.idx3-ubyte / .idx1-ubyte是MNIST数据集的文件格式
+### 例程
+```{java}
+INDArray x = IdxUbyteRead.fromFile("F:/Programs/TfDemo/MNIST_data/t10k-images.idx3-ubyte");
+INDArray y = IdxUbyteRead.fromFile("F:/Programs/TfDemo/MNIST_data/t10k-labels.idx1-ubyte");
+```
