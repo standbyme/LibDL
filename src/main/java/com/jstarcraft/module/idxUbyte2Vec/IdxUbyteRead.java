@@ -5,12 +5,27 @@ import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.*;
 
+/**
+ * 内含从MNIST数据集文件(IdxUbyte类型)中读取数据到INDArray的方法<br>
+ *     关于该类文件数据的格式 可以查看http://yann.lecun.com/exdb/mnist/
+ */
 public class IdxUbyteRead {
 
+    /**
+     * 从文件中读取数据
+     * @param filePath 文件的路径
+     * @return
+     */
     public static INDArray fromFile(String filePath) {
         return fromFile(filePath, 2048);
     }
 
+    /**
+     * 从文件中读取数据 并指定了读取文件时的缓冲数组长度
+     * @param filePath 文件的路径
+     * @param fileReadBatch 读取文件时的缓冲数组长度
+     * @return
+     */
     public static INDArray fromFile(String filePath, int fileReadBatch) {
         try {
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(filePath));
@@ -35,7 +50,12 @@ public class IdxUbyteRead {
         }
     }
 
-
+    /**
+     * 从InputStream中读取4字节的数据并转换成int值返回
+     * @param inputStream
+     * @return
+     * @throws Exception
+     */
     private static int readInt(InputStream inputStream) throws Exception {
         byte[] intReader = new byte[4];
         int size = inputStream.read(intReader), res = 0;
