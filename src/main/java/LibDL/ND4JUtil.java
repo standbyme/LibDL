@@ -22,6 +22,10 @@ public class ND4JUtil {
         return exec(new org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear(x));
     }
 
+    public static INDArray Log(INDArray x){
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Log(x));
+    }
+
     public static INDArray Step(INDArray x){
         return exec(new org.nd4j.linalg.api.ops.impl.transforms.Step(x));
     }
