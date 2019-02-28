@@ -14,6 +14,10 @@ public class ND4JUtil {
         return exec(new org.nd4j.linalg.api.ops.impl.transforms.Pow(x, x.dup(), exponent));
     }
 
+    public static INDArray Exp(INDArray x){
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Exp(x));
+    }
+
     public static INDArray ReLU(INDArray x){
         return exec(new org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear(x));
     }
