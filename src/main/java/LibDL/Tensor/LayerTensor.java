@@ -21,7 +21,7 @@ public abstract class LayerTensor extends Tensor {
     }
 
     @Override
-    final public void backward() {
+    public void backward() {
         core.dout = dout;
         core.backward();
     }
