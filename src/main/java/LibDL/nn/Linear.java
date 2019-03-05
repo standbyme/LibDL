@@ -39,7 +39,7 @@ public class Linear extends LayerTensor {
         WeightInit.kaimingUniform(W.value, Math.sqrt(5));
         if(bias) {
             double bound = 1 / Math.sqrt(fanIn);
-            WeightInit.uniform(W.value, -bound, bound);
+            WeightInit.uniform(B.value, -bound, bound);
         }
     }
 }
