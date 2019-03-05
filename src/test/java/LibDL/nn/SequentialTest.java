@@ -20,7 +20,7 @@ public class SequentialTest {
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
-        SGD optimizer = new SGD(nn.parameters(), 0.03f);
+        SGD optimizer = new SGD(nn.parameters(), 0.3f);
 
         for (int i = 1; i <= 800; i++) {
             loss.forward();
@@ -44,7 +44,7 @@ public class SequentialTest {
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
-        SGD optimizer = new SGD(nn.parameters(), 0.03f, 0.8f);
+        SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
         for (int i = 1; i <= 160; i++) {
             loss.forward();
@@ -68,7 +68,7 @@ public class SequentialTest {
         MSELoss loss = new MSELoss(target);
         loss.setX(nn);
 
-        SGD optimizer = new SGD(nn.parameters(), 0.03f);
+        SGD optimizer = new SGD(nn.parameters(), 0.1f);
 
         for (int i = 1; i <= 1000; i++) {
             loss.forward();

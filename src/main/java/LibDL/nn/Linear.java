@@ -23,12 +23,23 @@ public class Linear extends LayerTensor {
     }
 
     public Linear(int in_features, int out_features, boolean bias) {
-        W = new Constant(Nd4j.randn(in_features, out_features).muli(FastMath.sqrt(2.0 / (in_features + out_features))), true);
+        W = new Constant(Nd4j.create(in_features, out_features), true);
         if (bias) {
-            B = new Constant(Nd4j.randn(1, out_features).muli(FastMath.sqrt(2.0 / (in_features + out_features))), true);
+            B = new Constant(Nd4j.create(1, out_features), true);
         } else {
             B = null;
         }
         this.bias = bias;
+
+        resetParameters();
+    }
+
+    public void resetParameters() {
+        long fanIn = W.value.size(0);
+        WeightInit.kaimingUniform(W.value, Math.sqrt(5));
+        if(bias) {
+            double bound = 1 / Math.sqrt(fanIn);
+            WeightInit.uniform(B.value, -bound, bound);
+        }
     }
 }

@@ -30,4 +30,8 @@ public abstract class Tensor {
     final public Pow pow(int exponent) {
         return new Pow(this, exponent);
     }
+
+    final public Div div(int divisor) {
+        return new Div(this, divisor);
+    }
 }
