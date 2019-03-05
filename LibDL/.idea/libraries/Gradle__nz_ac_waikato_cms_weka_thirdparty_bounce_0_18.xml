@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: nz.ac.waikato.cms.weka.thirdparty:bounce:0.18">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/nz/ac/waikato/cms/weka/thirdparty/bounce/0.18/bounce-0.18.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

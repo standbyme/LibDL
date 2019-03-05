@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: nz.ac.waikato.cms.weka.thirdparty:java-cup-11b:2015.03.26">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/nz/ac/waikato/cms/weka/thirdparty/java-cup-11b/2015.03.26/java-cup-11b-2015.03.26.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
