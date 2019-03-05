@@ -1,9 +1,5 @@
-package LibDL.Layer;
+package LibDL.nn;
 
-import LibDL.nn.Linear;
-import LibDL.nn.MSELoss;
-import LibDL.nn.ReLU;
-import LibDL.nn.Sequential;
 import LibDL.Tensor.Constant;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
