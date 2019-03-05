@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: org.apache.commons:commons-csv:1.6">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-csv/1.6/commons-csv-1.6.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

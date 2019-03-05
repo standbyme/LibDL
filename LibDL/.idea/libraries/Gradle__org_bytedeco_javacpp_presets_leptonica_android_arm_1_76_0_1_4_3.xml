@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: org.bytedeco.javacpp-presets:leptonica:android-arm:1.76.0-1.4.3">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/leptonica/1.76.0-1.4.3/leptonica-1.76.0-1.4.3-android-arm.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

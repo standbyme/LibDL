@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: org.bytedeco.javacpp-presets:mkl:macosx-x86_64:2019.0-1.4.3">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/mkl/2019.0-1.4.3/mkl-2019.0-1.4.3-macosx-x86_64.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

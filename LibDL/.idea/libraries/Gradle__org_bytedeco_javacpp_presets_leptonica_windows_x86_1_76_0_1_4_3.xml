@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: org.bytedeco.javacpp-presets:leptonica:windows-x86:1.76.0-1.4.3">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/javacpp-presets/leptonica/1.76.0-1.4.3/leptonica-1.76.0-1.4.3-windows-x86.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
