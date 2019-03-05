@@ -3,7 +3,6 @@ package LibDL.nn;
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
-import org.apache.commons.math3.util.FastMath;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Linear extends LayerTensor {
@@ -34,7 +33,7 @@ public class Linear extends LayerTensor {
         resetParameters();
     }
 
-    public void resetParameters() {
+    private void resetParameters() {
         long fanIn = W.value.size(0);
         WeightInit.kaimingUniform(W.value, Math.sqrt(5));
         if(bias) {
