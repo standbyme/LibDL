@@ -24,13 +24,13 @@ public class AutoGradTest {
         loss.setX(out);
         loss.forward();
 
-        assert loss.out.equalsWithEps(Nd4j.create(new double[][]{{185.0}}), 1e-6);
+        assert loss.out.equalsWithEps(Nd4j.create(new double[][]{{92.5}}), 1e-6);
 
         loss.backward();
 
-        assert x.dout.equalsWithEps(Nd4j.create(new double[][]{{60.0, 136.0}}), 1e-6);
-        assert y.dout.equalsWithEps(Nd4j.create(new double[][]{{32.0, 44.0}, {16.0, 22.0}}), 1e-6);
-        assert z.dout.equalsWithEps(Nd4j.create(new double[][]{{16.0, 22.0}}), 1e-6);
+        assert x.dout.equalsWithEps(Nd4j.create(new double[][]{{30.0, 68.0}}), 1e-6);
+        assert y.dout.equalsWithEps(Nd4j.create(new double[][]{{16.0, 22.0}, {8.0, 11.0}}), 1e-6);
+        assert z.dout.equalsWithEps(Nd4j.create(new double[][]{{8.0, 11.0}}), 1e-6);
     }
 
 }

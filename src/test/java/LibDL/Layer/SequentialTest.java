@@ -74,7 +74,7 @@ public class SequentialTest {
 
         SGD optimizer = new SGD(nn.parameters(), 0.03f);
 
-        for (int i = 1; i <= 3000; i++) {
+        for (int i = 1; i <= 1000; i++) {
             loss.forward();
             loss.backward();
             optimizer.step();

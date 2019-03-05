@@ -1,27 +1,27 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.function.Supplier;
 
+public class Div extends OperatorTensor {
 
-public class Sum extends OperatorTensor {
-
-    public Sum(Tensor tensor) {
+    public Div(Tensor dividend, int divisor) {
+        assert (divisor != 0);
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> Nd4j.onesLike(tensor.out).muli(dout)),
+                new OperandInfo(dividend, () -> dout.div(divisor)),
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.sum();
+        Supplier<INDArray> forward = () -> dividend.out.div(divisor);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
         setOperatorInfo(operatorInfo);
     }
+
 }
