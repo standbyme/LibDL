@@ -1,8 +1,7 @@
-package LibDL.Layer;
+package LibDL.nn;
 
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
-import LibDL.nn.MSELoss;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
