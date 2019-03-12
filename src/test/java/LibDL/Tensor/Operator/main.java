@@ -52,7 +52,7 @@ public class main {
     public void testUnfold() {
 
         Constant x = new Constant(Nd4j.linspace(1, 16, 16).reshape(2, 2, 2, 2));
-        Unfold ret = new Unfold(x, 1,2);
+        Unfold ret = new Unfold(x, 1, 2);
         INDArray im2colAssertion = Nd4j.create(new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                         0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -64,6 +64,24 @@ public class main {
                 new int[]{2, 2, 1, 1, 6, 6});
         ret.forward();
         assertEquals(im2colAssertion, ret.out);
+
+    }
+
+    @Test
+    public void testUnfold2() {
+
+        INDArray assertion = Nd4j.create(new double[]{1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1, 3, 3,
+                3, 3, 1, 1, 1, 1, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4,
+                4, 4, 2, 2, 2, 2, 4, 4, 4, 4}, new int[]{1, 1, 2, 2, 4, 4});
+
+        Constant x = new Constant(Nd4j.create(new double[]{1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+                4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+                4, 4, 4, 4, 4, 4, 4, 4}, new int[]{1, 1, 8, 8}));
+
+        Unfold ret = new Unfold(x, 2, 0, 2);
+
+        ret.forward();
+        assertEquals(assertion, ret.out);
 
     }
 }

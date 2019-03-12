@@ -15,11 +15,14 @@ public class Unfold extends OperatorTensor {
     }
 
     public Unfold(Tensor tensor, int kernel_size, int padding) {
+        this(tensor, kernel_size, 1, 1);
+    }
+
+    public Unfold(Tensor tensor, int kernel_size, int padding, int stride) {
 
         // todo: only support kernel_size is a int, but PyTorch support Tuple
 
         int dilation = 1; // todo
-        int stride = 1;
         int filter_h = kernel_size;
         int filter_w = kernel_size;
 
