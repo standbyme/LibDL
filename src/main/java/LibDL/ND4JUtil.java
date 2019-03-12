@@ -15,18 +15,18 @@ public class ND4JUtil {
     }
 
     public static INDArray Exp(INDArray x){
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Exp(x));
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Exp(x.dup()));
     }
 
     public static INDArray ReLU(INDArray x){
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear(x));
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear(x.dup()));
     }
 
     public static INDArray Log(INDArray x){
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Log(x));
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Log(x.dup()));
     }
 
     public static INDArray Step(INDArray x){
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Step(x));
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Step(x.dup()));
     }
 }
