@@ -31,6 +31,10 @@ public abstract class Tensor {
         return new Pow(this, exponent);
     }
 
+    final public Reshape reshapeLike(Tensor that) {
+        return new Reshape(this, that.out.shape());
+    }
+
     final public Div div(int divisor) {
         return new Div(this, divisor);
     }
