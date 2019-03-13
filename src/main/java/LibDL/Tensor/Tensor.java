@@ -31,6 +31,10 @@ public abstract class Tensor {
         return new Pow(this, exponent);
     }
 
+    final public Max max() {
+        return new Max(this);
+    }
+
     final public Reshape reshapeLike(Tensor that) {
         return new Reshape(this, that.out.shape());
     }
