@@ -20,7 +20,7 @@ public class AutoGradTest {
         assert out.out.equalsWithEps(Nd4j.create(new double[][]{{8.0, 11.0}}), 1e-6);
 
         MSELoss loss = new MSELoss(new Constant(Nd4j.zeros(1, 2)));
-        loss.setX(out);
+        loss.setInput(out);
         loss.forward();
 
         assert loss.out.equalsWithEps(Nd4j.create(new double[][]{{92.5}}), 1e-6);

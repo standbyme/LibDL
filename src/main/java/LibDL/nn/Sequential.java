@@ -13,10 +13,10 @@ public class Sequential extends LayerTensor {
 
     @Override
     protected Tensor core() {
-        Tensor X = this.X;
+        Tensor X = this.input;
 
         for (LayerTensor tensor : tensors) {
-            tensor.setX(X);
+            tensor.setInput(X);
             X = tensor;
         }
 
