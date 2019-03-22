@@ -9,6 +9,40 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class main {
+
+    @Test
+    public void testAddAndSub() {
+        Constant data1 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+        Constant data2 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+
+        Add add = new Add(data1, data2);
+        Sub sub = new Sub(data1, data2);
+
+        add.forward();
+        sub.forward();
+
+        {
+            double a = add.out.getDouble(0);
+            double b = add.out.getDouble(1);
+            double c = add.out.getDouble(2);
+
+            assert a == 2;
+            assert b == 4;
+            assert c == 6;
+        }
+
+        {
+            double a = sub.out.getDouble(0);
+            double b = sub.out.getDouble(1);
+            double c = sub.out.getDouble(2);
+
+            assert a == 0;
+            assert b == 0;
+            assert c == 0;
+        }
+
+    }
+
     @Test
     public void testSoftmax() {
         Constant data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
