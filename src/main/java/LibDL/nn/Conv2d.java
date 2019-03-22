@@ -19,10 +19,10 @@ public class Conv2d extends LayerTensor {
     @Override
     protected Tensor core() {
 
-        Unfold col = new Unfold(X, kernel_size);
+        Unfold col = new Unfold(input, kernel_size);
 
-        if (bias) return col.mm(W).add(B).reshapeLike(X);
-        else return col.mm(W).reshapeLike(X);
+        if (bias) return col.mm(W).add(B).reshapeLike(input);
+        else return col.mm(W).reshapeLike(input);
 
     }
 

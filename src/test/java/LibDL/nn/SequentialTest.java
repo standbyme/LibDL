@@ -15,10 +15,10 @@ public class SequentialTest {
         Constant target = new Constant(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
 
         Sequential nn = new Sequential(new Linear(2, 1));
-        nn.setX(data);
+        nn.setInput(data);
 
         MSELoss loss = new MSELoss(target);
-        loss.setX(nn);
+        loss.setInput(nn);
 
         SGD optimizer = new SGD(nn.parameters(), 0.3f);
 
@@ -39,10 +39,10 @@ public class SequentialTest {
         Constant target = new Constant(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
 
         Sequential nn = new Sequential(new Linear(2, 1));
-        nn.setX(data);
+        nn.setInput(data);
 
         MSELoss loss = new MSELoss(target);
-        loss.setX(nn);
+        loss.setInput(nn);
 
         SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
@@ -63,10 +63,10 @@ public class SequentialTest {
         Constant target = new Constant(Nd4j.create(new double[][]{{1.0}, {0.0}, {1.0}, {0.0}}));
 
         Sequential nn = new Sequential(new Linear(2, 5), new ReLU(), new Linear(5, 1));
-        nn.setX(data);
+        nn.setInput(data);
 
         MSELoss loss = new MSELoss(target);
-        loss.setX(nn);
+        loss.setInput(nn);
 
         SGD optimizer = new SGD(nn.parameters(), 0.1f);
 

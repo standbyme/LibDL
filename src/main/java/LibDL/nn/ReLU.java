@@ -6,6 +6,6 @@ import LibDL.Tensor.Tensor;
 public class ReLU extends LayerTensor {
     @Override
     protected Tensor core() {
-        return new LibDL.Tensor.Operator.ReLU(X);
+        return new LibDL.Tensor.Operator.ReLU(input);
     }
 }

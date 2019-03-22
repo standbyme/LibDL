@@ -22,8 +22,8 @@ public class MSELoss extends LossTensor {
     @Override
     protected Tensor core() {
         if(size_average)
-            return new Sum(X.sub(target).pow(2)).div((int) target.value.length());
+            return new Sum(input.sub(target).pow(2)).div((int) target.value.length());
         else
-            return new Sum(X.sub(target).pow(2));
+            return new Sum(input.sub(target).pow(2));
     }
 }

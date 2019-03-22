@@ -2,10 +2,10 @@ package LibDL.Tensor;
 
 public abstract class LayerTensor extends Tensor {
 
-    protected Tensor X = null;
+    protected Tensor input = null;
 
-    final public void setX(Tensor x) {
-        X = x;
+    final public void setInput(Tensor input) {
+        this.input = input;
         core = core();
         requires_grad = core.requires_grad;
     }

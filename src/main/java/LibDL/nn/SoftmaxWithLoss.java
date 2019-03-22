@@ -15,14 +15,14 @@ public class SoftmaxWithLoss extends LossTensor {
 
     @Override
     protected Tensor core() {
-        y = new Softmax(X);
+        y = new Softmax(input);
         return new CrossEntropyLoss(y,target);
     }
 
     @Override
     public void backward() {
         long batch_size = target.out.shape()[0];
-        X.dout = y.out.sub(target.out).divi(batch_size);
-        X.backward();
+        input.dout = y.out.sub(target.out).divi(batch_size);
+        input.backward();
     }
 }
