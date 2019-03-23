@@ -1,9 +1,6 @@
 language: java
 jdk:
   - openjdk8
-install:
-  - ./gradlew assemble
-  - ./gradlew check
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -13,4 +10,3 @@ cache:
     - $HOME/.gradle/wrapper/
 script:
   - gradle test
-
