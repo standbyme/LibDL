@@ -9,6 +9,35 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class main {
+
+    @Test
+    public void testMax() {
+        Constant data = new Constant(Nd4j.create(new double[][]{
+                {0.3, 4.0, 2.9},
+                {3.5, 2.2, 2.5},
+                {0.5, 6, 6.5},
+                {0.5, 6, 7.5},
+
+        }), true);
+
+        Max result = new Max(data);
+
+        result.forward();
+
+        assertEquals(result.out, Nd4j.create(new double[]{4.0, 3.5, 6.5, 7.5}));
+
+        result.dout = Nd4j.create(new double[]{0.5, 1, 2, 4});
+
+        result.backward();
+        assertEquals(data.dout, Nd4j.create(new double[][]{
+                {0, 0.5, 0},
+                {1, 0, 0},
+                {0, 0, 2},
+                {0, 0, 4}
+        }));
+
+    }
+
     @Test
     public void testSoftmax() {
         Constant data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
