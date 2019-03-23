@@ -117,4 +117,65 @@ public class main {
         assertEquals(matrix_2_3, x.dout);
 
     }
+
+    @Test
+    public void testAddAndSub() {
+        Constant data1 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+        Constant data2 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+
+        Add add = new Add(data1, data2);
+        Sub sub = new Sub(data1, data2);
+
+        add.forward();
+        sub.forward();
+
+        {
+            double a = add.out.getDouble(0);
+            double b = add.out.getDouble(1);
+            double c = add.out.getDouble(2);
+
+            assert a == 2;
+            assert b == 4;
+            assert c == 6;
+        }
+
+        {
+            double a = sub.out.getDouble(0);
+            double b = sub.out.getDouble(1);
+            double c = sub.out.getDouble(2);
+
+            assert a == 0;
+            assert b == 0;
+            assert c == 0;
+        }
+
+    }
+
+    @Test
+    public void testAverage() {
+        Constant data = new Constant(Nd4j.create(new double[][]{
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+                {10, 11, 12},
+
+        }), true);
+
+        Average result = new Average(data);
+
+        result.forward();
+
+        assertEquals(result.out, Nd4j.create(new double[]{2, 5, 8, 11}));
+
+        result.dout = Nd4j.create(new double[]{3, 6, 9, 12});
+
+        result.backward();
+        assertEquals(data.dout, Nd4j.create(new double[][]{
+                {1, 1, 1},
+                {2, 2, 2},
+                {3, 3, 3},
+                {4, 4, 4}
+        }));
+    }
+
 }
