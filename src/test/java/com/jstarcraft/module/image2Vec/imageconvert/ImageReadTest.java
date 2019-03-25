@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.List;
 
 public class ImageReadTest {
-    @Test
+
     public void files2INDArrayTest(){
         // 注意 在Test类中 display方法弹出的窗口会闪退
         String[] allowedExtensions = new String[]{"jpg"};

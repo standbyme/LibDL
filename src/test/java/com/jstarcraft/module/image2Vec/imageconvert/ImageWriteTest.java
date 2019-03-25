@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class ImageWriteTest {
-    @Test
+    
     public void toDirTest() {
         String path = "F:/Programs/moduleimage/ImageDemo/label1/1.jpg";
         BufferedImage bufferedImage = ImageRead.fromFile(new File(path), 50, 50, BufferedImage.TYPE_INT_ARGB);
