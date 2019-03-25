@@ -2,8 +2,7 @@ package vision.datasets;
 
 import LibDL.utils.data.Dataset;
 import com.jstarcraft.module.idxUbyte2Vec.IdxUbyteRead;
-import javafx.util.Pair;
-import org.jetbrains.annotations.NotNull;
+
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.Iterator;
@@ -34,7 +33,7 @@ public class MNIST extends Dataset {
         assert data.size(0) == target.size(0);
     }
 
-    private class MNISTIterator implements Iterator<Pair<INDArray, INDArray>> {
+    private class MNISTIterator implements Iterator<INDArray[]> {
 
         private INDArray data, label;
         private int now;
@@ -51,8 +50,8 @@ public class MNIST extends Dataset {
         }
 
         @Override
-        public Pair<INDArray, INDArray> next() {
-            Pair<INDArray, INDArray> ret = new Pair<>(data.getRow(now), label.getRow(now));
+        public INDArray[] next() {
+            INDArray[] ret = new INDArray[]{data.getRow(now), label.getRow(now)};
             now++;
             return ret;
         }
@@ -65,7 +64,6 @@ public class MNIST extends Dataset {
 
 
 
-    @NotNull
     @Override
     public Iterator iterator() {
         return new MNISTIterator(data, target, 0);
