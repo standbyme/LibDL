@@ -63,14 +63,7 @@ public class MNIST extends Dataset {
         return data.size(0);
     }
 
-    @Override
-    public void forEach(Consumer action) {
-        Iterator iterator = iterator();
-        while (iterator.hasNext()) {
-            action.accept(iterator.next());
-        }
 
-    }
 
     @NotNull
     @Override

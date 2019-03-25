@@ -4,12 +4,12 @@ import javafx.util.Pair;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 
 public class MNISTTest {
     @Test
     public void testMNIST() {
+
         MNIST mnist_train = new MNIST("E:/mnist/MNIST/raw/", true);
         MNIST mnist_test = new MNIST("E:/mnist/MNIST/raw/", false);
 //        System.out.println(Arrays.toString(mnist.data.shape()));

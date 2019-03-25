@@ -18,4 +18,13 @@ public abstract class Dataset implements RandomAccess, Iterable {
     }
 
     public abstract long size();
+
+    @Override
+    public void forEach(Consumer action) {
+        Iterator iterator = iterator();
+        while (iterator.hasNext()) {
+            action.accept(iterator.next());
+        }
+
+    }
 }
