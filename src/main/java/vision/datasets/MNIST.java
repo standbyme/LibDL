@@ -18,21 +18,20 @@ public class MNIST extends Dataset {
             "train-images.idx3-ubyte",
             "train-labels.idx1-ubyte"
     };
-    public INDArray train_data, train_label, test_data, test_label;
+    public INDArray data, target;
 
     private boolean isTrain;
 
     public MNIST(String root, boolean train) {
         isTrain = train;
         if (train) {
-            train_data = IdxUbyteRead.fromFile(root + train_name[0]);
-            train_label = IdxUbyteRead.fromFile(root + train_name[1]);
-            assert train_data.size(0) == train_label.size(0);
+            data = IdxUbyteRead.fromFile(root + train_name[0]);
+            target = IdxUbyteRead.fromFile(root + train_name[1]);
         } else {
-            test_data = IdxUbyteRead.fromFile(root + test_name[0]);
-            test_label = IdxUbyteRead.fromFile(root + test_name[1]);
-            assert test_data.size(0) == test_label.size(0);
+            data = IdxUbyteRead.fromFile(root + test_name[0]);
+            target = IdxUbyteRead.fromFile(root + test_name[1]);
         }
+        assert data.size(0) == target.size(0);
     }
 
     private class MNISTIterator implements Iterator<Pair<INDArray, INDArray>> {
@@ -61,10 +60,7 @@ public class MNIST extends Dataset {
 
     @Override
     public long size() {
-        if (isTrain)
-            return train_data.size(0);
-        else
-            return test_data.size(0);
+        return data.size(0);
     }
 
     @Override
@@ -79,11 +75,7 @@ public class MNIST extends Dataset {
     @NotNull
     @Override
     public Iterator iterator() {
-        if (isTrain) {
-            return new MNISTIterator(train_data, train_label, 0);
-        } else {
-            return new MNISTIterator(test_data, test_label, 0);
-        }
+        return new MNISTIterator(data, target, 0);
     }
 
 }
