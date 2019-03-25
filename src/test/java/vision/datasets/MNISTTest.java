@@ -4,14 +4,14 @@ import javafx.util.Pair;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.io.File;
 import java.util.*;
 
 public class MNISTTest {
     @Test
     public void testMNIST() {
-
-        MNIST mnist_train = new MNIST("E:/mnist/MNIST/raw/", true);
-        MNIST mnist_test = new MNIST("E:/mnist/MNIST/raw/", false);
+        MNIST mnist_train = new MNIST("resource/MNIST/", true);
+        MNIST mnist_test = new MNIST("resource/MNIST/", false);
 //        System.out.println(Arrays.toString(mnist.data.shape()));
 //        System.out.println(Arrays.toString(mnist_test.target.shape()));
         assert Arrays.equals(mnist_train.data.shape(), new long[]{60000, 28, 28});
