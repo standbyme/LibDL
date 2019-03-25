@@ -60,7 +60,10 @@ public class IdxUbyteRead {
         byte[] intReader = new byte[4];
         int size = inputStream.read(intReader), res = 0;
         if (size != 4) throw new Exception("File format error.");
-        for (int i = 0; i < 4; i++) res = (res << 8) + intReader[i];
+        for (int i = 0; i < 4; i++) {
+            int toAdd = (int) intReader[i] + (intReader[i] >= 0 ? 0 : 256);
+            res = (res << 8) + toAdd;
+        }
         return res;
     }
 }
