@@ -1,12 +1,11 @@
 package vision.datasets;
 
 import LibDL.utils.data.Dataset;
-import com.jstarcraft.module.idxUbyte2Vec.IdxUbyteRead;
+import vision.datasets._ImageModule.idxUbyte2Vec.IdxUbyteRead;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class MNIST extends Dataset {
     private static String[] test_name = {
