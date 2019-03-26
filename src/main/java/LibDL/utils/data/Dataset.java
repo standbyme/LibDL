@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.omg.CORBA.DATA_CONVERSION;
 
 public abstract class Dataset implements RandomAccess, Iterable {
 
@@ -25,4 +26,10 @@ public abstract class Dataset implements RandomAccess, Iterable {
         }
 
     }
+
+    public ConcatDataset add(Dataset other) {
+        return new ConcatDataset(this, other);
+    }
+
+    protected abstract Iterator getIteratorByIndex(long index);
 }

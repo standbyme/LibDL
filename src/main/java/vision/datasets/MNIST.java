@@ -1,9 +1,8 @@
 package vision.datasets;
 
 import LibDL.utils.data.Dataset;
-import vision.datasets._ImageModule.idxUbyte2Vec.IdxUbyteRead;
-
 import org.nd4j.linalg.api.ndarray.INDArray;
+import vision.datasets._ImageModule.idxUbyte2Vec.IdxUbyteRead;
 
 import java.util.Iterator;
 
@@ -35,9 +34,9 @@ public class MNIST extends Dataset {
     private class MNISTIterator implements Iterator<INDArray[]> {
 
         private INDArray data, label;
-        private int now;
+        private long now;
 
-        public MNISTIterator(INDArray data, INDArray label, int now) {
+        public MNISTIterator(INDArray data, INDArray label, long now) {
             this.data = data;
             this.label = label;
             this.now = now;
@@ -61,7 +60,10 @@ public class MNIST extends Dataset {
         return data.size(0);
     }
 
-
+    @Override
+    protected Iterator getIteratorByIndex(long index) {
+        return new MNISTIterator(data, target, index);
+    }
 
     @Override
     public Iterator iterator() {
