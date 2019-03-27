@@ -13,7 +13,7 @@ public class CrossEntropyLoss extends OperatorTensor {
 
     public CrossEntropyLoss(Tensor tensor, Tensor target) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, null),
+                new OperandInfo(tensor, () -> target.out.sub(tensor.out)),
                 new OperandInfo(target, null),
         };
 
@@ -21,7 +21,7 @@ public class CrossEntropyLoss extends OperatorTensor {
             INDArray y = tensor.out;
             INDArray t = target.out;
 
-            return ND4JUtil.Log(y.add(delta)).muli(t).sum().muli(-1);
+            return ND4JUtil.Log(y.add(delta)).muli(t).sum().muli(-1.0 / y.size(0));
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
