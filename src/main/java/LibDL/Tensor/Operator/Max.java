@@ -24,7 +24,7 @@ public class Max extends OperatorTensor {
                     INDArray zeros = Nd4j.toFlattened(Nd4j.zerosLike(tensor.out));
                     INDArray indices = Nd4j.linspace(0, argmax.size(0) - 1, argmax.size(0));
                     indices = indices.mul(tensor.out.size(1)).add(argmax.transpose());
-                    INDArray fuck = zeros.put(new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.indices(indices.data().asLong())}, dout);
+                    zeros.put(new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.indices(indices.data().asLong())}, dout);
                     return zeros.reshape(tensor.out.shape());
                 }),
         };
