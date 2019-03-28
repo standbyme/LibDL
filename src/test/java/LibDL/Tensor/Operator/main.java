@@ -43,19 +43,16 @@ public class main {
 
     @Test
     public void testSoftmax() {
+
         Constant data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
-
-        Softmax f = new Softmax(data, 0);
-
+        Softmax f = new Softmax(data, 1);
         f.forward();
         INDArray s = Transforms.abs(f.out.subi(Nd4j.create(new double[] {0.01821127329554753, 0.24519181293507392, 0.7365969137693786})), false);
-
         assert s.sumNumber().doubleValue() < 0.0000001;
 
 //        assert a1 == 0.018211273476481438;
 //        assert b1 == 0.24519184231758118;
 //        assert c1 == 0.736596941947937;
-
 
         Constant data_to_forward = new Constant(Nd4j.create(new double[][][]{
                 {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
@@ -65,15 +62,14 @@ public class main {
         INDArray target, loss;
         double lossSum;
 
-        result = new Softmax(data_to_forward, -3);
+        result = new Softmax(data_to_forward, -1);
         result.forward();
         target = Nd4j.create(new double[][][]{
-                {{0.5498, 0.1192, 0.5000}, {0.1192, 0.7311, 0.6900}},
-                {{0.4502, 0.8808, 0.5000}, {0.8808, 0.2689, 0.3100}}
+                {{0.8978, 0.0122, 0.0900}, {0.0132, 0.2654, 0.7214}},
+                {{0.8033, 0.0984, 0.0984}, {0.1880, 0.1880, 0.6241}}
         });
         loss = result.out.sub(target);
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-
         assert lossSum / 12 < 0.000002;
 
         result = new Softmax(data_to_forward, 1);
@@ -84,19 +80,25 @@ public class main {
         });
         loss = result.out.sub(target);
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-
         assert lossSum / 12 < 0.000002;
 
-        result = new Softmax(data_to_forward); //dim = 2
+        result = new Softmax(data_to_forward);
         result.forward();
         target = Nd4j.create(new double[][][]{
-                {{0.8978, 0.0122, 0.0900}, {0.0132, 0.2654, 0.7214}},
-                {{0.8033, 0.0984, 0.0984}, {0.1880, 0.1880, 0.6241}}
+                {{0.5498, 0.1192, 0.5000}, {0.1192, 0.7311, 0.6900}},
+                {{0.4502, 0.8808, 0.5000}, {0.8808, 0.2689, 0.3100}}
         });
         loss = result.out.sub(target);
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-        
         assert lossSum / 12 < 0.000002;
+
+        data_to_forward = new Constant(Nd4j.create(new double[] {0.3, 2.9, 4.0}).reshape(new int[] {3}));
+        result = new Softmax(data_to_forward);
+        result.forward();
+        target = Nd4j.create(new double[] {0.0182, 0.2452, 0.7366}).reshape(new int[] {3});
+        loss = result.out.sub(target);
+        lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
+        assert lossSum / 3 < 0.000002;
 
         Constant data_to_backward = new Constant(Nd4j.create(new double[][][]{
                 {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
