@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public class Log extends OperatorTensor {
     public Log(Tensor tensor) {
         OperandInfo[] operandInfos = {
-            new OperandInfo(tensor, () -> Transforms.exp(this.dout, true))
+            new OperandInfo(tensor, () -> null)
         };
 
         Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);

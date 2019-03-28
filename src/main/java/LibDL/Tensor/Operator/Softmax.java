@@ -3,6 +3,7 @@ package LibDL.Tensor.Operator;
 import LibDL.ND4JUtil;
 import LibDL.Tensor.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.util.function.Supplier;
@@ -17,9 +18,23 @@ public class Softmax extends OperatorTensor {
         this(tensor, dim, true);
     }
 
+    private static INDArray DjSi(INDArray sn) {
+        long n = sn.length();
+        INDArray e = Nd4j.eye(n);
+        INDArray right = sn.broadcast(n, n);
+        INDArray left = sn.reshape(n, 1).broadcast(n, n);
+        return left.muli(e.subi(right));
+    }
+
     private Softmax(Tensor tensor, int dim, boolean withDim) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> Transforms.pow(dout.mul(-1).add(1).mul(dout), -1, true)),
+                new OperandInfo(tensor, () -> {
+                    if(tensor.out.rank() == 1) {
+                        return dout.mmul(Softmax.DjSi(out.dup()));
+                    }else {
+                        return null;
+                    }
+                })
         };
 
         Supplier<INDArray> forward = () -> {
