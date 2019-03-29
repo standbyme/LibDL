@@ -2,10 +2,14 @@ package LibDL.Tensor.Operator;
 
 import LibDL.ND4JUtil;
 import LibDL.Tensor.*;
+import org.nd4j.linalg.api.iter.NdIndexIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class Softmax extends OperatorTensor {
@@ -26,30 +30,68 @@ public class Softmax extends OperatorTensor {
         return left.muli(e.subi(right));
     }
 
-    private Softmax(Tensor tensor, int dim, boolean withDim) {
-        OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> {
-                    if(tensor.out.rank() == 1) {
-                        return dout.mmul(Softmax.DjSi(out.dup()));
-                    }else {
-                        return null;
+    private Softmax(Tensor tensor, int dim, boolean withDim) { // TODO remove comments
+
+        OperandInfo[] operandInfos = { // TODO try to remove for-loop
+            new OperandInfo(tensor, () -> {
+                int rank = out.rank();
+//                if(rank == 2 && tensor.out.tensorssAlongDimension(1) == 1) {
+//                    rank = 1;
+//                }
+                int _dim;
+                if(withDim) {
+                    _dim = dim < 0 ? dim + rank : dim;
+                }else {
+                    _dim = (rank == 1 || rank == 3) ? 0 : 1;
+                }
+
+                if(tensor.out.rank() == 1) {
+                    return dout.reshape(1, dout.shape()[0]).mmul(Softmax.DjSi(out.dup())).reshape(dout.shape()[0]);
+                }else {
+                    INDArray out = this.out.dup();
+                    INDArray dout = this.dout.dup();
+
+                    int[] rearrange = Nd4j.linspace(0, rank - 1, rank).toIntVector();
+                    rearrange[_dim] = rank - 1;
+                    rearrange[rank - 1] = _dim;
+                    out.permutei(rearrange);
+                    dout.permutei(rearrange);
+
+                    long[] __shape = out.shape();
+                    double[] _shape = new double[rank];
+                    for (int i = 0; i < rank; i++) {
+                        _shape[i] = __shape[i];
                     }
-                })
+
+                    INDArray shape = Nd4j.create(_shape);
+                    long lastDim = new Double(shape.getDouble(rank - 1)).longValue(); // TODO replace by TAD
+                    shape.putScalar(rank - 1, 1);
+                    long size = shape.prodNumber().longValue();
+                    out = out.reshape(size, lastDim);
+                    dout = dout.reshape(size, lastDim);
+                    INDArray result = Nd4j.zeros(size, lastDim);
+                    for(long i = 0; i < size; i++) {
+                        result.putRow(i, dout.getRow(i).mmul(Softmax.DjSi(out.getRow(i))));
+                    }
+                    result = result.reshape(__shape);
+                    result.permutei(rearrange);
+                    return result;
+                }
+            })
         };
 
         Supplier<INDArray> forward = () -> {
+
             int rank = tensor.out.rank();
 //            if(rank == 2 && tensor.out.tensorssAlongDimension(1) == 1) {
 //                rank = 1;
 //            }
-
             int _dim;
             if(withDim) {
                 _dim = dim < 0 ? dim + rank : dim;
             }else {
                 _dim = (rank == 1 || rank == 3) ? 0 : 1;
             }
-
 //            if(rank == 1) {
 //                Number max = tensor.out.maxNumber();
 //                INDArray exp = ND4JUtil.Exp(tensor.out.sub(max));

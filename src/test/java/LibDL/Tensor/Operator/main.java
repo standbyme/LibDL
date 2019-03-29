@@ -92,21 +92,55 @@ public class main {
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
         assert lossSum / 12 < 0.000002;
 
-        data_to_forward = new Constant(Nd4j.create(new double[] {0.3, 2.9, 4.0}).reshape(new int[] {3}));
+        data_to_forward = new Constant(Nd4j.create(new double[] {0.3, 2.9, 4.0}).reshape(3));
         result = new Softmax(data_to_forward);
         result.forward();
-        target = Nd4j.create(new double[] {0.0182, 0.2452, 0.7366}).reshape(new int[] {3});
+        target = Nd4j.create(new double[] {0.0182, 0.2452, 0.7366}).reshape(3);
         loss = result.out.sub(target);
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
         assert lossSum / 3 < 0.000002;
 
-        Constant data_to_backward = new Constant(Nd4j.create(new double[] {1.0, 2.0, 3.0}).reshape(3), true);
+        Constant data_to_backward; // The following is testing backward
+
+        data_to_backward = new Constant(Nd4j.create(new double[] {1.0, 2.0, 3.0}).reshape(3), true);
         result = new Softmax(data_to_backward, 0);
-        result.dout = Nd4j.create(new double[] {-5.8199, -3.5105, -0.6695});
+        result.dout = Nd4j.create(new double[] { 2.1801, -3.5105, -4.6695}).reshape(3);
         result.forward();
         result.backward();
         assert Nd4j.create(new double[]
-                {-0.3594, -0.4116, 0.7710}).sub(data_to_backward.dout).sumNumber().doubleValue() < 0.0000005;
+                { 0.5356,  0.0633, -0.5989}).sub(data_to_backward.dout).sumNumber().doubleValue() < 0.0000005;
+
+        data_to_backward = new Constant(Nd4j.create(new double[][][] {
+                {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
+                {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
+        }), true);
+        result = new Softmax(data_to_backward, 2);
+        result.dout = Nd4j.create(new double[][][] {
+                {{2.1801, -3.5105, -4.6695}, { 2.0357,  4.0131,  7.9511}},
+                {{-8.4435,  6.2107, -5.9672}, {-2.8199, -4.5105,  8.3305}}
+        });
+        result.forward();
+        result.backward();
+        assert Transforms.abs((Nd4j.create(new double[][][] {
+                {{ 0.5356,  0.0633, -0.5989}, {-0.1033, -0.0250,  0.1284}},
+                {{-1.4256,  1.3506,  0.0750}, {-0.6306, -2.1278,  2.7584}}
+        }).sub(data_to_backward.dout))).sumNumber().doubleValue() / 12 < 0.0001; // TODO 1.3506 is 1.3505
+
+        data_to_backward = new Constant(Nd4j.create(new double[][][] {
+                {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
+                {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
+        }), true);
+        result = new Softmax(data_to_backward, 0);
+        result.dout = Nd4j.create(new double[][][] {
+                {{ 2.0360, -3.4621, -5.0500}, { 2.1517,  4.0220,  6.7551}},
+                {{-8.0360,  7.4621, -5.1500}, {-1.1517, -3.0220,  8.2449}}
+        });
+        result.forward();
+        result.backward();
+        assert Transforms.abs((Nd4j.create(new double[][][] {
+                {{ 0.1779, -2.1478,  0.0249}, { 0.2316,  0.0765, -0.3501}},
+                {{-0.1779,  2.1478, -0.0249}, {-0.2316, -0.0765,  0.3501}}
+        }).sub(data_to_backward.dout))).sumNumber().doubleValue() / 12 < 0.0001; // TODO +-0.0249 should be +-0.0250
     }
 
     @Test
