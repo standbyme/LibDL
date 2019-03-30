@@ -19,7 +19,7 @@ public class Log extends OperatorTensor {
             new OperandInfo(tensor, () -> Transforms.pow(dout, -1))
         };
 
-        Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);
+        Supplier<INDArray> forward = () -> Transforms.log(tensor.out);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

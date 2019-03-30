@@ -145,7 +145,7 @@ public class main {
 
     @Test
     public void testLog() {
-        
+
         Constant x = new Constant(Nd4j.create(new double[] {0.5, 1, 2.731, 10}), true);
         Log log = new Log(x);
         log.forward();
