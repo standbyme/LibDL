@@ -11,7 +11,6 @@ import org.nd4j.linalg.ops.transforms.Transforms;
 import java.util.function.Supplier;
 
 
-
 public class Log extends OperatorTensor {
 
     public Log(Tensor tensor) {
