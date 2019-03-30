@@ -2,10 +2,7 @@ package vision.datasets;
 
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.Operator.CrossEntropyLoss;
-import LibDL.nn.Linear;
-import LibDL.nn.ReLU;
-import LibDL.nn.Sequential;
-import LibDL.nn.Softmax;
+import LibDL.nn.*;
 import LibDL.optim.SGD;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -84,8 +81,8 @@ public class MNISTTest {
 
         nn.setInput(data);
 
-        CrossEntropyLoss loss = new CrossEntropyLoss(nn, target);
-//        loss.setInput(nn);
+        CrossEntropy loss = new CrossEntropy(target);
+        loss.setInput(nn);
 
         LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.5f);
 
@@ -101,7 +98,7 @@ public class MNISTTest {
             loss.backward();
             System.out.println("3 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
             System.out.println("3 " + Arrays.toString(nn.out.getRow(0).toDoubleVector()));
-//            optim.step();
+            optim.step();
             System.out.println("4 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
             System.out.println("4 " + Arrays.toString(nn.out.getRow(0).toDoubleVector()));
 //            System.out.println(Arrays.toString(nn.out.getRow(0).toDoubleVector()));

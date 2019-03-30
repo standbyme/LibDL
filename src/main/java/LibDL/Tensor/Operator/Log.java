@@ -1,20 +1,22 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.util.function.Supplier;
 
 
-
 public class Log extends OperatorTensor {
     public Log(Tensor tensor) {
         OperandInfo[] operandInfos = {
-            new OperandInfo(tensor, () -> null)
+                new OperandInfo(tensor, () ->
+                        Nd4j.onesLike(tensor.out).div(dout)
+                )
         };
 
         Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);
