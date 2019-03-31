@@ -10,12 +10,22 @@ public class Softmax extends LayerTensor {
 
     private int dim;
 
+    public Softmax(Tensor t) {
+        this(t, 0);
+    }
+
     public Softmax(int dim) {
         this.dim = dim;
     }
 
+    public Softmax(Tensor t, int dim) {
+        this(dim);
+        this.setInput(t);
+    }
+
     @Override
     protected Tensor core() {
-        return new Div(new Exp(this.input), new Sum(this.input, 1));
+        return new Div(new Exp(this.input),
+                new Sum(new Exp(this.input), dim));
     }
 }
