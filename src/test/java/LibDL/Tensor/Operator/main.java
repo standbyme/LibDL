@@ -40,7 +40,7 @@ public class main {
         }));
 
     }
-    
+
     @Test
     public void testCrossEntropyLoss() {
         Constant t = new Constant(Nd4j.create(new double[]{0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0}));
