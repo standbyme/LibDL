@@ -4,7 +4,6 @@ import LibDL.Tensor.Constant;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.ops.transforms.Transforms;
 
 import static org.junit.Assert.assertEquals;
 
@@ -103,5 +102,30 @@ public class SoftmaxTest {
                 {{-0.17789784073829650879,  2.14783453941345214844, -0.02495835907757282257}, {-0.23158286511898040771, -0.07654109597206115723,  0.35011735558509826660}}
         });
         assertEquals(target, data_to_backward.dout); // 6.317471464474995E-8
+    }
+
+    @Test
+    public void testThread() {
+        Constant data_to_backward;
+        SoftmaxWithThread result;
+        INDArray target;
+        data_to_backward = new Constant(Nd4j.create(new double[][][] {
+                {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
+                {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
+        }), true);
+        result = new SoftmaxWithThread(data_to_backward, 2);
+        result.dout = Nd4j.create(new double[][][] {
+                {{ 2.18006110191345214844, -3.51054310798645019531, -4.66951799392700195312}, { 2.03573584556579589844,  4.01314640045166015625,  7.95111751556396484375}},
+                {{-8.44346332550048828125,  6.21065425872802734375, -5.96719074249267578125}, {-2.81993889808654785156, -4.51054286956787109375,  8.33048152923583984375}}
+        });
+        result.forward();
+        result.backward();
+        target = Nd4j.create(new double[][][] {
+                {{ 0.53561645746231079102,  0.06330370157957077026, -0.59892022609710693359}, {-0.10334482789039611816, -0.02502040006220340729,  0.12836529314517974854}},
+                {{-1.42557442188262939453,  1.35054612159729003906,  0.07502812147140502930}, {-0.63057214021682739258, -2.12781190872192382812,  2.75838351249694824219}}
+        });
+        assertEquals(target, data_to_backward.dout); // 1.1998539169629416E-7
+        result.forward();
+        result.backward();
     }
 }
