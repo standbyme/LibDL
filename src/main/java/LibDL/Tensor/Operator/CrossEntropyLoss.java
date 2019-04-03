@@ -18,7 +18,6 @@ public class CrossEntropyLoss extends OperatorTensor {
                 new OperandInfo(tensor, () -> {
                     INDArray magic = (tensor.out.sub(target.value));
 
-                    System.out.println("magic" + Arrays.toString(magic.getRow(0).toDoubleVector()));
 
                     return magic;
                 })
@@ -28,17 +27,8 @@ public class CrossEntropyLoss extends OperatorTensor {
             INDArray y = tensor.out;
             INDArray t = target.value;
 
-//            tao = t.sum(1).repeat(1,t.size(1));
-            INDArray result = Transforms.log(y.add(delta));
+            INDArray result = Transforms.log(y.add(delta)).muli(t).sum(1).muli(-1.0);
 
-            result = result.mul(t);
-            result = result.sum(1);
-            result = result.mul(-1.0);
-
-            System.out.println("magic y " + Arrays.toString(y.getRow(0).toDoubleVector()));
-//            System.out.println("magic t " +Arrays.toString(t.getRow(0).toDoubleVector()));
-
-//            System.out.println("magic dout " +Arrays.toString(dout.getRow(0).toDoubleVector()));
 
             return result;
         };

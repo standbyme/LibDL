@@ -64,60 +64,54 @@ public class MNISTTest {
     @Test
     public void testMNISTWithLinear() {
         MNIST mnist_train = new MNIST("resource/MNIST/", true);
-        MNIST mnist_test = new MNIST("resource/MNIST/", false);
+//        MNIST mnist_test = new MNIST("resource/MNIST/", false);
 
         Sequential nn = new Sequential(
-                new Linear(784, 100),
+                new Linear(784, 500),
                 new ReLU(),
-                new Linear(100, 10),
+                new Linear(500, 256),
                 new ReLU(),
-                new Linear(10, 10),
+                new Linear(256, 10),
                 new Softmax(1)
         );
 
+        int b = 10;
 
-        Constant data = new Constant(mnist_train.data.reshape(60000, 784));
-        Constant target = new Constant(createOneHot(mnist_train.target, 10));
 
-//        for (int i = 0; i < 10; i++)
-//            System.out.println(target.value.getDouble(0, i));
+        Constant data = new Constant(mnist_train.data.get(NDArrayIndex.interval(0,b), NDArrayIndex.all()).reshape(b, 784));
+        Constant target = new Constant(createOneHot(mnist_train.target.get(NDArrayIndex.interval(0,b), NDArrayIndex.all()), 10));
+
+        System.out.println("---");
+        System.out.println(mnist_train.target.get(NDArrayIndex.interval(0,b), NDArrayIndex.all()));
+        System.out.println("---");
 
         nn.setInput(data);
 
         CrossEntropyLoss loss = new CrossEntropyLoss(nn, target);
-//        loss.setInput(nn);
 
-        LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.5f);
+        LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.00005f, 0.7f);
 
 
-        for (int i = 0; i < 100; i++) {
-            System.out.println("1 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
-//            if(i!=0){
-//
-//            }
+        for (int i = 0; i < 3000; i++) {
+
             loss.forward();
-            System.out.println("2 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
-            System.out.println("2 " + Arrays.toString(nn.out.getRow(0).toDoubleVector()));
             loss.backward();
-            System.out.println("3 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
-            System.out.println("3 " + Arrays.toString(nn.out.getRow(0).toDoubleVector()));
-//            optim.step();
-            System.out.println("4 " + Arrays.toString(data.value.getRow(0).toDoubleVector()));
-            System.out.println("4 " + Arrays.toString(nn.out.getRow(0).toDoubleVector()));
-//            System.out.println(Arrays.toString(nn.out.getRow(0).toDoubleVector()));
-//            System.out.println(Arrays.toString(nn.dout.getRow(0).toDoubleVector()));
-            System.out.println(loss.out.getDouble(0));
-            if (i % 50 == 0)
+
+            System.out.println(loss.out.sum());
+
+            optim.step();
+
+            if (i % 10 == 0)
                 System.out.println("time " + i);
         }
 
-        nn.setInput(new Constant(mnist_test.data.reshape(10000, 784)));
-
+        nn.setInput(new Constant(mnist_train.data.get(NDArrayIndex.interval(0,b), NDArrayIndex.all()).reshape(b, 784)));
         nn.forward();
-
-        for (int i = 0; i < 100; i++) {
-            System.out.println(nn.out.argMax(i) + ", " + mnist_test.target.getDouble(i));
-        }
+        System.out.println(nn.out.argMax(1));
+//
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println(nn.out.argMax(i) + ", " + mnist_test.target.getDouble(i));
+//        }
 
     }
 
