@@ -1,27 +1,36 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.ND4JUtil;
 import LibDL.Tensor.*;
-import org.apache.commons.math3.util.FastMath;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class CrossEntropyLoss extends OperatorTensor {
 
-    private final static double delta = Math.pow(10,-7);
+    private final static double delta = Math.pow(10, -7);
 
-    public CrossEntropyLoss(Tensor tensor, Tensor target) {
+    public CrossEntropyLoss(Tensor tensor, Constant target) {
+
+
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, null),
-                new OperandInfo(target, null),
+                new OperandInfo(tensor, () -> {
+                    INDArray magic = (tensor.out.sub(target.value));
+
+
+                    return magic;
+                })
         };
 
         Supplier<INDArray> forward = () -> {
             INDArray y = tensor.out;
-            INDArray t = target.out;
+            INDArray t = target.value;
 
-            return ND4JUtil.Log(y.add(delta)).muli(t).sum().muli(-1);
+            INDArray result = Transforms.log(y.add(delta)).muli(t).sum(1).muli(-1.0);
+
+
+            return result;
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
