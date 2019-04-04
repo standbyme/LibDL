@@ -1,18 +1,33 @@
 package LibDL.utils.data;
 
 
+import LibDL.utils.Pair;
+
+import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class DataLoader {
+public class DataLoader implements Iterable<Pair> {
+
+    Dataset dataset;
+    int batch_size;
+
+
     public DataLoader(Dataset dataset,
                       int batch_size,
                       boolean shuffle,
-                      Sampler sampler,
-                      Sampler batch_sampler,
-                      int num_workers,
-                      Consumer collate_fn,
-                      boolean pin_memory,
                       boolean drop_last) {
 
+        if (shuffle) {
+            this.dataset = dataset.shuffleData();
+        } else this.dataset = dataset;
+        if (drop_last) {
+            this.dataset = this.dataset.dropLast(batch_size);
+        }
+
+    }
+
+    @Override
+    public Iterator<Pair> iterator() {
+        return null;
     }
 }

@@ -7,6 +7,22 @@ public abstract class Tensor {
     public INDArray out = null;
     public INDArray dout = null;
 
+    private String tensorName;
+
+    Tensor() {
+        tensorName = this.getClass().getName();
+    }
+
+    public Tensor withName(String name) {
+        tensorName = name;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return tensorName;
+    }
+
     boolean requires_grad;
 
     abstract public void forward();
@@ -46,4 +62,5 @@ public abstract class Tensor {
     final public Div div(int divisor) {
         return new Div(this, divisor);
     }
+
 }

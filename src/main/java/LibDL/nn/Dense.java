@@ -5,7 +5,7 @@ import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class Linear extends LayerTensor {
+public class Dense extends LayerTensor {
 
     private final Constant W;
     private final Constant B;
@@ -17,11 +17,11 @@ public class Linear extends LayerTensor {
         else return input.mm(W);
     }
 
-    public Linear(int in_features, int out_features) {
+    public Dense(int in_features, int out_features) {
         this(in_features, out_features, true);
     }
 
-    public Linear(int in_features, int out_features, boolean bias) {
+    public Dense(int in_features, int out_features, boolean bias) {
         W = new Constant(Nd4j.create(in_features, out_features), true);
         if (bias) {
             B = new Constant(Nd4j.create(1, out_features), true);

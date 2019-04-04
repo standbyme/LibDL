@@ -1,6 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Constant;
+import LibDL.Tensor.Operator.CrossEntropyLoss;
 import LibDL.Tensor.Operator.Log;
 import LibDL.Tensor.Operator.Mul;
 import LibDL.Tensor.Operator.Sum;
@@ -24,8 +25,9 @@ public class CrossEntropy extends LossTensor {
 
     @Override
     protected Tensor core() {
-        return new Mul(new Sum(new Mul(new Log(this.input), this.target), 1),
-                new Constant(Nd4j.create(new double[]{-1.0})));
+        return new CrossEntropyLoss(input, target);
+//        return new Mul(new Sum(new Mul(new Log(this.input), this.target), 1),
+//                new Constant(Nd4j.create(new double[]{-1.0})));
 
     }
 }

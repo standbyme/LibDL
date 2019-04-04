@@ -17,12 +17,12 @@ public class Sum extends OperatorTensor {
     private int[] dim;
 
     public Sum(Tensor tensor) {
-        this(tensor, Nd4j.linspace(0, tensor.out.rank() - 1, tensor.out.rank()).toIntVector());
+        this(tensor, null);
     }
 
-    public Sum(Tensor tensor, int... dim) {
+    public Sum(Tensor tensor, int... dimensions) {
 
-        this.dim = dim;
+        this.dim = dimensions;
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
@@ -42,8 +42,12 @@ public class Sum extends OperatorTensor {
                 })
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.sum(dim);
-
+        Supplier<INDArray> forward = () -> {
+            if (this.dim == null)
+                this.dim = Nd4j.linspace(0, tensor.out.rank() - 1,
+                        tensor.out.rank()).toIntVector();
+            return tensor.out.sum(dim);
+        };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

@@ -32,7 +32,7 @@ public class Max extends OperatorTensor {
         Supplier<INDArray> forward = () -> {
             // returns max value of every row
             argmax = tensor.out.argMax(1);
-            return tensor.out.max(1).transpose();
+            return tensor.out.max(1);
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);

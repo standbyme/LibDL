@@ -5,9 +5,9 @@ import LibDL.Tensor.Tensor;
 
 public class Sequential extends LayerTensor {
 
-    private final LayerTensor[] tensors;
+    private final Tensor[] tensors;
 
-    public Sequential(LayerTensor... tensors) {
+    public Sequential(Tensor... tensors) {
         this.tensors = tensors;
     }
 
@@ -15,8 +15,8 @@ public class Sequential extends LayerTensor {
     protected Tensor core() {
         Tensor X = this.input;
 
-        for (LayerTensor tensor : tensors) {
-            tensor.setInput(X);
+        for (Tensor tensor : tensors) {
+            ((LayerTensor) tensor).setInput(X);
             X = tensor;
         }
 

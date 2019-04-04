@@ -1,13 +1,9 @@
 package LibDL.utils.data;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.RandomAccess;
+import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-import org.omg.CORBA.DATA_CONVERSION;
 
 public abstract class Dataset implements RandomAccess, Iterable {
 
@@ -27,9 +23,27 @@ public abstract class Dataset implements RandomAccess, Iterable {
 
     }
 
+    private long batch_size;
+
+    public Dataset() {
+        batch_size = -1;
+    }
+
+    public void setBatchSize(long batch_size) {
+        this.batch_size = batch_size;
+    }
+
     public ConcatDataset add(Dataset other) {
         return new ConcatDataset(this, other);
     }
 
     protected abstract Iterator getIteratorByIndex(long index);
+
+    public Dataset shuffleData() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Dataset dropLast(int batch_size) {
+        throw new UnsupportedOperationException();
+    }
 }

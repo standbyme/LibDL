@@ -25,7 +25,8 @@ public class Softmax extends LayerTensor {
 
     @Override
     protected Tensor core() {
-        return new Div(new Exp(this.input),
-                new Sum(new Exp(this.input), dim));
+        return new LibDL.Tensor.Operator.Softmax(this.input, dim);
+//        return new Div(new Exp(this.input),
+//                new Sum(new Exp(this.input), dim));
     }
 }
