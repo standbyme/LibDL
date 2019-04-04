@@ -8,13 +8,9 @@ import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class Softmax extends OperatorTensor {
-
-    private static final Executor executor = Executors.newCachedThreadPool();
 
     public Softmax(Tensor tensor) {
         this(tensor, 0, false);
