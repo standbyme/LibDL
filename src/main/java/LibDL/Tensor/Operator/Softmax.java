@@ -34,6 +34,7 @@ public class Softmax extends OperatorTensor {
 
         OperandInfo[] operandInfos = { // TODO try to remove for-loop
             new OperandInfo(tensor, () -> {
+                System.out.println(this.dout);
                 int rank = out.rank();
 //                if(rank == 2 && tensor.out.tensorssAlongDimension(1) == 1) {
 //                    rank = 1;
