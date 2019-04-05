@@ -1,15 +1,13 @@
 package LibDL.Tensor.Operator;
 
 import LibDL.ND4JUtil;
-import LibDL.Tensor.*;
-import org.nd4j.linalg.api.iter.NdIndexIterator;
+import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
+import LibDL.Tensor.OperatorTensor;
+import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.ops.transforms.Transforms;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class Softmax extends OperatorTensor {

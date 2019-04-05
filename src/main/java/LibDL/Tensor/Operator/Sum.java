@@ -12,13 +12,22 @@ import java.util.function.Supplier;
 
 public class Sum extends OperatorTensor {
 
+    private int[] dim;
+
     public Sum(Tensor tensor) {
+        this(tensor, Nd4j.linspace(0, tensor.out.rank() - 1, tensor.out.rank()).toIntVector());
+    }
+
+    public Sum(Tensor tensor, int... dim) {
+
+        this.dim = dim;
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> Nd4j.onesLike(tensor.out).muli(dout)),
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.sum();
+        Supplier<INDArray> forward = () -> tensor.out.sum(dim);
+
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
