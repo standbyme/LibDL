@@ -15,10 +15,10 @@ public class Log extends OperatorTensor {
 
     public Log(Tensor tensor) {
         OperandInfo[] operandInfos = {
-            new OperandInfo(tensor, () -> Transforms.pow(dout, -1))
+            new OperandInfo(tensor, () -> dout.div(tensor.out))
         };
 
-        Supplier<INDArray> forward = () -> Transforms.log(tensor.out);
+        Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
