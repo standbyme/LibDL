@@ -42,28 +42,6 @@ public class main {
     }
 
     @Test
-    public void testCrossEntropyLoss() {
-        Constant t = new Constant(Nd4j.create(new double[]{0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0}));
-        Constant y = new Constant(Nd4j.create(new double[]{0.1, 0.05, 0.6, 0, 0.05, 0.1, 0, 0.1, 0, 0}));
-
-
-        CrossEntropyLoss result = new CrossEntropyLoss(y, t);
-        result.forward();
-        double a = result.out.getDouble(0);
-
-        assert a == 0.5108253955841064;
-
-        y = new Constant(Nd4j.create(new double[]{0.1, 0.05, 0.1, 0, 0.05, 0.1, 0, 0.6, 0, 0}));
-        result = new CrossEntropyLoss(y, t);
-        result.forward();
-
-        double b = result.out.getDouble(0);
-
-        assert b == 2.302584171295166;
-
-    }
-
-    @Test
     public void testUnfold() {
 
         Constant x = new Constant(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
