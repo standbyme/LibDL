@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
+import static org.junit.Assert.assertEquals;
+
 public class NLLLossTest {
     @Test
     public void testNLLLoss() {
@@ -13,8 +15,8 @@ public class NLLLossTest {
         Constant target = new Constant(Nd4j.create(new double[] {0, 1}).reshape(2));
         NLLLoss nll = new NLLLoss.Builder(input, target).reduction("mean").build();
         nll.forward();
-        System.out.println(nll.out);
+        assertEquals(Nd4j.create(new double[] {1.7}).reshape(1), nll.out);
         nll.backward();
-        System.out.println(input.dout);
+        assertEquals(Nd4j.create(new double[][] {{-0.5,  0.0,  0.0}, { 0.0, -0.5,  0.0}}), input.dout);
     }
 }
