@@ -28,15 +28,11 @@ public class Softmax extends OperatorTensor {
         return left.muli(e.subi(right));
     }
 
-    private Softmax(Tensor tensor, int dim, boolean withDim) { // TODO remove comments
+    private Softmax(Tensor tensor, int dim, boolean withDim) {
 
-        OperandInfo[] operandInfos = { // TODO try to remove for-loop
+        OperandInfo[] operandInfos = {
             new OperandInfo(tensor, () -> {
-                System.out.println(this.dout);
                 int rank = out.rank();
-//                if(rank == 2 && tensor.out.tensorssAlongDimension(1) == 1) {
-//                    rank = 1;
-//                }
                 int _dim;
                 if(withDim) {
                     _dim = dim < 0 ? dim + rank : dim;
@@ -63,7 +59,7 @@ public class Softmax extends OperatorTensor {
                     }
 
                     INDArray shape = Nd4j.create(_shape);
-                    long lastDim = new Double(shape.getDouble(rank - 1)).longValue(); // TODO replace by TAD
+                    long lastDim = new Double(shape.getDouble(rank - 1)).longValue();
                     shape.putScalar(rank - 1, 1);
                     long size = shape.prodNumber().longValue();
                     out = out.reshape(size, lastDim);
@@ -82,21 +78,13 @@ public class Softmax extends OperatorTensor {
         Supplier<INDArray> forward = () -> {
 
             int rank = tensor.out.rank();
-//            if(rank == 2 && tensor.out.tensorssAlongDimension(1) == 1) {
-//                rank = 1;
-//            }
             int _dim;
             if(withDim) {
                 _dim = dim < 0 ? dim + rank : dim;
             }else {
                 _dim = (rank == 1 || rank == 3) ? 0 : 1;
             }
-//            if(rank == 1) {
-//                Number max = tensor.out.maxNumber();
-//                INDArray exp = ND4JUtil.Exp(tensor.out.sub(max));
-//                Number sum = exp.sumNumber();
-//                return exp.divi(sum);
-//            }else {
+
             long[] shape = tensor.out.dup().shape();
             shape[_dim] = 1;
 
@@ -108,7 +96,6 @@ public class Softmax extends OperatorTensor {
             sumOfExpAlongDim = sumOfExpAlongDim.reshape(shape).broadcast(exp.shape());
 
             return exp.divi(sumOfExpAlongDim);
-//            }
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
