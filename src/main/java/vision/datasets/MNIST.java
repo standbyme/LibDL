@@ -18,8 +18,6 @@ public class MNIST extends Dataset {
             "train-images.idx3-ubyte",
             "train-labels.idx1-ubyte"
     };
-    public INDArray data, target;
-
     private boolean isTrain;
 
 
@@ -52,43 +50,5 @@ public class MNIST extends Dataset {
         assert data.size(0) == target.size(0);
     }
 
-    private class MNISTIterator implements Iterator<INDArray[]> {
-
-        private INDArray data, label;
-        private long now;
-
-        public MNISTIterator(INDArray data, INDArray label, long now) {
-            this.data = data;
-            this.label = label;
-            this.now = now;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return now < data.size(0);
-        }
-
-        @Override
-        public INDArray[] next() {
-            INDArray[] ret = new INDArray[]{data.getRow(now), label.getRow(now)};
-            now++;
-            return ret;
-        }
-    }
-
-    @Override
-    public long size() {
-        return data.size(0);
-    }
-
-    @Override
-    protected Iterator getIteratorByIndex(long index) {
-        return new MNISTIterator(data, target, index);
-    }
-
-    @Override
-    public Iterator iterator() {
-        return new MNISTIterator(data, target, 0);
-    }
 
 }

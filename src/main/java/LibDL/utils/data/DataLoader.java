@@ -4,7 +4,6 @@ package LibDL.utils.data;
 import LibDL.utils.Pair;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class DataLoader implements Iterable<Pair> {
 
@@ -20,14 +19,17 @@ public class DataLoader implements Iterable<Pair> {
         if (shuffle) {
             this.dataset = dataset.shuffleData();
         } else this.dataset = dataset;
-        if (drop_last) {
-            this.dataset = this.dataset.dropLast(batch_size);
-        }
+        if (batch_size != -1) {
+            this.dataset.batchSize(batch_size);
+            if (drop_last) {
+                this.dataset = this.dataset.dropLast(true);
+            }
+        } else this.dataset.batchSize(this.dataset.size());
 
     }
 
     @Override
     public Iterator<Pair> iterator() {
-        return null;
+        return this.dataset.iterator();
     }
 }

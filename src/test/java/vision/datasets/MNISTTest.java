@@ -3,6 +3,9 @@ package vision.datasets;
 import LibDL.Tensor.Constant;
 import LibDL.nn.*;
 import LibDL.optim.SGD;
+import LibDL.utils.Pair;
+import LibDL.utils.data.DataLoader;
+import LibDL.utils.data.Dataset;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
@@ -84,8 +87,8 @@ public class MNISTTest {
 
     @Test
     public void testMNISTWithLinear() {
-        MNIST mnist_train = new MNIST("resource/MNIST/", true);
-        MNIST mnist_test = new MNIST("resource/MNIST/", false);
+        Dataset mnist_train = new MNIST("resource/MNIST/", true).reshapeData(784);
+        Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
         Sequential nn = new Sequential(
                 new Dense(784, 100),
@@ -97,24 +100,30 @@ public class MNISTTest {
         );
 
 
-        Constant data = new Constant(mnist_train.data.reshape(60000, 784));
-        Constant target = new Constant(mnist_train.target);
+        for (Pair<INDArray, INDArray> e :
+                new DataLoader(mnist_train, 100, false, false)) {
+            System.out.println(Arrays.toString(e.first.shape()));
+            System.out.println(Arrays.toString(e.second.shape()));
+            nn.setInput(new Constant(e.first));
+
+            CrossEntropy loss = new CrossEntropy(new Constant(e.second));
+            loss.setInput(nn);
+            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.5f);
+
+
+            for (int i = 0; i < 100; i++) {
+                loss.forward();
+                loss.backward();
+                optim.step();
+                if (i % 50 == 0)
+                    System.out.println("time " + i + " " + loss.out.getRow(0));
+            }
+
+        }
+
 
 //        for (int i = 0; i < 10; i++)
 //            System.out.println(target.value.getDouble(0, i));
-
-        CrossEntropy loss = new CrossEntropy(target);
-        loss.setInput(nn);
-        LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.5f);
-
-
-        for (int i = 0; i < 100; i++) {
-            loss.forward();
-            loss.backward();
-            optim.step();
-            if (i % 50 == 0)
-                System.out.println("time " + i);
-        }
 
         nn.setInput(new Constant(mnist_test.data.reshape(10000, 784)));
 
