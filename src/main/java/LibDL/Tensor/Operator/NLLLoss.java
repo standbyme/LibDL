@@ -23,7 +23,7 @@ public class NLLLoss extends OperatorTensor {
                 new OperandInfo(input, () -> {
                     long rows = input.out.rows();
                     long cols = input.out.columns();
-                    INDArray indices = Nd4j.linspace(0, cols*(rows-1), rows).addi(target.out);
+                    INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.out.transpose());
                     INDArray result = Nd4j.zeros(rows * cols)
                             .put(indices, Nd4j.onesLike(indices)).reshape(rows, cols).muli(-1);
                     if(reduction.equals("none")) {
@@ -40,7 +40,7 @@ public class NLLLoss extends OperatorTensor {
         Supplier<INDArray> forward = () -> {
             long rows = input.out.rows();
             long cols = input.out.columns();
-            INDArray indices = Nd4j.linspace(0, cols*(rows-1), rows).addi(target.out);
+            INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.out.transpose());
             INDArray result = input.out.reshape(rows * cols).get(indices).muli(-1);
             if(reduction.equals("none")) {
                 return result.reshape(rows);

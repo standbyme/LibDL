@@ -15,7 +15,7 @@ public class Log extends OperatorTensor {
     public Log(Tensor tensor) {
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () ->
-                        Nd4j.onesLike(tensor.out).div(dout)
+                        dout.div(tensor.out)
                 )
         };
 

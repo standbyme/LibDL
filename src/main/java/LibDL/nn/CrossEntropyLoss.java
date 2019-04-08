@@ -16,7 +16,7 @@ public class CrossEntropyLoss extends LossTensor {
 
     @Override
     protected Tensor core() {
-        return new NLLLoss.Builder(new Log(new Softmax(input)), target).reduction("mean").build();
+        return new NLLLoss.Builder(new Log(new Softmax(input, 1)), target).reduction("mean").build();
     }
 
 }

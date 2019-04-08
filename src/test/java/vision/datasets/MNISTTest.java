@@ -96,27 +96,26 @@ public class MNISTTest {
                 new Dense(100, 10),
                 new ReLU(),
                 new Dense(10, 10),
-                new Softmax(1)
+                new Softmax()
         );
 
 
         for (Pair<INDArray, INDArray> e :
-                new DataLoader(mnist_train, 100, false, false)) {
+                new DataLoader(mnist_train, 10, false, false)) {
             System.out.println(Arrays.toString(e.first.shape()));
             System.out.println(Arrays.toString(e.second.shape()));
             nn.setInput(new Constant(e.first));
 
-            CrossEntropy loss = new CrossEntropy(new Constant(e.second));
+            CrossEntropyLoss loss = new CrossEntropyLoss(new Constant(e.second));
             loss.setInput(nn);
-            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.5f);
+            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.005f);
 
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1; i++) {
                 loss.forward();
                 loss.backward();
                 optim.step();
-                if (i % 50 == 0)
-                    System.out.println("time " + i + " " + loss.out.getRow(0));
+                System.out.println("time " + i + " " + loss.out.getRow(0));
             }
 
         }
