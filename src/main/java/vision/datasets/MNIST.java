@@ -32,7 +32,7 @@ public class MNIST extends Dataset {
     }
 
     public MNIST(String root, boolean train) {
-        this(root, train, true);
+        this(root, train, false);
     }
 
     public MNIST(String root, boolean train, boolean one_hot) {
