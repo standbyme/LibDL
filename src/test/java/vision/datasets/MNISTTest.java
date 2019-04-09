@@ -50,7 +50,8 @@ public class MNISTTest {
                 new ReLU().withName("ReLU1"),
                 new Dense(100, 10).withName("100-10"),
                 new ReLU().withName("ReLU2"),
-                new Dense(10, 1).withName("10-1")
+                new Dense(10, 1).withName("10-1"),
+                new ReLU().withName("ReLU3")
         );
 
         Sequential decoder = new Sequential(
@@ -58,7 +59,8 @@ public class MNISTTest {
                 new ReLU().withName("ReLU3"),
                 new Dense(10, 100).withName("10-100"),
                 new ReLU().withName("ReLU4"),
-                new Dense(100, 784).withName("100-784")
+                new Dense(100, 784).withName("100-784"),
+                new ReLU()
         );
 
         Sequential nn = new Sequential(
@@ -66,23 +68,26 @@ public class MNISTTest {
                 decoder.withName("Decoder")
         );
 
-        Constant data = new Constant(mnist_train.data.reshape(60000, 784));
-        Constant target = new Constant(mnist_train.target);
+        for (Pair<INDArray, INDArray> e :
+                new DataLoader(mnist_train, 10, false, false)) {
+//            System.out.println(Arrays.toString(e.first.shape()));
+//            System.out.println(Arrays.toString(e.second.shape()));
+            nn.setInput(new Constant(e.first));
 
-        nn.setInput(data);
+            MSELoss loss = new MSELoss(new Constant(e.first));
+            loss.withName("Loss");
+            loss.setInput(nn);
+            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
 
-        MSELoss loss = new MSELoss(data);
-        loss.setInput(nn);
 
+            for (int i = 0; i < 1; i++) {
+                loss.forward();
+                loss.backward();
+                optim.step();
+                System.out.println("time " + i + " " + loss.out.getRow(0));
+            }
 
-        SGD optim = new SGD(nn.parameters(), 0.5f, 0.7f);
-
-        for (int i = 0; i < 100; i++) {
-            loss.forward();
-            loss.backward();
-            optim.step();
         }
-
     }
 
     @Test
@@ -99,25 +104,18 @@ public class MNISTTest {
                 new Softmax()
         );
 
+        LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
 
         for (Pair<INDArray, INDArray> e :
                 new DataLoader(mnist_train, 10, false, false)) {
-            System.out.println(Arrays.toString(e.first.shape()));
-            System.out.println(Arrays.toString(e.second.shape()));
-            nn.setInput(new Constant(e.first));
-
-            CrossEntropyLoss loss = new CrossEntropyLoss(new Constant(e.second));
-            loss.setInput(nn);
-            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.005f);
-
 
             for (int i = 0; i < 1; i++) {
-                loss.forward();
+                MSELoss loss = Functional.mse_loss(nn.predict(new Constant(e.first)),
+                        new Constant(e.first));
                 loss.backward();
                 optim.step();
                 System.out.println("time " + i + " " + loss.out.getRow(0));
             }
-
         }
 
 

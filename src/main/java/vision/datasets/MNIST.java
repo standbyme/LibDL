@@ -7,8 +7,6 @@ import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 import vision.datasets._ImageModule.idxUbyte2Vec.IdxUbyteRead;
 
-import java.util.Iterator;
-
 public class MNIST extends Dataset {
     private static String[] test_name = {
             "t10k-images.idx3-ubyte",
@@ -46,6 +44,7 @@ public class MNIST extends Dataset {
         }
 
         if (one_hot) target = createOneHot(target, 10);
+        else target = target.reshape(target.size(0));
 
         assert data.size(0) == target.size(0);
     }

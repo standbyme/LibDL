@@ -1,8 +1,17 @@
 package LibDL.Tensor;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.nd4j.linalg.factory.Nd4j;
+
 public abstract class LayerTensor extends Tensor {
 
     protected Tensor input = null;
+
+    protected long[] layerShape;
+
+    protected LayerTensor(long... layerShape) {
+        input = new Constant(Nd4j.zeros(ArrayUtils.insert(0, layerShape, 1)));
+    }
 
     public void setInput(Tensor input) {
         this.input = input;

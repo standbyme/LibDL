@@ -31,7 +31,7 @@ public class Dataset implements RandomAccess, Iterable {
     }
 
     public INDArray data, target;
-    private int drop_last;
+    private boolean drop_last;
 
     public Dataset reshapeData(long... newShape) {
 
@@ -60,8 +60,9 @@ public class Dataset implements RandomAccess, Iterable {
 
         @Override
         public boolean hasNext() {
-            return (now + dataset.drop_last) *
-                    dataset.batch_size <= data.size(0);
+            if (dataset.drop_last) {
+                return (dataset.data.size(0) - now * dataset.batch_size) >= dataset.batch_size;
+            } else return now * dataset.batch_size < dataset.data.size(0);
         }
 
         @Override
@@ -119,7 +120,7 @@ public class Dataset implements RandomAccess, Iterable {
     }
 
     public Dataset dropLast(boolean drop_last) {
-        this.drop_last = drop_last ? 1 : 0;
+        this.drop_last = drop_last;
         return this;
     }
 }
