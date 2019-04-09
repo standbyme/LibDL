@@ -9,6 +9,7 @@ public abstract class OperatorTensor extends Tensor {
         this.operatorInfo = operatorInfo;
         OperandInfo[] operandInfos = this.operatorInfo.operandInfos;
 
+        System.out.println(Arrays.toString(operandInfos));
         // If operandInfos is empty, this line will panic
         requires_grad = Arrays.stream(operandInfos)
                 .map(memberInfo -> memberInfo.tensor.requires_grad)

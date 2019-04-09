@@ -11,17 +11,13 @@ public class Dense extends LayerTensor {
     private final Constant B;
     private final boolean bias;
 
-    @Override
-    protected Tensor core() {
-        if (bias) return input.mm(W).add(B);
-        else return input.mm(W);
-    }
 
     public Dense(int in_features, int out_features) {
         this(in_features, out_features, true);
     }
 
     public Dense(int in_features, int out_features, boolean bias) {
+//        super(false);
         W = new Constant(Nd4j.create(in_features, out_features), true);
         if (bias) {
             B = new Constant(Nd4j.create(1, out_features), true);
@@ -31,6 +27,9 @@ public class Dense extends LayerTensor {
         this.bias = bias;
 
         resetParameters();
+
+        if (bias) setCore(input.mm(W).add(B));
+        else setCore(input.mm(W));
     }
 
     private void resetParameters() {

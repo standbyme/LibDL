@@ -1,22 +1,22 @@
 package LibDL.Tensor;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.nd4j.linalg.factory.Nd4j;
-
 public abstract class LayerTensor extends Tensor {
 
-    protected Tensor input = null;
+    protected InputTensor input;
 
-    protected long[] layerShape;
 
-    protected LayerTensor(long... layerShape) {
-        input = new Constant(Nd4j.zeros(ArrayUtils.insert(0, layerShape, 1)));
+    protected void setCore(Tensor core) {
+        this.core = core;
+        requires_grad = core.requires_grad;
     }
 
     public void setInput(Tensor input) {
-        this.input = input;
-        core = core();
-        requires_grad = core.requires_grad;
+        this.input.setInput(input);
+    }
+
+
+    protected LayerTensor() {
+        input = new InputTensor();
     }
 
 
@@ -29,7 +29,7 @@ public abstract class LayerTensor extends Tensor {
 
     private Tensor core;
 
-    abstract protected Tensor core();
+//    abstract protected Tensor core();
 
     @Override
     final public void forward() {

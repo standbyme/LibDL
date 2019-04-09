@@ -11,11 +11,12 @@ public class MaxPool2d extends LayerTensor {
     private final int padding = 0;
 
     public MaxPool2d(int kernel_size) {
+//        super(true);
         this.kernel_size = kernel_size;
+        setCore(core());
     }
 
-    @Override
-    protected Tensor core() {
+    private Tensor core() {
         Unfold col = new Unfold(input, kernel_size);
         return col.max().reshapeLike(input);
     }
