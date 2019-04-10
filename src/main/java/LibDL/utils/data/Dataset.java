@@ -48,6 +48,11 @@ public class Dataset implements RandomAccess, Iterable {
         return this;
     }
 
+    protected Dataset(INDArray data, INDArray target) {
+        this.data = data;
+        this.target = target;
+    }
+
     private class DatasetIterator implements Iterator<Pair<INDArray, INDArray>> {
 
         private Dataset dataset;
@@ -57,6 +62,7 @@ public class Dataset implements RandomAccess, Iterable {
             this.dataset = dataset;
             this.now = now;
         }
+
 
         @Override
         public boolean hasNext() {
@@ -96,11 +102,6 @@ public class Dataset implements RandomAccess, Iterable {
 
     public Dataset() {
         batch_size = 1;
-    }
-
-    private Dataset(INDArray data, INDArray target) {
-        this.data = data;
-        this.target = target;
     }
 
     public Dataset batchSize(long batch_size) {

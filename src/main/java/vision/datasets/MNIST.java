@@ -34,14 +34,11 @@ public class MNIST extends Dataset {
     }
 
     public MNIST(String root, boolean train, boolean one_hot) {
+        super(train ? IdxUbyteRead.fromFile(root + train_name[0]) :
+                        IdxUbyteRead.fromFile(root + test_name[0]),
+                train ? IdxUbyteRead.fromFile(root + train_name[1]) :
+                        IdxUbyteRead.fromFile(root + test_name[1]));
         isTrain = train;
-        if (train) {
-            data = IdxUbyteRead.fromFile(root + train_name[0]);
-            target = IdxUbyteRead.fromFile(root + train_name[1]);
-        } else {
-            data = IdxUbyteRead.fromFile(root + test_name[0]);
-            target = IdxUbyteRead.fromFile(root + test_name[1]);
-        }
 
         if (one_hot) target = createOneHot(target, 10);
         else target = target.reshape(target.size(0));

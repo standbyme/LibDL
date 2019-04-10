@@ -96,31 +96,28 @@ public class MNISTTest {
         Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
         Sequential nn = new Sequential(
-                new Dense(784, 100),
-                new ReLU(),
-                new Dense(100, 10),
-                new ReLU(),
-                new Dense(10, 10),
-                new Softmax()
+                new Dense(784, 100).withName("Dense784_100"),
+                new ReLU().withName("RELU784_100"),
+                new Dense(100, 10).withName("Dense100_10"),
+                new ReLU().withName("RELU100_10"),
+                new Dense(10, 10).withName("Dense10_10"),
+                new Softmax().withName("SoftMax")
         );
 
-        LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
+
+        LibDL.optim.SGD optim = new SGD(nn.withName("NN").parameters(), 0.005f);
 
         for (Pair<INDArray, INDArray> e :
-                new DataLoader(mnist_train, 10, false, false)) {
+                new DataLoader(mnist_train, 100, false, false)) {
 
-            for (int i = 0; i < 1; i++) {
-                MSELoss loss = Functional.mse_loss(nn.predict(new Constant(e.first)),
-                        new Constant(e.first));
-                loss.backward();
-                optim.step();
-                System.out.println("time " + i + " " + loss.out.getRow(0));
-            }
+            CrossEntropyLoss loss = Functional.cross_entropy(
+                    nn.predict(new Constant(e.first)),
+                    new Constant(e.second));
+            loss.backward();
+            optim.step();
+
+            System.out.println(loss.out.getRow(0));
         }
-
-
-//        for (int i = 0; i < 10; i++)
-//            System.out.println(target.value.getDouble(0, i));
 
         nn.setInput(new Constant(mnist_test.data.reshape(10000, 784)));
 

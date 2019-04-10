@@ -12,6 +12,7 @@ public abstract class LayerTensor extends Tensor {
 
     public void setInput(Tensor input) {
         this.input.setInput(input);
+//        this.input.withName("("+this.input.toString()+")"+input.toString());
     }
 
 
@@ -22,7 +23,7 @@ public abstract class LayerTensor extends Tensor {
 
     final public Tensor predict(Tensor input) {
         setInput(input);
-        forward();
+//        forward();
 
         return this;
     }

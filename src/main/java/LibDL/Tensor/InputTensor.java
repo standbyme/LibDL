@@ -9,7 +9,8 @@ public class InputTensor extends Tensor {
     }
 
     InputTensor() {
-        requires_grad = false;
+        inside = null;
+        requires_grad = true;
     }
 
     @Override
@@ -20,13 +21,15 @@ public class InputTensor extends Tensor {
 
     @Override
     public void backward() {
+        inside.dout = this.dout;
         inside.backward();
-        this.dout = inside.dout;
     }
 
     @Override
     public Constant[] parameters() {
-        if (requires_grad) return inside.parameters();
+        if (inside != null) {
+            return inside.parameters();
+        }
         return new Constant[]{};
     }
 }
