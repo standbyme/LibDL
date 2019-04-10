@@ -49,6 +49,7 @@ public class Dataset implements RandomAccess, Iterable {
     }
 
     protected Dataset(INDArray data, INDArray target) {
+        this();
         this.data = data;
         this.target = target;
     }
