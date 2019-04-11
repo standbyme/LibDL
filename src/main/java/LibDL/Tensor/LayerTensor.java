@@ -23,14 +23,18 @@ public abstract class LayerTensor extends Tensor {
 
     final public Tensor predict(Tensor input) {
         setInput(input);
-//        forward();
-
+        forward();
         return this;
     }
 
     private Tensor core;
-
 //    abstract protected Tensor core();
+
+    final public void forwardThisLayer() {
+        input.needsForward(false);
+        forward();
+        input.needsForward(true);
+    }
 
     @Override
     final public void forward() {
@@ -45,7 +49,7 @@ public abstract class LayerTensor extends Tensor {
     }
 
     @Override
-    final public Constant[] parameters() {
+    final public Variable[] parameters() {
         return core.parameters();
     }
 }

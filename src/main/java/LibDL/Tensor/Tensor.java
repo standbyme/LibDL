@@ -29,7 +29,7 @@ public abstract class Tensor {
 
     abstract public void backward();
 
-    abstract public Constant[] parameters();
+    abstract public Variable[] parameters();
 
     final public BroadcastAdd add(Tensor that) {
         return new BroadcastAdd(this, that);

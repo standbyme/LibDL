@@ -1,6 +1,6 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -10,10 +10,10 @@ import static org.junit.Assert.assertEquals;
 public class LogTest {
     @Test
     public void testLog() {
-        Constant data_to_backward;
+        Variable data_to_backward;
         Softmax softmax;
         INDArray target;
-        data_to_backward = new Constant(Nd4j.create(new double[][][] {
+        data_to_backward = new Variable(Nd4j.create(new double[][][]{
                 {{ 1.0,  2.0,  3.0}, { 1.0,  2.0,  3.0}},
                 {{ 1.0,  2.0,  3.0}, { 1.0,  2.0,  3.0}}
         }), true);

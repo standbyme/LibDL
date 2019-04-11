@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -9,8 +9,8 @@ import static org.junit.Assert.assertEquals;
 public class CrossEntropyLossTest {
     @Test
     public void testCEL() {
-        Constant x = new Constant(Nd4j.create(new double[][] {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}), true);
-        CrossEntropyLoss cel = new CrossEntropyLoss(new Constant(Nd4j.create(new double[] {1, 0, 2}).reshape(3)));
+        Variable x = new Variable(Nd4j.create(new double[][]{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}), true);
+        CrossEntropyLoss cel = new CrossEntropyLoss(new Variable(Nd4j.create(new double[]{1, 0, 2}).reshape(3)));
         cel.setInput(x);
         cel.forward();
         assertEquals(Nd4j.create(new double[] {1.40760576725006103516}).reshape(1), cel.out);

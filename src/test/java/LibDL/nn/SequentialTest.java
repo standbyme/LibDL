@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
 import org.junit.Test;
@@ -11,8 +11,8 @@ public class SequentialTest {
 
     @Test
     public void testSGD() {
-        Constant data = new Constant(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
-        Constant target = new Constant(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
+        Variable data = new Variable(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
+        Variable target = new Variable(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
 
         Sequential nn = new Sequential(new Dense(2, 1));
         nn.setInput(data);
@@ -35,8 +35,8 @@ public class SequentialTest {
 
     @Test
     public void testMomentum() {
-        Constant data = new Constant(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
-        Constant target = new Constant(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
+        Variable data = new Variable(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
+        Variable target = new Variable(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
 
         Sequential nn = new Sequential(new Dense(2, 1));
         nn.setInput(data);
@@ -59,8 +59,8 @@ public class SequentialTest {
 
     @Test
     public void testXOR() {
-        Constant data = new Constant(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
-        Constant target = new Constant(Nd4j.create(new double[][]{{1.0}, {0.0}, {1.0}, {0.0}}));
+        Variable data = new Variable(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
+        Variable target = new Variable(Nd4j.create(new double[][]{{1.0}, {0.0}, {1.0}, {0.0}}));
 
         Sequential nn = new Sequential(new Dense(2, 5), new ReLU(), new Dense(5, 1));
         nn.setInput(data);

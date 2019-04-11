@@ -2,15 +2,15 @@ package LibDL.Tensor;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-public class Constant extends Tensor {
+public class Variable extends Tensor {
 
     public final INDArray value;
 
-    public Constant(INDArray value) {
+    public Variable(INDArray value) {
         this(value, false);
     }
 
-    public Constant(INDArray value, Boolean requires_grad) {
+    public Variable(INDArray value, Boolean requires_grad) {
         this.value = value;
         this.requires_grad = requires_grad;
     }
@@ -26,7 +26,7 @@ public class Constant extends Tensor {
     }
 
     @Override
-    public Constant[] parameters() {
-        return requires_grad ? new Constant[]{this} : new Constant[]{};
+    public Variable[] parameters() {
+        return requires_grad ? new Variable[]{this} : new Variable[]{};
     }
 }

@@ -1,6 +1,6 @@
 package vision.datasets;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.nn.*;
 import LibDL.optim.SGD;
 import LibDL.utils.Pair;
@@ -72,9 +72,9 @@ public class MNISTTest {
                 new DataLoader(mnist_train, 10, false, false)) {
 //            System.out.println(Arrays.toString(e.first.shape()));
 //            System.out.println(Arrays.toString(e.second.shape()));
-            nn.setInput(new Constant(e.first));
+            nn.setInput(new Variable(e.first));
 
-            MSELoss loss = new MSELoss(new Constant(e.first));
+            MSELoss loss = new MSELoss(new Variable(e.first));
             loss.withName("Loss");
             loss.setInput(nn);
             LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
@@ -111,15 +111,15 @@ public class MNISTTest {
                 new DataLoader(mnist_train, 100, false, false)) {
 
             CrossEntropyLoss loss = Functional.cross_entropy(
-                    nn.predict(new Constant(e.first)),
-                    new Constant(e.second));
+                    nn.predict(new Variable(e.first)),
+                    new Variable(e.second));
             loss.backward();
             optim.step();
 
             System.out.println(loss.out.getRow(0));
         }
 
-        nn.setInput(new Constant(mnist_test.data.reshape(10000, 784)));
+        nn.setInput(new Variable(mnist_test.data.reshape(10000, 784)));
 
         nn.forward();
 

@@ -1,20 +1,20 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Sum;
 import LibDL.Tensor.Tensor;
 
 public class MSELoss extends LossTensor {
 
-    private final Constant target;
+    private final Variable target;
     private final boolean size_average;
 
 
-    public MSELoss(Constant target) {
+    public MSELoss(Variable target) {
         this(target, true);
     }
 
-    public MSELoss(Constant target, boolean size_average) {
+    public MSELoss(Variable target, boolean size_average) {
         this.target = target;
         this.size_average = size_average;
         setCore(core());

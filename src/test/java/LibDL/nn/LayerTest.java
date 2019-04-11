@@ -1,7 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
-import LibDL.Tensor.Operator.Log;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Softmax;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -15,7 +14,7 @@ public class LayerTest {
     @Test
     public void testSoftmax() {
 
-        Constant data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
+        Variable data = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
         Softmax f = new Softmax(data, 1);
         f.forward();
         INDArray s = Transforms.abs(f.out.subi(Nd4j.create(new double[]{0.01821127329554753, 0.24519181293507392, 0.7365969137693786})), false);
@@ -25,7 +24,7 @@ public class LayerTest {
 //        assert b1 == 0.24519184231758118;
 //        assert c1 == 0.736596941947937;
 
-        Constant data_to_forward = new Constant(Nd4j.create(new double[][][]{
+        Variable data_to_forward = new Variable(Nd4j.create(new double[][][]{
                 {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
                 {{4.1, 2.0, 2.0}, {0.0, 0.0, 1.2}}
         }));
@@ -63,7 +62,7 @@ public class LayerTest {
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
         assert lossSum / 12 < 0.000002;
 
-        data_to_forward = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
+        data_to_forward = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
         result = new Softmax(data_to_forward);
         result.forward();
         target = Nd4j.create(new double[]{0.0182, 0.2452, 0.7366}).reshape(3);
@@ -71,9 +70,9 @@ public class LayerTest {
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
         assert lossSum / 3 < 0.000002;
 
-        Constant data_to_backward; // The following is testing backward
+        Variable data_to_backward; // The following is testing backward
 
-        data_to_backward = new Constant(Nd4j.create(new double[]{1.0, 2.0, 3.0}).reshape(3), true);
+        data_to_backward = new Variable(Nd4j.create(new double[]{1.0, 2.0, 3.0}).reshape(3), true);
         result = new Softmax(data_to_backward, 0);
         result.dout = Nd4j.create(new double[]{2.1801, -3.5105, -4.6695}).reshape(3);
         result.forward();
@@ -81,7 +80,7 @@ public class LayerTest {
         assert Nd4j.create(new double[]
                 {0.5356, 0.0633, -0.5989}).sub(data_to_backward.dout).sumNumber().doubleValue() < 0.0000005;
 
-        data_to_backward = new Constant(Nd4j.create(new double[][][]{
+        data_to_backward = new Variable(Nd4j.create(new double[][][]{
                 {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
                 {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
         }), true);
@@ -97,7 +96,7 @@ public class LayerTest {
                 {{-1.4256, 1.3506, 0.0750}, {-0.6306, -2.1278, 2.7584}}
         }).sub(data_to_backward.dout))).sumNumber().doubleValue() / 12 < 0.0001; // TODO 1.3506 is 1.3505
 
-        data_to_backward = new Constant(Nd4j.create(new double[][][]{
+        data_to_backward = new Variable(Nd4j.create(new double[][][]{
                 {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
                 {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
         }), true);

@@ -1,12 +1,9 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.NDArrayIndex;
-import org.nd4j.linalg.ops.transforms.Transforms;
-import org.nd4j.linalg.util.ArrayUtil;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -15,7 +12,7 @@ public class main {
 
     @Test
     public void testMax() {
-        Constant data = new Constant(Nd4j.create(new double[][]{
+        Variable data = new Variable(Nd4j.create(new double[][]{
                 {0.3, 4.0, 2.9},
                 {3.5, 2.2, 2.5},
                 {0.5, 6, 6.5},
@@ -44,7 +41,7 @@ public class main {
     @Test
     public void testUnfold() {
 
-        Constant x = new Constant(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
+        Variable x = new Variable(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
 
         Unfold ret = new Unfold(x, 3, 0, 1);
         ret.forward();
@@ -69,7 +66,7 @@ public class main {
         INDArray matrix_2_3 = matrix.reshape(2, 3);
         INDArray matrix_3_2 = matrix.reshape(3, 2);
 
-        Constant x = new Constant(matrix_2_3, true);
+        Variable x = new Variable(matrix_2_3, true);
         Reshape reshape = new Reshape(x, 3, 2);
 
         reshape.forward();
@@ -83,8 +80,8 @@ public class main {
 
     @Test
     public void testAddAndSub() {
-        Constant data1 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
-        Constant data2 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+        Variable data1 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
+        Variable data2 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
 
         Add add = new Add(data1, data2);
         Sub sub = new Sub(data1, data2);
@@ -116,7 +113,7 @@ public class main {
 
     @Test
     public void testAverage() {
-        Constant data = new Constant(Nd4j.create(new double[][]{
+        Variable data = new Variable(Nd4j.create(new double[][]{
                 {1, 2, 3},
                 {4, 5, 6},
                 {7, 8, 9},

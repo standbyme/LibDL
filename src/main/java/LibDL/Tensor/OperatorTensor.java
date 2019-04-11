@@ -39,9 +39,9 @@ public abstract class OperatorTensor extends Tensor {
     }
 
     @Override
-    public Constant[] parameters() {
+    public Variable[] parameters() {
         return Arrays.stream(operatorInfo.operandInfos)
                 .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters()))
-                .toArray(Constant[]::new);
+                .toArray(Variable[]::new);
     }
 }

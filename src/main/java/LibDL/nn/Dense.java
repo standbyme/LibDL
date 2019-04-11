@@ -1,14 +1,13 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.LayerTensor;
-import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Dense extends LayerTensor {
 
-    private final Constant W;
-    private final Constant B;
+    private final Variable W;
+    private final Variable B;
     private final boolean bias;
 
 
@@ -18,9 +17,9 @@ public class Dense extends LayerTensor {
 
     public Dense(int in_features, int out_features, boolean bias) {
 //        super(false);
-        W = new Constant(Nd4j.create(in_features, out_features), true);
+        W = new Variable(Nd4j.create(in_features, out_features), true);
         if (bias) {
-            B = new Constant(Nd4j.create(1, out_features), true);
+            B = new Variable(Nd4j.create(1, out_features), true);
         } else {
             B = null;
         }
