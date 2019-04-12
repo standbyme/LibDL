@@ -8,7 +8,6 @@ public abstract class Tensor {
     public INDArray dout = null;
 
     private String tensorName;
-
     Tensor() {
         tensorName = this.getClass().getName();
     }

@@ -2,6 +2,7 @@ package vision.datasets;
 
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
+import LibDL.optim.RMSProp;
 import LibDL.optim.SGD;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
@@ -99,33 +100,32 @@ public class MNISTTest {
                 new Dense(784, 100).withName("Dense784_100"),
                 new ReLU().withName("RELU784_100"),
                 new Dense(100, 10).withName("Dense100_10"),
-                new ReLU().withName("RELU100_10"),
-                new Dense(10, 10).withName("Dense10_10"),
                 new Softmax().withName("SoftMax")
         );
 
 
-        LibDL.optim.SGD optim = new SGD(nn.withName("NN").parameters(), 0.005f);
+        LibDL.optim.RMSProp optim = new RMSProp(nn.withName("NN").parameters(), 0.5f, 0.9f, 5e-8);
+        for (int epoch = 0; epoch < 10; epoch++) {
+            for (Pair<INDArray, INDArray> batch :
+                    new DataLoader(mnist_train, 100, false, false)) {
 
-        for (Pair<INDArray, INDArray> e :
-                new DataLoader(mnist_train, 100, false, false)) {
+                CrossEntropyLoss loss = Functional.cross_entropy(
+                        nn.predict(new Variable(batch.first)),
+                        new Variable(batch.second));
+                loss.backward();
+                optim.step();
 
-            CrossEntropyLoss loss = Functional.cross_entropy(
-                    nn.predict(new Variable(e.first)),
-                    new Variable(e.second));
-            loss.backward();
-            optim.step();
-
-            System.out.println(loss.out.getRow(0));
+                System.out.println(loss.out.getRow(0));
+            }
         }
 
-        nn.setInput(new Variable(mnist_test.data.reshape(10000, 784)));
+//        nn.setInput(new Variable(mnist_test.data.reshape(10000, 784)));
 
-        nn.forward();
-
-        for (int i = 0; i < 100; i++) {
-            System.out.println(nn.out.argMax(i) + ", " + mnist_test.target.getDouble(i));
-        }
+//        nn.forward();
+//
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println(nn.out.argMax(i) + ", " + mnist_test.target.getDouble(i));
+//        }
 
     }
 

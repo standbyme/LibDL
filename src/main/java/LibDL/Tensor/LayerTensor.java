@@ -23,7 +23,7 @@ public abstract class LayerTensor extends Tensor {
 
     final public Tensor predict(Tensor input) {
         setInput(input);
-        forward();
+        forwardThisLayer();
         return this;
     }
 

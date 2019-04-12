@@ -13,6 +13,7 @@ public class Variable extends Tensor {
     public Variable(INDArray value, Boolean requires_grad) {
         this.value = value;
         this.requires_grad = requires_grad;
+
     }
 
     @Override

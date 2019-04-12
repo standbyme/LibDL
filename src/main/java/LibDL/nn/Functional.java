@@ -1,5 +1,6 @@
 package LibDL.nn;
 
+import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 
@@ -17,5 +18,9 @@ public class Functional {
         loss.forwardThisLayer();
         return loss;
     }
+
+//    public static Tensor linear(Tensor input){
+//        Dense layer= new Dense()
+//    }
 
 }
