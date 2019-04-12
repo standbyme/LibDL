@@ -9,6 +9,12 @@ public class InputTensor extends Tensor {
         requires_grad = input.requires_grad;
     }
 
+    public boolean isNotNull() {
+        if (inside != null)
+            return inside.out != null;
+        return false;
+    }
+
     public void needsForward(boolean needForward) {
         needs_forward = needForward;
     }

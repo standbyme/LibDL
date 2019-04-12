@@ -22,15 +22,11 @@ class Model extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        linear2_5.setInput(input);
-        relu.setInput(linear2_5);
-        linear5_1.setInput(relu);
-        return linear5_1;
-//        Expected to be:
-//        Tensor output = linear2_5.predict(input);
-//        output = relu.predict(output);
-//        output = linear5_1.predict(output);
-//        return output;
+//        Still not good
+        Tensor output = linear2_5.predict(input);
+        output = relu.predict(output);
+        output = linear5_1.predict(output);
+        return output;
     }
 }
 
