@@ -104,7 +104,8 @@ public class MNISTTest {
         );
 
 
-        LibDL.optim.RMSProp optim = new RMSProp(nn.withName("NN").parameters(), 0.5f, 0.9f, 5e-8);
+        RMSProp optim = new RMSProp(nn.parameters(), 0.01f, 0.99f, 5e-8);
+
         for (int epoch = 0; epoch < 10; epoch++) {
             for (Pair<INDArray, INDArray> batch :
                     new DataLoader(mnist_train, 100, false, false)) {

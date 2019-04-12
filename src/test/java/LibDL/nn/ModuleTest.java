@@ -23,9 +23,9 @@ class Model extends Module {
     @Override
     public Tensor forward(Tensor input) {
 //        Still not good
-        Tensor output = linear2_5.predict(input);
-        output = relu.predict(output);
-        output = linear5_1.predict(output);
+        Tensor output = linear2_5.forward(input);
+        output = relu.forward(output);
+        output = linear5_1.forward(output);
         return output;
     }
 }

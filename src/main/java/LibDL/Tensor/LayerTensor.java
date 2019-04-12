@@ -12,7 +12,6 @@ public abstract class LayerTensor extends Tensor {
 
     public void setInput(Tensor input) {
         this.input.setInput(input);
-//        this.input.withName("("+this.input.toString()+")"+input.toString());
     }
 
 
@@ -23,14 +22,11 @@ public abstract class LayerTensor extends Tensor {
 
     public Tensor predict(Tensor input) {
         setInput(input);
-        if (this.input.isNotNull())
-            forwardThisLayer();
+        forwardThisLayer();
         return this;
     }
 
     private Tensor core;
-//    abstract protected Tensor core();
-
     final public void forwardThisLayer() {
         input.needsForward(false);
         forward();
@@ -52,5 +48,10 @@ public abstract class LayerTensor extends Tensor {
     @Override
     public Variable[] parameters() {
         return core.parameters();
+    }
+
+    public Tensor forward(Tensor input) {
+        setInput(input);
+        return this;
     }
 }

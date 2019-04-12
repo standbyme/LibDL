@@ -38,5 +38,5 @@ public abstract class Module extends LayerTensor {
         return super.parameters();
     }
 
-    abstract Tensor forward(Tensor input);
+//    abstract Tensor forward(Tensor input);
 }
