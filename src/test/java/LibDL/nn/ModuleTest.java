@@ -1,18 +1,37 @@
-package LibDL.optim;
+package LibDL.nn;
 
+
+import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.nn.*;
+import LibDL.optim.RMSProp;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class OptimTest {
+class Model extends Module {
+    private LayerTensor linear2_5, relu, linear5_1;
 
+    Model() {
+        linear2_5 = new Dense(2, 5);
+        relu = new ReLU();
+        linear5_1 = new Dense(5, 1);
+    }
+
+    @Override
+    public Tensor forward(Tensor input) {
+        linear2_5.setInput(input);
+        relu.setInput(linear2_5);
+        linear5_1.setInput(relu);
+        return linear5_1;
+    }
+}
+
+public class ModuleTest {
     @Test
-    public void testXORWithRMSProp() {
+    public void testXORWithModule() {
         Variable data = new Variable(
                 Nd4j.create(new double[][]{{1.0, 0.0},
                         {1.0, 1.0},
@@ -22,11 +41,12 @@ public class OptimTest {
         Variable target = new Variable(
                 Nd4j.create(new double[][]{{1.0}, {0.0},
                         {1.0}, {0.0}}));
-        Sequential nn = new Sequential(new Dense(2, 5),
-                new ReLU(), new Dense(5, 1));
+//        Sequential nn = new Sequential(new Dense(2, 5),
+//                new ReLU(), new Dense(5, 1));
 //        Tensor pred2 = nn.predict(data);
 //        System.out.println(Arrays.toString(pred2.out.toDoubleVector()));
-        RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.9f, 1e-8);
+        Model nn = new Model();
+        RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
             MSELoss loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
@@ -38,6 +58,4 @@ public class OptimTest {
             assert Math.abs(target.value.getInt(i) - pred.out.getDouble(i)) < 0.1;
         });
     }
-
-
 }

@@ -3,16 +3,16 @@ package LibDL.nn;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
 
-public class Sequential extends LayerTensor {
+public class Sequential extends Module {
 
     private final Tensor[] tensors;
 
     public Sequential(Tensor... tensors) {
         this.tensors = tensors;
-        setCore(core());
     }
 
-    private Tensor core() {
+    @Override
+    Tensor forward(Tensor input) {
         Tensor X = this.input;
 
         for (Tensor tensor : tensors) {
