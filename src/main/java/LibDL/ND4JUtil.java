@@ -29,4 +29,8 @@ public class ND4JUtil {
     public static INDArray Step(INDArray x){
         return exec(new org.nd4j.linalg.api.ops.impl.transforms.Step(x.dup()));
     }
+
+    public static INDArray TanhDerivative(INDArray x) {
+        return exec(new org.nd4j.linalg.api.ops.impl.transforms.TanhDerivative(x.dup()));
+    }
 }

@@ -13,7 +13,7 @@ public class Linear extends LayerTensor {
 
     @Override
     protected Tensor core() {
-        if (bias) return input.mm(W).add(B);
+        if (bias) return input.mm(W).addVector(B);
         else return input.mm(W);
     }
 

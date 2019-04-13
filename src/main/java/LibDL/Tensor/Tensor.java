@@ -15,7 +15,11 @@ public abstract class Tensor {
 
     abstract public Constant[] parameters();
 
-    final public BroadcastAdd add(Tensor that) {
+    final public Add add(Tensor that) {
+        return new Add(this, that);
+    }
+
+    final public BroadcastAdd addVector(Tensor that) {
         return new BroadcastAdd(this, that);
     }
 
@@ -41,5 +45,21 @@ public abstract class Tensor {
 
     final public Div div(int divisor) {
         return new Div(this, divisor);
+    }
+
+    final public Transpose transpose() {
+        return new Transpose(this);
+    }
+
+    final public Tensor get(long i) {
+        return new Get(this, i);
+    }
+
+    final public Reshape reshape(long... shape) {
+        return new Reshape(this, shape);
+    }
+
+    final public long size(int i) {
+        return this.out.size(i);
     }
 }
