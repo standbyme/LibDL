@@ -25,7 +25,11 @@ public class Get extends OperatorTensor {
         }
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> Nd4j.zerosLike(tensor.out).put(indices, dout)),
+                new OperandInfo(tensor, () -> {
+                    INDArray result = Nd4j.zerosLike(tensor.out);
+                    result.put(indices, dout);
+                    return result;
+                }),
         };
 
         Supplier<INDArray> forward = () -> tensor.out.get(indices);

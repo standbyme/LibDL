@@ -59,10 +59,6 @@ public abstract class Tensor {
         return new Get(this, i);
     }
 
-    final public Reshape reshape(long... shape) {
-        return new Reshape(this, shape);
-    }
-
     final public long size(int i) {
         return this.out.size(i);
     }
