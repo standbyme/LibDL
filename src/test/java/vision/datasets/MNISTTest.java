@@ -1,14 +1,15 @@
 package vision.datasets;
 
+import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
 import LibDL.optim.RMSProp;
-import LibDL.optim.SGD;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
 import LibDL.utils.data.Dataset;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -41,55 +42,55 @@ public class MNISTTest {
     }
 
 
-    @Test
-    public void testMNISTWithAutoEncoder() {
-
-        MNIST mnist_train = new MNIST("resource/MNIST/", true);
-        MNIST mnist_test = new MNIST("resource/MNIST/", false);
-        Sequential encoder = new Sequential(
-                new Dense(784, 100).withName("784-100"),
-                new ReLU().withName("ReLU1"),
-                new Dense(100, 10).withName("100-10"),
-                new ReLU().withName("ReLU2"),
-                new Dense(10, 1).withName("10-1"),
-                new ReLU().withName("ReLU3")
-        );
-
-        Sequential decoder = new Sequential(
-                new Dense(1, 10).withName("1-10"),
-                new ReLU().withName("ReLU3"),
-                new Dense(10, 100).withName("10-100"),
-                new ReLU().withName("ReLU4"),
-                new Dense(100, 784).withName("100-784"),
-                new ReLU()
-        );
-
-        Sequential nn = new Sequential(
-                encoder.withName("Encoder"),
-                decoder.withName("Decoder")
-        );
-
-        for (Pair<INDArray, INDArray> e :
-                new DataLoader(mnist_train, 10, false, false)) {
-//            System.out.println(Arrays.toString(e.first.shape()));
-//            System.out.println(Arrays.toString(e.second.shape()));
-            nn.setInput(new Variable(e.first));
-
-            MSELoss loss = new MSELoss(new Variable(e.first));
-            loss.withName("Loss");
-            loss.setInput(nn);
-            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
-
-
-            for (int i = 0; i < 1; i++) {
-                loss.forward();
-                loss.backward();
-                optim.step();
-                System.out.println("time " + i + " " + loss.out.getRow(0));
-            }
-
-        }
-    }
+//    @Test
+//    public void testMNISTWithAutoEncoder() {
+//
+//        MNIST mnist_train = new MNIST("resource/MNIST/", true);
+//        MNIST mnist_test = new MNIST("resource/MNIST/", false);
+//        Sequential encoder = new Sequential(
+//                new Dense(784, 100).withName("784-100"),
+//                new ReLU().withName("ReLU1"),
+//                new Dense(100, 10).withName("100-10"),
+//                new ReLU().withName("ReLU2"),
+//                new Dense(10, 1).withName("10-1"),
+//                new ReLU().withName("ReLU3")
+//        );
+//
+//        Sequential decoder = new Sequential(
+//                new Dense(1, 10).withName("1-10"),
+//                new ReLU().withName("ReLU3"),
+//                new Dense(10, 100).withName("10-100"),
+//                new ReLU().withName("ReLU4"),
+//                new Dense(100, 784).withName("100-784"),
+//                new ReLU()
+//        );
+//
+//        Sequential nn = new Sequential(
+//                encoder.withName("Encoder"),
+//                decoder.withName("Decoder")
+//        );
+//
+//        for (Pair<INDArray, INDArray> e :
+//                new DataLoader(mnist_train, 10, false, false)) {
+////            System.out.println(Arrays.toString(e.first.shape()));
+////            System.out.println(Arrays.toString(e.second.shape()));
+//            nn.setInput(new Variable(e.first));
+//
+//            MSELoss loss = new MSELoss(new Variable(e.first));
+//            loss.withName("Loss");
+//            loss.setInput(nn);
+//            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
+//
+//
+//            for (int i = 0; i < 1; i++) {
+//                loss.forward();
+//                loss.backward();
+//                optim.step();
+//                System.out.println("time " + i + " " + loss.out.getRow(0));
+//            }
+//
+//        }
+//    }
 
     @Test
     public void testMNISTWithLinear() {
@@ -97,37 +98,43 @@ public class MNISTTest {
         Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
         Sequential nn = new Sequential(
-                new Dense(784, 100).withName("Dense784_100"),
-                new ReLU().withName("RELU784_100"),
-                new Dense(100, 10).withName("Dense100_10"),
-                new Softmax().withName("SoftMax")
+                new Dense(784, 200).withName("Dense784"),
+                new ReLU().withName("RELU784"),
+                new Dense(200, 100).withName("Dense200"),
+                new ReLU().withName("RELU200"),
+                new Dense(100, 20).withName("Dense100"),
+                new ReLU().withName("RELU100"),
+                new Dense(20, 10).withName("Dense20")
+//                new Softmax().withName("SoftMax")
         );
 
 
-        RMSProp optim = new RMSProp(nn.parameters(), 0.01f, 0.99f, 5e-8);
+        RMSProp optim = new RMSProp(nn.parameters(), 0.0002f, 0.99f, 5e-8);
 
+        int cnt = 0;
         for (int epoch = 0; epoch < 10; epoch++) {
             for (Pair<INDArray, INDArray> batch :
-                    new DataLoader(mnist_train, 100, false, false)) {
-
-                CrossEntropyLoss loss = Functional.cross_entropy(
-                        nn.predict(new Variable(batch.first)),
-                        new Variable(batch.second));
+                    new DataLoader(mnist_train, 500, false, false)) {
+                Tensor pred = nn.predict(new Variable(batch.first));
+                Tensor target = new Variable(batch.second);
+                CrossEntropyLoss loss = Functional.cross_entropy(pred, target);
                 loss.backward();
                 optim.step();
-
-                System.out.println(loss.out.getRow(0));
+                cnt++;
+                if (cnt % 50 == 0) {
+                    System.out.println("CNT: " + cnt + " " + loss.out.getRow(0));
+                }
             }
         }
 
-//        nn.setInput(new Variable(mnist_test.data.reshape(10000, 784)));
+        Tensor result = nn.predict(new Variable(mnist_test.reshapeData(784).data));
 
-//        nn.forward();
-//
-//        for (int i = 0; i < 100; i++) {
-//            System.out.println(nn.out.argMax(i) + ", " + mnist_test.target.getDouble(i));
-//        }
+        INDArray out = MNIST.revertOneHot(result.out);
+
+        int rightCnt = Arrays.stream(Transforms.abs(out.sub(mnist_test.target)).toDoubleVector())
+                .filter(i -> i < 1e-6).toArray().length;
+        System.out.println(rightCnt);
+        assert (rightCnt > 9000);
 
     }
-
 }

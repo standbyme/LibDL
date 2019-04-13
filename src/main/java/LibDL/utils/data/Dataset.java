@@ -36,7 +36,7 @@ public class Dataset implements RandomAccess, Iterable {
     public Dataset reshapeData(long... newShape) {
 
         newShape = ArrayUtils.insert(0, newShape, this.size());
-        System.out.println(Arrays.toString(newShape));
+//        System.out.println(Arrays.toString(newShape));
 
         data = data.reshape(newShape);
         return this;

@@ -6,10 +6,10 @@ import LibDL.Tensor.Variable;
 
 public abstract class Module extends LayerTensor {
 
-    private boolean coreSet;
+    private boolean coreIsSet;
 
     public Module() {
-        coreSet = false;
+        coreIsSet = false;
     }
 
     @Override
@@ -19,9 +19,9 @@ public abstract class Module extends LayerTensor {
     }
 
     private void checkCore() {
-        if (coreSet) return;
+        if (coreIsSet) return;
         setCore(forward(this.input));
-        coreSet = true;
+        coreIsSet = true;
     }
 
     @Override
