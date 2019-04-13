@@ -43,6 +43,10 @@ public abstract class Tensor {
         return new Reshape(this, that.out.shape());
     }
 
+    final public Reshape reshape(long... shape) {
+        return new Reshape(this, shape);
+    }
+
     final public Div div(int divisor) {
         return new Div(this, divisor);
     }
