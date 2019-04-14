@@ -7,7 +7,6 @@ import LibDL.optim.SGD;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class SequentialTest {
@@ -26,7 +25,7 @@ public class SequentialTest {
         SGD optimizer = new SGD(nn.parameters(), 0.3f);
 
         for (int epoch = 1; epoch <= 800; epoch++) {
-            loss.forward();
+            loss.forwardWithInput();
             loss.backward();
             optimizer.step();
         }
@@ -50,7 +49,7 @@ public class SequentialTest {
         SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
         for (int epoch = 1; epoch <= 160; epoch++) {
-            loss.forward();
+            loss.forwardWithInput();
             loss.backward();
             optimizer.step();
         }
@@ -74,7 +73,7 @@ public class SequentialTest {
         SGD optimizer = new SGD(nn.parameters(), 0.1f);
 
         for (int epoch = 1; epoch <= 1000; epoch++) {
-            loss.forward();
+            loss.forwardWithInput();
             loss.backward();
             optimizer.step();
         }

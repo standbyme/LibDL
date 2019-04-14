@@ -22,7 +22,7 @@ public class main {
 
         Max result = new Max(data);
 
-        result.forward();
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{4.0, 3.5, 6.5, 7.5}));
 
@@ -44,7 +44,7 @@ public class main {
         Variable x = new Variable(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
 
         Unfold ret = new Unfold(x, 3, 0, 1);
-        ret.forward();
+        ret.forwardWithInput();
 
         INDArray assertion_forward = Nd4j.create(new double[][]{{0, 1, 2, 4, 5, 6, 8, 9, 10}, {1, 2, 3, 5, 6, 7, 9, 10, 11}, {4, 5, 6, 8, 9, 10, 12, 13, 14}, {5, 6, 7, 9, 10, 11, 13, 14, 15}});
 
@@ -69,7 +69,7 @@ public class main {
         Variable x = new Variable(matrix_2_3, true);
         Reshape reshape = new Reshape(x, 3, 2);
 
-        reshape.forward();
+        reshape.forwardWithInput();
         assertArrayEquals(new long[]{2, 3}, reshape.from_shape);
 
         reshape.dout = matrix_3_2;
@@ -86,8 +86,8 @@ public class main {
         Add add = new Add(data1, data2);
         Sub sub = new Sub(data1, data2);
 
-        add.forward();
-        sub.forward();
+        add.forwardWithInput();
+        sub.forwardWithInput();
 
         {
             double a = add.out.getDouble(0);
@@ -123,7 +123,7 @@ public class main {
 
         Average result = new Average(data);
 
-        result.forward();
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{2, 5, 8, 11}));
 

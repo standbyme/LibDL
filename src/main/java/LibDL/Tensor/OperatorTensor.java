@@ -19,9 +19,9 @@ public abstract class OperatorTensor extends Tensor {
     }
 
     @Override
-    public final void forward() {
+    public final void forwardWithInput() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            operandInfo.tensor.forward();
+            operandInfo.tensor.forwardWithInput();
         }
 
         out = operatorInfo.forward.get();

@@ -24,7 +24,7 @@ public abstract class Tensor {
 
     boolean requires_grad;
 
-    abstract public void forward();
+    abstract public void forwardWithInput();
 
     abstract public void backward();
 

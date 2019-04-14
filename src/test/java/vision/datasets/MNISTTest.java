@@ -83,7 +83,7 @@ public class MNISTTest {
 //
 //
 //            for (int i = 0; i < 1; i++) {
-//                loss.forward();
+//                loss.forwardWithInput();
 //                loss.backward();
 //                optim.step();
 //                System.out.println("time " + i + " " + loss.out.getRow(0));

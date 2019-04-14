@@ -26,9 +26,9 @@ public class InputTensor extends Tensor {
     }
 
     @Override
-    public void forward() {
+    public void forwardWithInput() {
         if (needs_forward) {
-            inside.forward();
+            inside.forwardWithInput();
         }
         this.out = inside.out;
     }

@@ -15,13 +15,13 @@ public class AutoGradTest {
         Variable z = new Variable(Nd4j.ones(1, 2).muli(3), true);
 
         Tensor out = x.mm(y).add(z);
-        out.forward();
+        out.forwardWithInput();
 
         assert out.out.equalsWithEps(Nd4j.create(new double[][]{{8.0, 11.0}}), 1e-6);
 
         MSELoss loss = new MSELoss(new Variable(Nd4j.zeros(1, 2)));
         loss.setInput(out);
-        loss.forward();
+        loss.forwardWithInput();
 
         assert loss.out.equalsWithEps(Nd4j.create(new double[][]{{92.5}}), 1e-6);
 

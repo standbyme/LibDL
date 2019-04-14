@@ -31,17 +31,17 @@ public abstract class Module extends Tensor {
     }
 
 
-    final public void forwardThisLayer() {
+    final public void forward() {
         checkCore();
         input.needsForward(false);
-        forward();
+        forwardWithInput();
         input.needsForward(true);
     }
 
     @Override
-    public void forward() {
+    public void forwardWithInput() {
         checkCore();
-        core.forward();
+        core.forwardWithInput();
         out = core.out;
     }
 
@@ -62,7 +62,7 @@ public abstract class Module extends Tensor {
     public Tensor predict(Tensor input) {
         checkCore();
         setInput(input);
-        forwardThisLayer();
+        forward();
         return this;
     }
 

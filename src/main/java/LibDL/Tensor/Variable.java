@@ -17,7 +17,7 @@ public class Variable extends Tensor {
     }
 
     @Override
-    public void forward() {
+    public void forwardWithInput() {
         out = value;
     }
 
