@@ -1,33 +1,38 @@
 package LibDL.Tensor;
 
-public abstract class LayerTensor extends Tensor {
+public abstract class Module extends Tensor {
 
     protected InputTensor input;
+    private Tensor core;
+    //    private boolean requires_grad;
+    private boolean coreIsSet;
+
+    private void checkCore() {
+        if (coreIsSet) return;
+        setCore(forward(this.input));
+    }
 
 
     protected void setCore(Tensor core) {
         this.core = core;
+        this.coreIsSet = true;
         requires_grad = core.requires_grad;
     }
 
     public void setInput(Tensor input) {
+        checkCore();
         this.input.setInput(input);
     }
 
 
-    protected LayerTensor() {
+    protected Module() {
         input = new InputTensor();
+        coreIsSet = false;
     }
 
 
-    public Tensor predict(Tensor input) {
-        setInput(input);
-        forwardThisLayer();
-        return this;
-    }
-
-    private Tensor core;
     final public void forwardThisLayer() {
+        checkCore();
         input.needsForward(false);
         forward();
         input.needsForward(true);
@@ -35,23 +40,36 @@ public abstract class LayerTensor extends Tensor {
 
     @Override
     public void forward() {
+        checkCore();
         core.forward();
         out = core.out;
     }
 
     @Override
     public void backward() {
+        checkCore();
         core.dout = dout;
         core.backward();
     }
 
-    @Override
-    public Variable[] parameters() {
-        return core.parameters();
-    }
 
     public Tensor forward(Tensor input) {
+        checkCore();
         setInput(input);
         return this;
     }
+
+    public Tensor predict(Tensor input) {
+        checkCore();
+        setInput(input);
+        forwardThisLayer();
+        return this;
+    }
+
+    @Override
+    public Variable[] parameters() {
+        checkCore();
+        return core.parameters();
+    }
+
 }

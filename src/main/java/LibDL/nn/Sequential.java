@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 
 public class Sequential extends Module {
@@ -16,8 +16,7 @@ public class Sequential extends Module {
         Tensor X = this.input;
 
         for (Tensor tensor : tensors) {
-            ((LayerTensor) tensor).forward(X);
-            X = tensor;
+            X = ((Module) tensor).forward(X);
         }
 
         return X;

@@ -1,12 +1,11 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 
 public class Functional {
-    public static CrossEntropyLoss cross_entropy(Tensor tensor, Tensor target) {
-        CrossEntropyLoss loss = new CrossEntropyLoss(target);
+    public static SoftmaxCrossEntropyLoss cross_entropy(Tensor tensor, Tensor target) {
+        SoftmaxCrossEntropyLoss loss = new SoftmaxCrossEntropyLoss(target);
         loss.setInput(tensor);
         loss.forwardThisLayer();
         return loss;

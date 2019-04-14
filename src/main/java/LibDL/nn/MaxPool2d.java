@@ -1,22 +1,21 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
 
-public class MaxPool2d extends LayerTensor {
+public class MaxPool2d extends Module {
 
     private final int kernel_size;
     private final int stride = 1;
     private final int padding = 0;
 
     public MaxPool2d(int kernel_size) {
-//        super(true);
         this.kernel_size = kernel_size;
-        setCore(core());
     }
 
-    private Tensor core() {
+    @Override
+    public Tensor forward(Tensor input) {
         Unfold col = new Unfold(input, kernel_size);
         return col.max().reshapeLike(input);
     }

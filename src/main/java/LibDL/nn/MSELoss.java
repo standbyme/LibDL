@@ -17,10 +17,10 @@ public class MSELoss extends LossTensor {
     public MSELoss(Variable target, boolean size_average) {
         this.target = target;
         this.size_average = size_average;
-        setCore(core());
     }
 
-    private Tensor core() {
+    @Override
+    public Tensor forward(Tensor input) {
         if(size_average)
             return new Sum(input.sub(target).pow(2)).div((int) target.value.length());
         else

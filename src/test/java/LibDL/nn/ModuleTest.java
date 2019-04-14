@@ -1,7 +1,7 @@
 package LibDL.nn;
 
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.optim.RMSProp;
@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 public class ModuleTest {
 
     private static class Model extends Module {
-        private LayerTensor linear2_5, relu, linear5_1;
+        private Module linear2_5, relu, linear5_1;
 
         Model() {
             linear2_5 = new Dense(2, 5);
@@ -46,7 +46,7 @@ public class ModuleTest {
 
         Model nn = new Model();
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
-        for (int i = 1; i <= 1000; i++) {
+        for (int epoch = 1; epoch <= 1000; epoch++) {
             Tensor output = nn.predict(data);
             LossTensor loss = Functional.mse_loss(output, target);
             loss.backward();

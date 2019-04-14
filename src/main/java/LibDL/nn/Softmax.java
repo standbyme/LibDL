@@ -1,20 +1,22 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 
-public class Softmax extends LayerTensor {
-
+public class Softmax extends Module {
     private int dim;
 
     public Softmax(int dim) {
         this.dim = dim;
-        setCore(new LibDL.Tensor.Operator.Softmax(this.input, dim));
     }
 
     public Softmax() {
-        this(0);
+        this(1);
     }
 
+    @Override
+    public Tensor forward(Tensor input) {
+        return (new LibDL.Tensor.Operator.Softmax(this.input, dim));
+    }
 
 }

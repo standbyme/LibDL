@@ -1,10 +1,11 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Module;
+import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.Tensor.LayerTensor;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class Dense extends LayerTensor {
+public class Dense extends Module {
 
     private final Variable W;
     private final Variable B;
@@ -26,9 +27,12 @@ public class Dense extends LayerTensor {
         this.bias = bias;
 
         resetParameters();
+    }
 
-        if (bias) setCore(input.mm(W).add(B));
-        else setCore(input.mm(W));
+    @Override
+    public Tensor forward(Tensor input) {
+        if (bias) return (input.mm(W).add(B));
+        else return (input.mm(W));
     }
 
     private void resetParameters() {

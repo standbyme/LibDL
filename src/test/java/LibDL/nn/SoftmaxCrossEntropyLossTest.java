@@ -6,11 +6,11 @@ import org.nd4j.linalg.factory.Nd4j;
 
 import static org.junit.Assert.assertEquals;
 
-public class CrossEntropyLossTest {
+public class SoftmaxCrossEntropyLossTest {
     @Test
     public void testCEL() {
         Variable x = new Variable(Nd4j.create(new double[][]{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}), true);
-        CrossEntropyLoss cel = new CrossEntropyLoss(new Variable(Nd4j.create(new double[]{1, 0, 2}).reshape(3)));
+        SoftmaxCrossEntropyLoss cel = new SoftmaxCrossEntropyLoss(new Variable(Nd4j.create(new double[]{1, 0, 2}).reshape(3)));
         cel.setInput(x);
         cel.forward();
         assertEquals(Nd4j.create(new double[] {1.40760576725006103516}).reshape(1), cel.out);

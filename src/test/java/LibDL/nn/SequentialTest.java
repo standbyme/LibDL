@@ -25,7 +25,7 @@ public class SequentialTest {
 
         SGD optimizer = new SGD(nn.parameters(), 0.3f);
 
-        for (int i = 1; i <= 800; i++) {
+        for (int epoch = 1; epoch <= 800; epoch++) {
             loss.forward();
             loss.backward();
             optimizer.step();
@@ -49,7 +49,7 @@ public class SequentialTest {
 
         SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
-        for (int i = 1; i <= 160; i++) {
+        for (int epoch = 1; epoch <= 160; epoch++) {
             loss.forward();
             loss.backward();
             optimizer.step();
@@ -73,7 +73,7 @@ public class SequentialTest {
 
         SGD optimizer = new SGD(nn.parameters(), 0.1f);
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int epoch = 1; epoch <= 1000; epoch++) {
             loss.forward();
             loss.backward();
             optimizer.step();
@@ -109,12 +109,12 @@ public class SequentialTest {
 //        Tensor pred2 = nn.predict(data);
 //        System.out.println(Arrays.toString(pred2.out.toDoubleVector()));
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
-        for (int i = 1; i <= 500; i++) {
+        for (int epoch = 1; epoch <= 500; epoch++) {
             MSELoss loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();
         }
-        for (int i = 1; i <= 500; i++) {
+        for (int epoch = 1; epoch <= 500; epoch++) {
             MSELoss loss = Functional.mse_loss(nn.predict(data2), target2);
             loss.backward();
             optimizer.step();

@@ -1,14 +1,18 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
+import LibDL.Tensor.Tensor;
 
-public class Reshape extends LayerTensor {
+public class Reshape extends Module {
 
     private long[] shape;
 
     public Reshape(long... shape) {
         this.shape = shape;
-        setCore(new LibDL.Tensor.Operator.Reshape(input, shape));
     }
 
+    @Override
+    public Tensor forward(Tensor input) {
+        return (new LibDL.Tensor.Operator.Reshape(input, shape));
+    }
 }
