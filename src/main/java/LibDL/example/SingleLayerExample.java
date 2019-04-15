@@ -7,7 +7,7 @@ import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.stream.IntStream;
 
-public class AffineExample {
+public class SingleLayerExample {
 
     public static void main(String[] args) {
         Variable data = new Variable(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
