@@ -16,7 +16,7 @@ public class MaxPool2d extends LayerTensor {
 
     @Override
     protected Tensor core() {
-        Unfold col = new Unfold(input, kernel_size);
+        Unfold col = new Unfold.Builder(input, 3, 3).padding(2, 2).build();
         return col.max().reshapeLike(input);
     }
 }
