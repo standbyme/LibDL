@@ -7,15 +7,13 @@ public abstract class Module extends Tensor {
     //    private boolean requires_grad;
     private boolean coreIsSet;
 
+    public abstract Tensor forward(Tensor input);
+
     private void checkCore() {
         if (coreIsSet) return;
-        setCore(forward(this.input));
-    }
 
-
-    protected void setCore(Tensor core) {
-        this.core = core;
-        this.coreIsSet = true;
+        core = forward(input);
+        coreIsSet = true;
         requires_grad = core.requires_grad;
     }
 
@@ -24,18 +22,9 @@ public abstract class Module extends Tensor {
         this.input.setInput(input);
     }
 
-
     protected Module() {
         input = new InputTensor();
         coreIsSet = false;
-    }
-
-
-    final public void forward() {
-        checkCore();
-        input.needsForward(false);
-        forwardWithInput();
-        input.needsForward(true);
     }
 
     @Override
@@ -52,17 +41,12 @@ public abstract class Module extends Tensor {
         core.backward();
     }
 
-
-    public Tensor forward(Tensor input) {
-        checkCore();
-        setInput(input);
-        return this;
-    }
-
     public Tensor predict(Tensor input) {
         checkCore();
         setInput(input);
-        forward();
+        this.input.needsForward(false);
+        forwardWithInput();
+        this.input.needsForward(true);
         return this;
     }
 
