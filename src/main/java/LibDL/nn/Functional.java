@@ -6,15 +6,13 @@ import LibDL.Tensor.Tensor;
 public class Functional {
     public static SoftmaxCrossEntropyLoss cross_entropy(Tensor tensor, Tensor target) {
         SoftmaxCrossEntropyLoss loss = new SoftmaxCrossEntropyLoss(target);
-        loss.setInput(tensor);
-        loss.forwardWithInput();
+        loss.apply(tensor);
         return loss;
     }
 
     public static MSELoss mse_loss(Tensor tensor, Variable target) {
         MSELoss loss = new MSELoss(target);
-        loss.setInput(tensor);
-        loss.forwardWithInput();
+        loss.apply(tensor);
         return loss;
     }
 

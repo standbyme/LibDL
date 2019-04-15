@@ -41,13 +41,17 @@ public abstract class Module extends Tensor {
         core.backward();
     }
 
-    public Tensor predict(Tensor input) {
+    public Tensor apply(Tensor input) {
         checkCore();
         setInput(input);
         this.input.needsForward(false);
         forwardWithInput();
         this.input.needsForward(true);
         return this;
+    }
+
+    public Tensor predict(Tensor input) {        // make them happy
+        return apply(input);
     }
 
     @Override
