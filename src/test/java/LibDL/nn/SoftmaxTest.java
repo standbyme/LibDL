@@ -9,7 +9,7 @@ import org.nd4j.linalg.ops.transforms.Transforms;
 
 import static org.junit.Assert.assertEquals;
 
-public class LayerTest {
+public class SoftmaxTest {
 
     @Test
     public void testSoftmax() {
