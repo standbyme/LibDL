@@ -1,6 +1,6 @@
 package LibDL.Tensor;
 
-public class InputTensor extends Tensor {
+public class Input extends Tensor {
     Tensor inside;
     private boolean needs_forward;
 
@@ -19,7 +19,7 @@ public class InputTensor extends Tensor {
         needs_forward = needForward;
     }
 
-    InputTensor() {
+    Input() {
         inside = null;
         requires_grad = true;
         needs_forward = true;

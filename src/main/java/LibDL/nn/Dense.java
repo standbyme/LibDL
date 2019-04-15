@@ -19,13 +19,10 @@ public class Dense extends Module {
     public Dense(int in_features, int out_features, boolean bias) {
 //        super(false);
         W = new Variable(Nd4j.create(in_features, out_features), true);
-        if (bias) {
+        if (bias)
             B = new Variable(Nd4j.create(1, out_features), true);
-        } else {
-            B = null;
-        }
+        else B = null;
         this.bias = bias;
-
         resetParameters();
     }
 
@@ -38,7 +35,7 @@ public class Dense extends Module {
     private void resetParameters() {
         long fanIn = W.value.size(0);
         WeightInit.kaimingUniform(W.value, Math.sqrt(5));
-        if(bias) {
+        if (bias) {
             double bound = 1 / Math.sqrt(fanIn);
             WeightInit.uniform(B.value, -bound, bound);
         }
