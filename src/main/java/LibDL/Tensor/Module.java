@@ -2,7 +2,7 @@ package LibDL.Tensor;
 
 public abstract class Module extends Tensor {
 
-    protected InputTensor input;
+    protected Input input;
     private Tensor core;
     //    private boolean requires_grad;
     private boolean coreIsSet;
@@ -26,7 +26,7 @@ public abstract class Module extends Tensor {
 
 
     protected Module() {
-        input = new InputTensor();
+        input = new Input();
         coreIsSet = false;
     }
 
