@@ -9,7 +9,8 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class Unfold extends OperatorTensor {
@@ -24,9 +25,9 @@ public class Unfold extends OperatorTensor {
     private Tensor input;
 
     private int[] kernel_size;
-    private int[] stride = {1, 1};
-    private int[] padding = {0, 0};
-    private int[] dilation = {1, 1};
+    private int[] stride;
+    private int[] padding;
+    private int[] dilation;
 
     public Unfold(Builder builder) {
 
@@ -87,23 +88,17 @@ public class Unfold extends OperatorTensor {
             output_w = amount_h * amount_w;
 
             INDArray result = Nd4j.zeros(shape[0], output_h, output_w);
-            for(int batch = 0; batch < shape[0]; batch++) {
-                ArrayList<INDArray> buffer = new ArrayList<>((int) output_w);
-                for(long c = 0; c < channel; c++) {
-                    INDArray m = Nd4j.zeros(output_w, filter_h * filter_w);
-                    for (long i = 0; i < amount_h; i++) {
-                        for (long j = 0; j < amount_w; j++) {
-                            INDArray column = Nd4j.toFlattened(out.get(
-                                    NDArrayIndex.indices(batch), NDArrayIndex.indices(c),
-                                    NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
-                                    NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])));
-                            m.putRow(i*amount_w+j, column);
-                        }
-                    }
-                    buffer.add(m.transpose());
+
+            for (long i = 0; i < amount_h; i++) {
+                for (long j = 0; j < amount_w; j++) {
+                    INDArray column = Nd4j.toFlattened(out.get(
+                            NDArrayIndex.all(), NDArrayIndex.all(),
+                            NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
+                            NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])));
+                    result.put(new INDArrayIndex[] {
+                            NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j)},
+                            column.reshape(shape[0], 1, output_h));
                 }
-                result.put(new INDArrayIndex[] {NDArrayIndex.point(batch), NDArrayIndex.all(), NDArrayIndex.all()},
-                        Nd4j.vstack(buffer));
             }
             return result;
         };
@@ -120,18 +115,30 @@ public class Unfold extends OperatorTensor {
         private int[] dilation = {1, 1};
         public Builder(Tensor input, int... kernel_size) {
             this.input = input;
-            this.kernel_size = kernel_size;
+            if(kernel_size.length == 1)
+                this.kernel_size = new int[] {kernel_size[0], kernel_size[0]};
+            else
+                this.kernel_size = kernel_size;
         }
         public Builder stride(int... stride) {
-            this.stride = stride;
+            if(stride.length == 1)
+                this.stride = new int[] {stride[0], stride[0]};
+            else
+                this.stride = stride;
             return this;
         }
         public Builder padding(int... padding) {
-            this.padding = padding;
+            if(padding.length == 1)
+                this.padding = new int[] {padding[0], padding[0]};
+            else
+                this.padding = padding;
             return this;
         }
         public Builder dilation(int... dilation) {
-            this.dilation = dilation;
+            if(dilation.length == 1)
+                this.dilation = new int[] {dilation[0], dilation[0]};
+            else
+                this.dilation = dilation;
             return this;
         }
         public Unfold build() {
