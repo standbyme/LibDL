@@ -1,17 +1,20 @@
-package LibDL.nn;
+package LibDL.example;
 
 
 import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import LibDL.nn.Dense;
+import LibDL.nn.Functional;
+import LibDL.nn.LossTensor;
+import LibDL.nn.ReLU;
 import LibDL.optim.RMSProp;
-import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class ModuleTest {
+public class ModuleExample {
 
     private static class Model extends Module {
         private Module linear2_5, relu, linear5_1;
@@ -32,8 +35,7 @@ public class ModuleTest {
         }
     }
 
-    @Test
-    public void testXORWithModule() {
+    public static void main(String[] args) {
         Variable data = new Variable(Nd4j.create(new double[][]{
                         {1.0, 0.0},
                         {1.0, 1.0},
