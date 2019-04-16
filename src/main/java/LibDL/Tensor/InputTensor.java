@@ -1,12 +1,13 @@
 package LibDL.Tensor;
 
-public class Input extends Tensor {
+public class InputTensor extends Tensor {
     Tensor inside;
     private boolean needs_forward;
 
     void setInput(Tensor input) {
         inside = input;
         requires_grad = input.requires_grad;
+        this.out = inside.out;
     }
 
     public boolean isNotNull() {
@@ -19,7 +20,7 @@ public class Input extends Tensor {
         needs_forward = needForward;
     }
 
-    Input() {
+    InputTensor() {
         inside = null;
         requires_grad = true;
         needs_forward = true;
@@ -27,10 +28,6 @@ public class Input extends Tensor {
 
     @Override
     public void forwardWithInput() {
-        if (needs_forward) {
-            inside.forwardWithInput();
-        }
-        this.out = inside.out;
     }
 
     @Override

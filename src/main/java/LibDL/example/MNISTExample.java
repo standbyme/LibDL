@@ -69,13 +69,13 @@ public class MNISTExample {
         Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
         Sequential nn = new Sequential(
-                new Dense(784, 200).withName("Dense784"),
-                new ReLU().withName("RELU784"),
-                new Dense(200, 100).withName("Dense200"),
-                new ReLU().withName("RELU200"),
-                new Dense(100, 20).withName("Dense100"),
-                new ReLU().withName("RELU100"),
-                new Dense(20, 10).withName("Dense20")
+                new Dense(784, 200),
+                new ReLU(),
+                new Dense(200, 100),
+                new ReLU(),
+                new Dense(100, 20),
+                new ReLU(),
+                new Dense(20, 10)
 //                new Softmax().withName("SoftMax")
         );
 

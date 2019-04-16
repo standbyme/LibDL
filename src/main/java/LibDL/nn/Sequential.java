@@ -5,20 +5,20 @@ import LibDL.Tensor.Tensor;
 
 public class Sequential extends Module {
 
-    private final Tensor[] tensors;
+    private final Module[] layers;
 
-    public Sequential(Tensor... tensors) {
-        this.tensors = tensors;
+    public Sequential(Module... layers) {
+        this.layers = layers;
     }
 
     @Override
     public Tensor forward(Tensor input) {
-        Tensor X = this.input;
+        Tensor tensor = this.input;
 
-        for (Tensor tensor : tensors) {
-            X = ((Module) tensor).forward(X);
+        for (Module layer : layers) {
+            tensor = layer.forward(tensor);
         }
 
-        return X;
+        return tensor;
     }
 }

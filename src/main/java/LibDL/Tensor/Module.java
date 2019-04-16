@@ -2,51 +2,35 @@ package LibDL.Tensor;
 
 public abstract class Module extends Tensor {
 
-    protected Input input;
+    protected InputTensor input;
     private Tensor core;
-    //    private boolean requires_grad;
-    private boolean coreIsSet;
 
     public abstract Tensor forward(Tensor input);
 
-    private void checkCore() {
-        if (coreIsSet) return;
 
-        core = forward(input);
-        coreIsSet = true;
+    public void setInput(Tensor input) {
+        this.input.setInput(input);
+        core = forward(this.input);
+        out = core.out;
         requires_grad = core.requires_grad;
     }
 
-    public void setInput(Tensor input) {
-        checkCore();
-        this.input.setInput(input);
-    }
-
     protected Module() {
-        input = new Input();
-        coreIsSet = false;
+        input = new InputTensor();
     }
 
     @Override
     public void forwardWithInput() {
-        checkCore();
-        core.forwardWithInput();
-        out = core.out;
     }
 
     @Override
     public void backward() {
-        checkCore();
         core.dout = dout;
         core.backward();
     }
 
     public Tensor apply(Tensor input) {
-        checkCore();
         setInput(input);
-        this.input.needsForward(false);
-        forwardWithInput();
-        this.input.needsForward(true);
         return this;
     }
 
@@ -56,7 +40,7 @@ public abstract class Module extends Tensor {
 
     @Override
     public Variable[] parameters() {
-        checkCore();
+        core = forward(this.input);
         return core.parameters();
     }
 
