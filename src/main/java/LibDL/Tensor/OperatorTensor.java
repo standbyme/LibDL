@@ -16,15 +16,12 @@ public abstract class OperatorTensor extends Tensor {
                 .reduce(Boolean::logicalOr)
                 .get();
 
+        out = operatorInfo.forward.get();
     }
 
     @Override
     public final void forwardWithInput() {
-        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            operandInfo.tensor.forwardWithInput();
-        }
 
-        out = operatorInfo.forward.get();
     }
 
     @Override

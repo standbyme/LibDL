@@ -7,6 +7,7 @@ public class InputTensor extends Tensor {
     void setInput(Tensor input) {
         inside = input;
         requires_grad = input.requires_grad;
+        this.out = inside.out;
     }
 
     public boolean isNotNull() {
@@ -27,10 +28,6 @@ public class InputTensor extends Tensor {
 
     @Override
     public void forwardWithInput() {
-        if (needs_forward) {
-            inside.forwardWithInput();
-        }
-        this.out = inside.out;
     }
 
     @Override
