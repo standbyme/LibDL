@@ -9,8 +9,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class Unfold extends OperatorTensor {
@@ -24,16 +22,14 @@ public class Unfold extends OperatorTensor {
 
     private Tensor input;
 
-    private int[] kernel_size;
     private int[] stride;
     private int[] padding;
     private int[] dilation;
 
-    public Unfold(Builder builder) {
+    private Unfold(Builder builder) {
 
         input = builder.input;
-
-        kernel_size = builder.kernel_size;
+        int[] kernel_size = builder.kernel_size;
         stride = builder.stride;
         padding = builder.padding;
         dilation = builder.dilation;
@@ -41,22 +37,53 @@ public class Unfold extends OperatorTensor {
         int filter_h = kernel_size[0];
         int filter_w = kernel_size[1];
 
-
         OperandInfo[] operandInfos = {
-                new OperandInfo(input, () -> {
-                    double[][] result = new double[(int) input_h][(int) input_w];
-                    for (int x = 0; x < output_h; x++) {
-                        long base_x = x / amount_w;
-                        long base_y = x % amount_w;
-                        for (int y = 0; y < output_w; y++) {
-                            long offset_x = y / filter_w;
-                            long offset_y = y % filter_w;
+            new OperandInfo(input, () -> {
 
-                            result[(int) (base_x + offset_x)][(int) (base_y + offset_y)] += dout.getDouble(x, y);
-                        }
+                assert input.out.rank() == 4;
+                INDArray out = input.out;
+                long[] shape = out.shape();
+
+                INDArray zeros = Nd4j.zeros(1, shape[2]+this.padding[0]*2, shape[3]+this.padding[1]*2);
+                INDArray counts = Nd4j.zeros(1, shape[2]+this.padding[0]*2, shape[3]+this.padding[1]*2);
+
+                for (long i = 0; i < amount_h; i++) {
+                    for (long j = 0; j < amount_w; j++) {
+                        zeros.put(new INDArrayIndex[] {
+                                NDArrayIndex.all(),
+                                NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
+                                NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])
+                        }, 1);
+                        counts.addi(zeros);
+                        zeros.muli(0);
                     }
-                    return Nd4j.create(result);
-                }),
+                }
+                counts = counts.get(
+                        NDArrayIndex.point(0),
+                        NDArrayIndex.interval(padding[0], padding[0]+shape[2]),
+                        NDArrayIndex.interval(padding[1], padding[1]+shape[3]));
+
+                INDArray fold = Nd4j.zeros(shape[0], shape[1], shape[2]+this.padding[0]*2, shape[3]+this.padding[1]*2);
+                INDArray column;
+                for (long i = 0; i < amount_h; i++) {
+                    for (long j = 0; j < amount_w; j++) {
+                        column = dout.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j))
+                                .reshape(shape[0], shape[1], filter_h, filter_w);
+                        fold.put(new INDArrayIndex[] {
+                                NDArrayIndex.all(), NDArrayIndex.all(),
+                                NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
+                                NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])
+                                }, column);
+                    }
+                }
+                fold = fold.get(
+                        NDArrayIndex.all(),
+                        NDArrayIndex.all(),
+                        NDArrayIndex.interval(padding[0], padding[0]+shape[2]),
+                        NDArrayIndex.interval(padding[1], padding[1]+shape[3]));
+
+                return counts.reshape(1, 1, shape[2], shape[3]).broadcast(fold.shape()).muli(fold);
+            }),
         };
 
         Supplier<INDArray> forward = () -> {
