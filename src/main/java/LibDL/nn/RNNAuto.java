@@ -1,30 +1,38 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Variable;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Operator.Tanh;
 import LibDL.Tensor.Tensor;
-import org.nd4j.linalg.activations.IActivation;
-import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class RNNAuto extends LayerTensor {
+public class RNNAuto extends Module {
 
     // Layer configurations
-    private long inputSize;
+    //private long inputSize;
     private long hiddenSize;
 
     // Layer parameters
-    Constant weight_ih;
-    Constant weight_hh;
-    Constant bias_ih;
-    Constant bias_hh;
+    Variable weight_ih;
+    Variable weight_hh;
+    Variable bias_ih;
+    Variable bias_hh;
 
-    private Constant h0;
+    private Variable h0;
+
+    public RNNAuto(int inputSize, int hiddenSize) {
+        //this.inputSize = inputSize;
+        this.hiddenSize = hiddenSize;
+
+        weight_hh = new Variable(Nd4j.create(hiddenSize, hiddenSize), true);
+        weight_ih = new Variable(Nd4j.create(inputSize, hiddenSize),true);
+        bias_hh = new Variable(Nd4j.create(1, hiddenSize), true);
+        bias_ih = new Variable(Nd4j.create(1, hiddenSize), true);
+    }
 
     @Override
-    protected Tensor core() {
+    public Tensor forward(Tensor input) {
         int times = (int)input.size(0);
 
         Tensor[] outList = new Tensor[times];
@@ -46,17 +54,8 @@ public class RNNAuto extends LayerTensor {
         return output.reshape(times, input.size(1), hiddenSize);
     }
 
-    public RNNAuto(int inputSize, int hiddenSize) {
-        this.inputSize = inputSize;
-        this.hiddenSize = hiddenSize;
-
-        weight_hh = new Constant(Nd4j.create(hiddenSize, hiddenSize), true);
-        weight_ih = new Constant(Nd4j.create(inputSize, hiddenSize),true);
-        bias_hh = new Constant(Nd4j.create(1, hiddenSize), true);
-        bias_ih = new Constant(Nd4j.create(1, hiddenSize), true);
-    }
-
-    public void setH0(Constant h0) {
+    public void setH0(Variable h0) {
         this.h0 = h0;
     }
+
 }

@@ -1,6 +1,6 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
@@ -10,22 +10,22 @@ import static org.junit.Assert.assertEquals;
 public class ConcatTest {
     @Test
     public void testConcat() {
-        Constant data1 = new Constant(Nd4j.create(new double[][]{
+        Variable data1 = new Variable(Nd4j.create(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
         }), true);
-        Constant data2 = new Constant(Nd4j.create(new double[][]{
+        Variable data2 = new Variable(Nd4j.create(new double[][]{
                 {3, 4, 6},
                 {6, 7, 8},
         }), true);
 
-        data1.forward();
-        data2.forward();
+        data1.forwardWithInput();
+        data2.forwardWithInput();
 
         Tensor result = new Concat(data1, data2);
 
-        // forward
-        result.forward();
+        // forwardWithInput
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[][]{
                 {1, 2, 3},

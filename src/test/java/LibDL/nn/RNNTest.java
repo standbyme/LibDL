@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,23 +14,23 @@ public class RNNTest {
     @BeforeClass
     public static void initRNN() {
         rnn = new RNN(3, 5);
-        rnn.weight_hh = new Constant(Nd4j.create(new double[][]{
+        rnn.weight_hh = new Variable(Nd4j.create(new double[][]{
                 {-0.2759, -0.2183, 0.4454, -0.0331, 0.0015},
                 {-0.4196, -0.1691, -0.1807, 0.3347, -0.2393},
                 {-0.3233, 0.4190, -0.3819, -0.1739, -0.2363},
                 {-0.0749, 0.1831, 0.1638, 0.1701, 0.4200},
                 {0.4375, -0.1900, -0.3810, -0.2224, -0.4320}}));
 
-        rnn.weight_ih = new Constant(Nd4j.create(new double[][]{
+        rnn.weight_ih = new Variable(Nd4j.create(new double[][]{
                 {-0.0862, 0.1885, 0.1464},
                 {-0.0782, -0.0145, -0.2172},
                 {0.1067, 0.0100, -0.4008},
                 {-0.0921, -0.1040, 0.1249},
                 {0.0167, -0.1631, 0.1717}}));
 
-        rnn.bias_hh = new Constant(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
+        rnn.bias_hh = new Variable(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
-        rnn.bias_ih = new Constant(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
+        rnn.bias_ih = new Variable(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
     }
 
     @Before
@@ -50,7 +50,7 @@ public class RNNTest {
                 {-0.3468, -0.0986, -0.5787, -0.6640, 0.5776},
                 {-0.6707, 0.6514, 0.6557, 0.1384, -0.9628}});
 
-        rnn.setInput(new Constant(input), new Constant(h0));
+        rnn.setInput(new Variable(input), new Variable(h0));
 
         rnn.dout = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
@@ -74,7 +74,7 @@ public class RNNTest {
                         {-0.3656, -0.2373, -0.2324, -0.1165, 0.1217},
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
-        rnn.forward();
+        rnn.forwardWithInput();
 
         assert rnn.out.equalsWithEps(output, 1e-3);
 
@@ -104,7 +104,7 @@ public class RNNTest {
                 {-0.9795, -0.1644, 1.5444, -0.5361, -1.5196}});
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
-        rnn.forward();
+        rnn.forwardWithInput();
 
         rnn.backward();
 

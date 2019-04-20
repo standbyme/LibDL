@@ -1,6 +1,6 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
@@ -10,17 +10,17 @@ import static org.junit.Assert.assertEquals;
 public class GetTest {
     @Test
     public void testGet() {
-        Constant data = new Constant(Nd4j.create(new double[][]{
+        Variable data = new Variable(Nd4j.create(new double[][]{
                 {0.3, 4.0, 2.9},
                 {3.5, 2.2, 2.5},
                 {0.5, 6, 6.5},
                 {0.5, 6, 7.5},
         }), true);
-        data.forward();
+        data.forwardWithInput();
 
         Tensor result = data.get(0);
 
-        result.forward();
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{0.3, 4.0, 2.9}));
 
@@ -36,7 +36,7 @@ public class GetTest {
 
         Tensor result2 = data.get(2);
 
-        result2.forward();
+        result2.forwardWithInput();
 
         assertEquals(result2.out, Nd4j.create(new double[]{0.5, 6, 6.5}));
 

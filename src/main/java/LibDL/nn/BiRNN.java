@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -19,10 +19,10 @@ public class BiRNN extends Tensor {
 
     // Input
     Tensor input;
-    Constant h0;
+    Variable h0;
 
     // Output
-    private Constant hidden;
+    private Variable hidden;
 
     private RNN forwardRNN;
     private RNN backwardRNN;
@@ -35,37 +35,37 @@ public class BiRNN extends Tensor {
         backwardRNN = new RNN(inputSize, hiddenSize);
     }
 
-    public void setInput(Tensor input, Constant h0) {
+    public void setInput(Tensor input, Variable h0) {
         this.input = input;
         this.h0 = h0;
     }
 
     @Override
-    public void forward() {
-        input.forward();
+    public void forwardWithInput() {
+        input.forwardWithInput();
 
         Tensor inputReversed = reverseInput(input);
-        Constant h0F = new Constant(h0.value.get(point(0), all(), all()));
-        Constant h0B = new Constant(h0.value.get(point(1), all(), all()));
+        Variable h0F = new Variable(h0.value.get(point(0), all(), all()));
+        Variable h0B = new Variable(h0.value.get(point(1), all(), all()));
 
-        hidden = new Constant(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize*2), true);
+        hidden = new Variable(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize*2), true);
 
         forwardRNN.setInput(input, h0F);
-        forwardRNN.forward();
+        forwardRNN.forwardWithInput();
 
         backwardRNN.setInput(inputReversed, h0B);
-        backwardRNN.forward();
+        backwardRNN.forwardWithInput();
 
         hidden.value.assign(Nd4j.hstack(forwardRNN.out, backwardRNN.out));
     }
 
-    private Constant reverseInput(Tensor input) {
+    private Variable reverseInput(Tensor input) {
         INDArray rev = Nd4j.emptyLike(input.out);
         long times = input.out.size(0);
         for(long i = 0; i < times; i++) {
             rev.get(point(i), all(), all()).assign(input.out.get(point(times - 1 - i), all(), all()));
         }
-        return new Constant(rev);
+        return new Variable(rev);
     }
 
     @Override
@@ -78,9 +78,11 @@ public class BiRNN extends Tensor {
     }
 
     @Override
-    public Constant[] parameters() {
-        return Stream.concat(Arrays.stream(forwardRNN.parameters()), Arrays.stream(backwardRNN.parameters()))
-                .toArray(Constant[]::new);
+    public Variable[] parameters_core() {
+        return Stream.concat(
+                Arrays.stream(forwardRNN.parameters_core()),
+                Arrays.stream(backwardRNN.parameters_core())
+        ).toArray(Variable[]::new);
     }
 
 }

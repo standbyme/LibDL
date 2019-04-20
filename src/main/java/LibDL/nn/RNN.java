@@ -1,6 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.activations.impl.ActivationTanH;
@@ -22,36 +22,37 @@ public class RNN extends Tensor {
     private IActivation activation = new ActivationTanH();
 
     // Layer parameters
-    Constant weight_ih;
-    Constant weight_hh;
-    Constant bias_ih;
-    Constant bias_hh;
+    Variable weight_ih;
+    Variable weight_hh;
+    Variable bias_ih;
+    Variable bias_hh;
 
     // Input
     Tensor input;
-    Constant h0;
+    Variable h0;
 
     // Output
-    private Constant hidden;
+    private Variable hidden;
 
     public RNN(int inputSize, int hiddenSize) {
+        super();
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
 
-        weight_hh = new Constant(Nd4j.create(hiddenSize, hiddenSize), true);
-        weight_ih = new Constant(Nd4j.create(inputSize, hiddenSize),true);
-        bias_hh = new Constant(Nd4j.create(1, hiddenSize), true);
-        bias_ih = new Constant(Nd4j.create(1, hiddenSize), true);
+        weight_hh = new Variable(Nd4j.create(hiddenSize, hiddenSize), true);
+        weight_ih = new Variable(Nd4j.create(inputSize, hiddenSize),true);
+        bias_hh = new Variable(Nd4j.create(1, hiddenSize), true);
+        bias_ih = new Variable(Nd4j.create(1, hiddenSize), true);
     }
 
-    public void setInput(Tensor input, Constant h0) {
+    public void setInput(Tensor input, Variable h0) {
         this.input = input;
         this.h0 = h0;
     }
 
     @Override
-    public void forward() {
-        input.forward();
+    public void forwardWithInput() {
+        input.forwardWithInput();
         out = forwardHelper();
     }
 
@@ -61,15 +62,17 @@ public class RNN extends Tensor {
         input.backward();
     }
 
+
     @Override
-    public Constant[] parameters() {
-        return Stream.concat(Arrays.stream(input.parameters()),
-                Arrays.stream(new Constant[]{weight_ih, weight_hh, bias_ih, bias_hh}))
-                .toArray(Constant[]::new);
+    public Variable[] parameters_core() {
+        return Stream.concat(Arrays.stream(input.parameters_core()),
+                Arrays.stream(new Variable[]{weight_ih, weight_hh, bias_ih, bias_hh}))
+                .toArray(Variable[]::new);
     }
 
+
     INDArray forwardHelper() {
-        hidden = new Constant(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize), true);
+        hidden = new Variable(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize), true);
         INDArray prevHidden = h0.value;
         long times = input.out.size(0);
 
