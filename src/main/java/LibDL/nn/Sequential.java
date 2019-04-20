@@ -1,25 +1,24 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 
-public class Sequential extends LayerTensor {
+public class Sequential extends Module {
 
-    private final LayerTensor[] tensors;
+    private final Module[] layers;
 
-    public Sequential(LayerTensor... tensors) {
-        this.tensors = tensors;
+    public Sequential(Module... layers) {
+        this.layers = layers;
     }
 
     @Override
-    protected Tensor core() {
-        Tensor X = this.input;
+    public Tensor forward(Tensor input) {
+        Tensor tensor = this.input;
 
-        for (LayerTensor tensor : tensors) {
-            tensor.setInput(X);
-            X = tensor;
+        for (Module layer : layers) {
+            tensor = layer.forward(tensor);
         }
 
-        return X;
+        return tensor;
     }
 }

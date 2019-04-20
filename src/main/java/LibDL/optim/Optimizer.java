@@ -1,13 +1,20 @@
 package LibDL.optim;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 
 public abstract class Optimizer {
-    final Constant[] params;
+    private final Parameters parameters;
 
-    Optimizer(Constant[] params) {
-        this.params = params;
+    Variable[] params;
+
+    Optimizer(Parameters parameters) {
+        this.parameters = parameters;
     }
 
-    public abstract void step();
+    final public void step() {
+        params = parameters.get();
+        step_core();
+    }
+
+    public abstract void step_core();
 }

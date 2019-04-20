@@ -1,12 +1,9 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.NDArrayIndex;
-import org.nd4j.linalg.ops.transforms.Transforms;
-import org.nd4j.linalg.util.ArrayUtil;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -15,7 +12,7 @@ public class main {
 
     @Test
     public void testMax() {
-        Constant data = new Constant(Nd4j.create(new double[][]{
+        Variable data = new Variable(Nd4j.create(new double[][]{
                 {0.3, 4.0, 2.9},
                 {3.5, 2.2, 2.5},
                 {0.5, 6, 6.5},
@@ -25,7 +22,7 @@ public class main {
 
         Max result = new Max(data);
 
-        result.forward();
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{4.0, 3.5, 6.5, 7.5}));
 
@@ -42,148 +39,12 @@ public class main {
     }
 
     @Test
-    public void testSoftmax() {
-
-        Constant data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
-        Softmax f = new Softmax(data, 1);
-        f.forward();
-        INDArray s = Transforms.abs(f.out.subi(Nd4j.create(new double[] {0.01821127329554753, 0.24519181293507392, 0.7365969137693786})), false);
-        assert s.sumNumber().doubleValue() < 0.0000001;
-
-//        assert a1 == 0.018211273476481438;
-//        assert b1 == 0.24519184231758118;
-//        assert c1 == 0.736596941947937;
-
-        Constant data_to_forward = new Constant(Nd4j.create(new double[][][]{
-                {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
-                {{4.1, 2.0, 2.0}, {0.0, 0.0, 1.2}}
-        }));
-        Softmax result;
-        INDArray target, loss;
-        double lossSum;
-
-        result = new Softmax(data_to_forward, -1);
-        result.forward();
-        target = Nd4j.create(new double[][][]{
-                {{0.8978, 0.0122, 0.0900}, {0.0132, 0.2654, 0.7214}},
-                {{0.8033, 0.0984, 0.0984}, {0.1880, 0.1880, 0.6241}}
-        });
-        loss = result.out.sub(target);
-        lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-        assert lossSum / 12 < 0.000002;
-
-        result = new Softmax(data_to_forward, 1);
-        result.forward();
-        target = Nd4j.create(new double[][][]{
-                {{0.9982, 0.2689, 0.5000}, {0.0018, 0.7311, 0.5000}},
-                {{0.9837, 0.8808, 0.6900}, {0.0163, 0.1192, 0.3100}}
-        });
-        loss = result.out.sub(target);
-        lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-        assert lossSum / 12 < 0.000002;
-
-        result = new Softmax(data_to_forward);
-        result.forward();
-        target = Nd4j.create(new double[][][]{
-                {{0.5498, 0.1192, 0.5000}, {0.1192, 0.7311, 0.6900}},
-                {{0.4502, 0.8808, 0.5000}, {0.8808, 0.2689, 0.3100}}
-        });
-        loss = result.out.sub(target);
-        lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-        assert lossSum / 12 < 0.000002;
-
-        data_to_forward = new Constant(Nd4j.create(new double[] {0.3, 2.9, 4.0}).reshape(3));
-        result = new Softmax(data_to_forward);
-        result.forward();
-        target = Nd4j.create(new double[] {0.0182, 0.2452, 0.7366}).reshape(3);
-        loss = result.out.sub(target);
-        lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
-        assert lossSum / 3 < 0.000002;
-
-        Constant data_to_backward; // The following is testing backward
-
-        data_to_backward = new Constant(Nd4j.create(new double[] {1.0, 2.0, 3.0}).reshape(3), true);
-        result = new Softmax(data_to_backward, 0);
-        result.dout = Nd4j.create(new double[] { 2.1801, -3.5105, -4.6695}).reshape(3);
-        result.forward();
-        result.backward();
-        assert Nd4j.create(new double[]
-                { 0.5356,  0.0633, -0.5989}).sub(data_to_backward.dout).sumNumber().doubleValue() < 0.0000005;
-
-        data_to_backward = new Constant(Nd4j.create(new double[][][] {
-                {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
-                {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
-        }), true);
-        result = new Softmax(data_to_backward, 2);
-        result.dout = Nd4j.create(new double[][][] {
-                {{2.1801, -3.5105, -4.6695}, { 2.0357,  4.0131,  7.9511}},
-                {{-8.4435,  6.2107, -5.9672}, {-2.8199, -4.5105,  8.3305}}
-        });
-        result.forward();
-        result.backward();
-        assert Transforms.abs((Nd4j.create(new double[][][] {
-                {{ 0.5356,  0.0633, -0.5989}, {-0.1033, -0.0250,  0.1284}},
-                {{-1.4256,  1.3506,  0.0750}, {-0.6306, -2.1278,  2.7584}}
-        }).sub(data_to_backward.dout))).sumNumber().doubleValue() / 12 < 0.0001; // TODO 1.3506 is 1.3505
-
-        data_to_backward = new Constant(Nd4j.create(new double[][][] {
-                {{1.0, 2.0, 3.0}, {-1.0, -2.0, 3.0}},
-                {{5.0, 3.0, 3.1}, {1.5, 2.5, 3.5}}
-        }), true);
-        result = new Softmax(data_to_backward, 0);
-        result.dout = Nd4j.create(new double[][][] {
-                {{ 2.0360, -3.4621, -5.0500}, { 2.1517,  4.0220,  6.7551}},
-                {{-8.0360,  7.4621, -5.1500}, {-1.1517, -3.0220,  8.2449}}
-        });
-        result.forward();
-        result.backward();
-        assert Transforms.abs((Nd4j.create(new double[][][] {
-                {{ 0.1779, -2.1478,  0.0249}, { 0.2316,  0.0765, -0.3501}},
-                {{-0.1779,  2.1478, -0.0249}, {-0.2316, -0.0765,  0.3501}}
-        }).sub(data_to_backward.dout))).sumNumber().doubleValue() / 12 < 0.0001; // TODO +-0.0249 should be +-0.0250
-    }
-
-    @Test
-    public void testLog() {
-        Constant x = new Constant(Nd4j.create(new double[] {0.5, 1, 2.731, 10}), true);
-        Log log = new Log(x);
-        log.forward();
-        assertEquals(log.out, Nd4j.create(new double[] {-0.693147181, 0, 1.00466784, 2.30258509}));
-
-//        log.dout = Nd4j.create(new double[] {0.5, 1, 2, -2.5});
-//        log.backward();
-//        assertEquals(x.dout, Nd4j.create(new double[] {1.64872127, 2.71828183, 7.3890561, 0.0820849986}));
-    }
-
-    @Test
-    public void testCrossEntropyLoss() {
-        Constant t = new Constant(Nd4j.create(new double[]{0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0}));
-        Constant y = new Constant(Nd4j.create(new double[]{0.1, 0.05, 0.6, 0, 0.05, 0.1, 0, 0.1, 0, 0}));
-
-
-        CrossEntropyLoss result = new CrossEntropyLoss(y, t);
-        result.forward();
-        double a = result.out.getDouble(0);
-
-        assert a == 0.5108253955841064;
-
-        y = new Constant(Nd4j.create(new double[]{0.1, 0.05, 0.1, 0, 0.05, 0.1, 0, 0.6, 0, 0}));
-        result = new CrossEntropyLoss(y, t);
-        result.forward();
-
-        double b = result.out.getDouble(0);
-
-        assert b == 2.302584171295166;
-
-    }
-
-    @Test
     public void testUnfold() {
 
-        Constant x = new Constant(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
+        Variable x = new Variable(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
 
         Unfold ret = new Unfold(x, 3, 0, 1);
-        ret.forward();
+        ret.forwardWithInput();
 
         INDArray assertion_forward = Nd4j.create(new double[][]{{0, 1, 2, 4, 5, 6, 8, 9, 10}, {1, 2, 3, 5, 6, 7, 9, 10, 11}, {4, 5, 6, 8, 9, 10, 12, 13, 14}, {5, 6, 7, 9, 10, 11, 13, 14, 15}});
 
@@ -205,10 +66,10 @@ public class main {
         INDArray matrix_2_3 = matrix.reshape(2, 3);
         INDArray matrix_3_2 = matrix.reshape(3, 2);
 
-        Constant x = new Constant(matrix_2_3, true);
+        Variable x = new Variable(matrix_2_3, true);
         Reshape reshape = new Reshape(x, 3, 2);
 
-        reshape.forward();
+        reshape.forwardWithInput();
         assertArrayEquals(new long[]{2, 3}, reshape.from_shape);
 
         reshape.dout = matrix_3_2;
@@ -219,14 +80,14 @@ public class main {
 
     @Test
     public void testAddAndSub() {
-        Constant data1 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
-        Constant data2 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+        Variable data1 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
+        Variable data2 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
 
         Add add = new Add(data1, data2);
         Sub sub = new Sub(data1, data2);
 
-        add.forward();
-        sub.forward();
+        add.forwardWithInput();
+        sub.forwardWithInput();
 
         {
             double a = add.out.getDouble(0);
@@ -252,7 +113,7 @@ public class main {
 
     @Test
     public void testAverage() {
-        Constant data = new Constant(Nd4j.create(new double[][]{
+        Variable data = new Variable(Nd4j.create(new double[][]{
                 {1, 2, 3},
                 {4, 5, 6},
                 {7, 8, 9},
@@ -262,7 +123,7 @@ public class main {
 
         Average result = new Average(data);
 
-        result.forward();
+        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{2, 5, 8, 11}));
 

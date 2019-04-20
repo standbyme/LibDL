@@ -1,10 +1,10 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
 
-public class MaxPool2d extends LayerTensor {
+public class MaxPool2d extends Module {
 
     private final int kernel_size;
     private final int stride = 1;
@@ -15,7 +15,7 @@ public class MaxPool2d extends LayerTensor {
     }
 
     @Override
-    protected Tensor core() {
+    public Tensor forward(Tensor input) {
         Unfold col = new Unfold(input, kernel_size);
         return col.max().reshapeLike(input);
     }

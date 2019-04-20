@@ -1,6 +1,6 @@
 package LibDL.optim;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -12,12 +12,12 @@ public class SGD extends Optimizer {
 
     private final INDArray[] v;
 
-    public SGD(Constant[] params, float lr) {
-        this(params, lr, 0);
+    public SGD(Parameters parameters, float lr) {
+        this(parameters, lr, 0);
     }
 
-    public SGD(Constant[] params, float lr, float momentum) {
-        super(params);
+    public SGD(Parameters parameters, float lr, float momentum) {
+        super(parameters);
         this.lr = lr;
         this.momentum = momentum;
         this.v = Arrays.stream(params)
@@ -26,9 +26,9 @@ public class SGD extends Optimizer {
     }
 
     @Override
-    public void step() {
+    public void step_core() {
         for (int i = 0; i < params.length; i++) {
-            Constant param = params[i];
+            Variable param = params[i];
             v[i].muli(momentum).subi(param.dout.mul(lr));
             param.value.addi(v[i]);
         }

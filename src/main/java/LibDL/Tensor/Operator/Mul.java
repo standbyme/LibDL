@@ -5,21 +5,17 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.util.function.Supplier;
 
-
-public class Log extends OperatorTensor {
-    public Log(Tensor tensor) {
+public class Mul extends OperatorTensor {
+    public Mul(Tensor mat1, Tensor mat2) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () ->
-                        dout.div(tensor.out)
-                )
+                new OperandInfo(mat1, () -> mat2.out.mul(dout)),
+                new OperandInfo(mat2, () -> mat1.out.mul(dout)),
         };
 
-        Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);
+        Supplier<INDArray> forward = () -> mat1.out.mul(mat2.out);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

@@ -1,11 +1,11 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 
-public class ReLU extends LayerTensor {
+public class ReLU extends Module {
     @Override
-    protected Tensor core() {
+    public Tensor forward(Tensor input) {
         return new LibDL.Tensor.Operator.ReLU(input);
     }
 }

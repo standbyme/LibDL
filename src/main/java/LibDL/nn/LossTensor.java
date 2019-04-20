@@ -1,10 +1,11 @@
 package LibDL.nn;
 
-import LibDL.Tensor.LayerTensor;
+import LibDL.Tensor.Module;
 import org.nd4j.linalg.factory.Nd4j;
 
-abstract class LossTensor extends LayerTensor {
+public abstract class LossTensor extends Module {
     LossTensor() {
         dout = Nd4j.create(new double[]{1.0});
     }
+
 }

@@ -5,21 +5,20 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.ops.transforms.Transforms;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
+public class Broadcast extends OperatorTensor {
 
-public class Log extends OperatorTensor {
-    public Log(Tensor tensor) {
+    public Broadcast(Tensor mat, long... dim) {
+
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () ->
-                        dout.div(tensor.out)
-                )
+                new OperandInfo(mat, () -> dout.sum(Arrays.stream(dim)
+                        .mapToInt(i -> (int) i).toArray())),
         };
 
-        Supplier<INDArray> forward = () -> Transforms.log(tensor.out, true);
+        Supplier<INDArray> forward = () -> mat.out.broadcast(dim);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

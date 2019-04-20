@@ -9,21 +9,19 @@ public abstract class OperatorTensor extends Tensor {
         this.operatorInfo = operatorInfo;
         OperandInfo[] operandInfos = this.operatorInfo.operandInfos;
 
+//        System.out.println(Arrays.toString(operandInfos));
         // If operandInfos is empty, this line will panic
         requires_grad = Arrays.stream(operandInfos)
                 .map(memberInfo -> memberInfo.tensor.requires_grad)
                 .reduce(Boolean::logicalOr)
                 .get();
 
+        out = operatorInfo.forward.get();
     }
 
     @Override
-    public final void forward() {
-        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            operandInfo.tensor.forward();
-        }
+    public final void forwardWithInput() {
 
-        out = operatorInfo.forward.get();
     }
 
     @Override
@@ -38,9 +36,9 @@ public abstract class OperatorTensor extends Tensor {
     }
 
     @Override
-    public Constant[] parameters() {
+    public Variable[] parameters_core() {
         return Arrays.stream(operatorInfo.operandInfos)
-                .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters()))
-                .toArray(Constant[]::new);
+                .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters_core()))
+                .toArray(Variable[]::new);
     }
 }

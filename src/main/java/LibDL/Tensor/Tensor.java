@@ -1,19 +1,39 @@
 package LibDL.Tensor;
 
 import LibDL.Tensor.Operator.*;
+import LibDL.optim.Parameters;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public abstract class Tensor {
     public INDArray out = null;
     public INDArray dout = null;
 
+    private String tensorName;
+    Tensor() {
+        tensorName = this.getClass().getName();
+    }
+
+    public Tensor withName(String name) {
+        tensorName = name;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return tensorName;
+    }
+
     boolean requires_grad;
 
-    abstract public void forward();
+    abstract public void forwardWithInput();
 
     abstract public void backward();
 
-    abstract public Constant[] parameters();
+    final public Parameters parameters(){
+        return new Parameters(this);
+    }
+
+    public abstract Variable[] parameters_core();
 
     final public Add add(Tensor that) {
         return new Add(this, that);
@@ -62,4 +82,5 @@ public abstract class Tensor {
     final public long size(int i) {
         return this.out.size(i);
     }
+
 }
