@@ -81,7 +81,7 @@ public class MNISTExample {
         );
 
 
-        RMSProp optim = new RMSProp(new Parameters(nn), 0.0002f, 0.99f, 5e-8);
+        RMSProp optim = new RMSProp(nn.parameters(), 0.0002f, 0.99f, 5e-8);
 
         int cnt = 0;
         for (int epoch = 0; epoch < 10; epoch++) {

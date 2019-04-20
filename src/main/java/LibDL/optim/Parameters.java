@@ -11,6 +11,6 @@ public class Parameters {
     }
 
     public Variable[] get() {
-        return tensor.parameters();
+        return tensor.parameters_core();
     }
 }

@@ -37,9 +37,9 @@ public class InputTensor extends Tensor {
     }
 
     @Override
-    public Variable[] parameters() {
+    public Variable[] parameters_core() {
         if (inside != null) {
-            return inside.parameters();
+            return inside.parameters_core();
         }
         return new Variable[]{};
     }

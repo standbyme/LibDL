@@ -1,6 +1,7 @@
 package LibDL.Tensor;
 
 import LibDL.Tensor.Operator.*;
+import LibDL.optim.Parameters;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public abstract class Tensor {
@@ -28,7 +29,11 @@ public abstract class Tensor {
 
     abstract public void backward();
 
-    abstract public Variable[] parameters();
+    final public Parameters parameters(){
+        return new Parameters(this);
+    }
+
+    public abstract Variable[] parameters_core();
 
     final public BroadcastAdd add(Tensor that) {
         return new BroadcastAdd(this, that);

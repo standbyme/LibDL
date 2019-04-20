@@ -21,7 +21,7 @@ public class OptimTest {
                 new ReLU(), new Dense(5, 1));
 //        Tensor pred2 = nn.predict(data);
 //        System.out.println(Arrays.toString(pred2.out.toDoubleVector()));
-        RMSProp optimizer = new RMSProp(new Parameters(nn), 0.005f, 0.69f, 1e-8);
+        RMSProp optimizer = new RMSProp(nn.parameters(), 0.005f, 0.69f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
             MSELoss loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();

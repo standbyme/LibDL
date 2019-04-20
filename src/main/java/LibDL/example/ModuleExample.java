@@ -48,7 +48,7 @@ public class ModuleExample {
                 {1.0}, {0.0}}));
 
         Model nn = new Model();
-        RMSProp optimizer = new RMSProp(new Parameters(nn), 0.01f, 0.99f, 1e-8);
+        RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
             Tensor output = nn.predict(data);
             LossTensor loss = Functional.mse_loss(output, target);

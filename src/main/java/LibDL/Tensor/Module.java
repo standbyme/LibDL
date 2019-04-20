@@ -39,9 +39,9 @@ public abstract class Module extends Tensor {
     }
 
     @Override
-    public Variable[] parameters() {
+    public Variable[] parameters_core() {
         core = forward(this.input);
-        return core.parameters();
+        return core.parameters_core();
     }
 
 }
