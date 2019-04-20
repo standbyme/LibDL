@@ -27,7 +27,7 @@ public class Conv2d extends Module {
     @Override
     public Tensor forward(Tensor input) {
         Unfold col = new Unfold(input, kernel_size);
-        if (bias) return (col.mm(W).add(B).reshapeLike(input));
+        if (bias) return (col.mm(W).addVector(B).reshapeLike(input));
         else return (col.mm(W).reshapeLike(input));
     }
 
