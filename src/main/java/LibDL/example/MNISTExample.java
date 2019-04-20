@@ -3,6 +3,7 @@ package LibDL.example;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
+import LibDL.optim.Parameters;
 import LibDL.optim.RMSProp;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
@@ -80,7 +81,7 @@ public class MNISTExample {
         );
 
 
-        RMSProp optim = new RMSProp(nn.parameters(), 0.0002f, 0.99f, 5e-8);
+        RMSProp optim = new RMSProp(new Parameters(nn), 0.0002f, 0.99f, 5e-8);
 
         int cnt = 0;
         for (int epoch = 0; epoch < 10; epoch++) {

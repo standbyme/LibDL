@@ -18,8 +18,8 @@ public class Adam extends Optimizer {
     private INDArray[] beta1_t;
     private INDArray[] beta2_t;
 
-    public Adam(Variable[] params, float lr, float[] betas, double eps) {
-        super(params);
+    public Adam(Parameters parameters, float lr, float[] betas, double eps) {
+        super(parameters);
         this.lr = lr;
         this.betas = betas;
         this.eps = eps;
@@ -41,12 +41,12 @@ public class Adam extends Optimizer {
 //        this.t = 0;
     }
 
-    public Adam(Variable[] params, float lr) {
-        this(params, lr, new float[]{0.9f, 0.999f}, 1e-8);
+    public Adam(Parameters parameters, float lr) {
+        this(parameters, lr, new float[]{0.9f, 0.999f}, 1e-8);
     }
 
     @Override
-    public void step() {
+    public void step_core() {
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
 //            System.out.println(Arrays.toString());

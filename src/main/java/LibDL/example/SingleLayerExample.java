@@ -2,6 +2,7 @@ package LibDL.example;
 
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
+import LibDL.optim.Parameters;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -19,7 +20,7 @@ public class SingleLayerExample {
         MSELoss loss = new MSELoss(target);
         loss.setInput(nn);
 
-        SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
+        SGD optimizer = new SGD(new Parameters(nn), 0.3f, 0.8f);
 
         for (int epoch = 1; epoch <= 160; epoch++) {
             loss.forwardWithInput();

@@ -3,6 +3,7 @@ package LibDL.example;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
+import LibDL.optim.Parameters;
 import LibDL.optim.RMSProp;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
@@ -27,7 +28,7 @@ public class XORExample {
         MSELoss loss = new MSELoss(target);
         loss.setInput(nn);
 
-        SGD optimizer = new SGD(nn.parameters(), 0.1f);
+        SGD optimizer = new SGD(new Parameters(nn), 0.1f);
 
         for (int epoch = 1; epoch <= 1000; epoch++) {
             loss.forwardWithInput();
@@ -63,7 +64,7 @@ public class XORExample {
                 new ReLU(), new Dense(5, 1));
         Tensor pred2 = nn.predict(data);
         System.out.println(Arrays.toString(pred2.out.toDoubleVector()));
-        RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
+        RMSProp optimizer = new RMSProp(new Parameters(nn), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 500; epoch++) {
             MSELoss loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();

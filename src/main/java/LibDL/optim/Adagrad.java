@@ -9,13 +9,13 @@ import java.util.Arrays;
 
 public class Adagrad extends Optimizer {
 
-    public Adagrad(Variable[] params) {
-        super(params);
+    public Adagrad(Parameters parameters) {
+        super(parameters);
         throw new UnsupportedOperationException();
     }
 
-
     @Override
-    public void step() {
+    public void step_core() {
+        
     }
 }

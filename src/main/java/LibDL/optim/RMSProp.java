@@ -13,8 +13,8 @@ public class RMSProp extends Optimizer {
     private float beta, alpha;
     private double eps;
 
-    public RMSProp(Variable[] params, float lr, float alpha, double eps) {
-        super(params);
+    public RMSProp(Parameters parameters, float lr, float alpha, double eps) {
+        super(parameters);
         this.alpha = lr;
         this.beta = alpha;
         this.eps = eps;
@@ -25,7 +25,7 @@ public class RMSProp extends Optimizer {
 
 
     @Override
-    public void step() {
+    public void step_core() {
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
             Sdparams[i].muli(beta).addi
