@@ -5,16 +5,15 @@ import LibDL.Tensor.Variable;
 public abstract class Optimizer {
     private final Parameters parameters;
 
-    Variable[] params;
+    protected Variable[] params;
 
     Optimizer(Parameters parameters) {
         this.parameters = parameters;
     }
 
-    final public void step() {
+    final protected void cacheParams() {
         params = parameters.get();
-        step_core();
     }
 
-    public abstract void step_core();
+    public abstract void step();
 }

@@ -18,14 +18,18 @@ public class RMSProp extends Optimizer {
         this.alpha = lr;
         this.beta = alpha;
         this.eps = eps;
-        this.Sdparams = Arrays.stream(params)
-                .map(constant -> Nd4j.zerosLike(constant.value))
-                .toArray(INDArray[]::new);
     }
 
 
     @Override
-    public void step_core() {
+    public void step() {
+        if(params == null) {
+            cacheParams();
+            this.Sdparams = Arrays.stream(params)
+                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .toArray(INDArray[]::new);
+        }
+
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
             Sdparams[i].muli(beta).addi

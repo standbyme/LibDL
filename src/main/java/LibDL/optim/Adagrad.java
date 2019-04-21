@@ -15,7 +15,7 @@ public class Adagrad extends Optimizer {
     }
 
     @Override
-    public void step_core() {
+    public void step() {
         
     }
 }
