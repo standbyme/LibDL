@@ -2,12 +2,15 @@ package LibDL.nn;
 
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Sequential extends LayerTensor {
 
     private final LayerTensor[] tensors;
 
-    public Sequential(LayerTensor... tensors) {
+    @JsonCreator
+    public Sequential(@JsonProperty("tensors")LayerTensor... tensors) {
         this.tensors = tensors;
     }
 

@@ -92,7 +92,7 @@ public class PoolingLayer extends DefaultLayer {
                     for (int k = 0; k < input.shape()[1]; k++) {
                         double item = input.getDouble(j, k, i);
                         int mem = maxMem.remove();
-                        int offsetInner = (int) (mem / kernelWidth) * inputWidth + mem % kernelWidth;
+                        int offsetInner = (mem / kernelWidth) * inputWidth + mem % kernelWidth;
                         int offsetOuter = j * inputWidth * stride + k * stride + inputWidth * inputHeight * i;
                         result.putScalarUnsafe(offsetInner + offsetOuter, item);
                     }

@@ -4,6 +4,8 @@ import LibDL.Tensor.Constant;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Conv2d extends LayerTensor {
@@ -26,7 +28,8 @@ public class Conv2d extends LayerTensor {
 
     }
 
-    public Conv2d(int kernel_size, boolean bias) {
+    @JsonCreator
+    public Conv2d(@JsonProperty("kernel_size")int kernel_size, @JsonProperty("bias")boolean bias) {
         W = new Constant(Nd4j.ones(1, kernel_size * kernel_size));
         B = new Constant(Nd4j.ones());
 

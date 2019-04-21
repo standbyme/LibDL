@@ -32,7 +32,7 @@ public class DL4JDataVecTest {
     private static final int width = 50;
     private static final int channels = 3;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         //nyTest();
 
         List<Integer> arr = new ArrayList<>();

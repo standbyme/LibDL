@@ -3,13 +3,16 @@ package LibDL.nn;
 import LibDL.Tensor.Operator.CrossEntropyLoss;
 import LibDL.Tensor.Operator.Softmax;
 import LibDL.Tensor.Tensor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SoftmaxWithLoss extends LossTensor {
 
     private final Tensor target;
     private Tensor y;
 
-    public SoftmaxWithLoss(Tensor target) {
+    @JsonCreator
+    public SoftmaxWithLoss(@JsonProperty("target")Tensor target) {
         this.target = target;
     }
 

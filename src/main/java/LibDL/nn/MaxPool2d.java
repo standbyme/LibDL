@@ -3,6 +3,8 @@ package LibDL.nn;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MaxPool2d extends LayerTensor {
 
@@ -10,7 +12,8 @@ public class MaxPool2d extends LayerTensor {
     private final int stride = 1;
     private final int padding = 0;
 
-    public MaxPool2d(int kernel_size) {
+    @JsonCreator
+    public MaxPool2d(@JsonProperty("kernel_size")int kernel_size) {
         this.kernel_size = kernel_size;
     }
 

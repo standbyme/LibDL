@@ -3,7 +3,9 @@ package LibDL.nn;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class WeightInit {
+import java.io.Serializable;
+
+public class WeightInit implements Serializable {
 
     public static INDArray constant(INDArray paramView, double value) {
         return paramView.assign(value);

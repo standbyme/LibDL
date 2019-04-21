@@ -1,9 +1,30 @@
 package LibDL.Tensor;
 
 import LibDL.Tensor.Operator.*;
+import LibDL.nn.*;
+import LibDL.nn.ReLU;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-public abstract class Tensor {
+import java.io.Serializable;
+
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Conv2d.class),
+        @JsonSubTypes.Type(value = Linear.class),
+        @JsonSubTypes.Type(value = MaxPool2d.class),
+        @JsonSubTypes.Type(value = MSELoss.class),
+        @JsonSubTypes.Type(value = ReLU.class),
+        @JsonSubTypes.Type(value = Sequential.class),
+        @JsonSubTypes.Type(value = SoftmaxWithLoss.class),
+})
+public abstract class Tensor implements Serializable {
     public INDArray out = null;
     public INDArray dout = null;
 

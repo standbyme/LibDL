@@ -3,7 +3,11 @@ package LibDL.nn;
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.LayerTensor;
 import LibDL.Tensor.Tensor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.nd4j.linalg.factory.Nd4j;
+
+import java.util.Arrays;
 
 public class Linear extends LayerTensor {
 
@@ -17,11 +21,13 @@ public class Linear extends LayerTensor {
         else return input.mm(W);
     }
 
-    public Linear(int in_features, int out_features) {
+    @JsonCreator
+    public Linear(@JsonProperty("in_features")int in_features, @JsonProperty("out_features")int out_features) {
         this(in_features, out_features, true);
     }
 
-    public Linear(int in_features, int out_features, boolean bias) {
+    @JsonCreator
+    public Linear(@JsonProperty("in_features")int in_features, @JsonProperty("out_features")int out_features, @JsonProperty("bias")boolean bias) {
         W = new Constant(Nd4j.create(in_features, out_features), true);
         if (bias) {
             B = new Constant(Nd4j.create(1, out_features), true);
@@ -40,5 +46,19 @@ public class Linear extends LayerTensor {
             double bound = 1 / Math.sqrt(fanIn);
             WeightInit.uniform(B.value, -bound, bound);
         }
+    }
+
+    @Override
+    public String toString(){
+        return "Constant W:\n" + W.value + "\n"
+                               + Arrays.toString(W.parameters()) + "\n"
+                               + W.toString() + "\n" +
+               "Constant B:\n" + B.value + "\n"
+                               + Arrays.toString(B.parameters()) + "\n"
+                               + B.toString() + "\n" +
+               "bias:"         + bias + "\n" +
+               "out:"          + this.out + "\n" +
+               "dout:"         + this.dout + "\n" +
+               "input:"        + this.input + "\n";
     }
 }
