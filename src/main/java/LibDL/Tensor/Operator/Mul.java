@@ -9,13 +9,13 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import java.util.function.Supplier;
 
 public class Mul extends OperatorTensor {
-    public Mul(Tensor mat1, Tensor mat2) {
+    public Mul(Tensor tensor, int times) {
+
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1, () -> mat2.out.mul(dout)),
-                new OperandInfo(mat2, () -> mat1.out.mul(dout)),
+                new OperandInfo(tensor, () -> dout.mul(times)),
         };
 
-        Supplier<INDArray> forward = () -> mat1.out.mul(mat2.out);
+        Supplier<INDArray> forward = () -> tensor.out.mul(times);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

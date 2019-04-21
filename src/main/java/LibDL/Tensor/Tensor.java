@@ -67,6 +67,10 @@ public abstract class Tensor {
         return new Reshape(this, shape);
     }
 
+    final public Mul mul(int times) {
+        return new Mul(this, times);
+    }
+
     final public Div div(int divisor) {
         return new Div(this, divisor);
     }
