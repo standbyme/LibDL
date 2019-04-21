@@ -2,21 +2,19 @@ package LibDL.Tensor;
 
 public abstract class Module extends Tensor {
 
-    protected InputTensor input;
     private Tensor core;
 
     public abstract Tensor forward(Tensor input);
 
 
     public void setInput(Tensor input) {
-        this.input.setInput(input);
-        core = forward(this.input);
+        core = forward(input);
         out = core.out;
         requires_grad = core.requires_grad;
     }
 
     protected Module() {
-        input = new InputTensor();
+
     }
 
     @Override
@@ -40,7 +38,6 @@ public abstract class Module extends Tensor {
 
     @Override
     public Variable[] parameters_core() {
-        core = forward(this.input);
         return core.parameters_core();
     }
 

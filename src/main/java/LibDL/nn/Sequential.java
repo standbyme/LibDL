@@ -13,7 +13,7 @@ public class Sequential extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        Tensor tensor = this.input;
+        Tensor tensor = input;
 
         for (Module layer : layers) {
             tensor = layer.forward(tensor);
