@@ -9,12 +9,12 @@ import vision.datasets._ImageModule.idxUbyte2Vec.IdxUbyteRead;
 
 public class MNIST extends Dataset {
     private static String[] test_name = {
-            "t10k-images.idx3-ubyte",
-            "t10k-labels.idx1-ubyte",
+            "t10k-images-idx3-ubyte",
+            "t10k-labels-idx1-ubyte",
     };
     private static String[] train_name = {
-            "train-images.idx3-ubyte",
-            "train-labels.idx1-ubyte"
+            "train-images-idx3-ubyte",
+            "train-labels-idx1-ubyte"
     };
     private boolean isTrain;
 

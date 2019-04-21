@@ -37,7 +37,6 @@ public class Dataset implements RandomAccess, Iterable {
 
         newShape = ArrayUtils.insert(0, newShape, this.size());
 //        System.out.println(Arrays.toString(newShape));
-
         data = data.reshape(newShape);
         return this;
     }
@@ -54,6 +53,9 @@ public class Dataset implements RandomAccess, Iterable {
         this.target = target;
     }
 
+    protected Dataset(Pair<INDArray, INDArray> pair) {
+        this(pair.first, pair.second);
+    }
     private class DatasetIterator implements Iterator<Pair<INDArray, INDArray>> {
 
         private Dataset dataset;
