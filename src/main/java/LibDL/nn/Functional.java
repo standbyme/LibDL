@@ -10,7 +10,7 @@ public class Functional {
         return loss;
     }
 
-    public static MSELoss mse_loss(Tensor tensor, Variable target) {
+    public static MSELoss mse_loss(Tensor tensor, Tensor target) {
         MSELoss loss = new MSELoss(target);
         loss.apply(tensor);
         return loss;
