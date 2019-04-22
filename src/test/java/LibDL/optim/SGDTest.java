@@ -1,5 +1,6 @@
 package LibDL.optim;
 
+import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
 import org.junit.Test;
@@ -18,13 +19,14 @@ public class SGDTest {
         SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
         for (int epoch = 1; epoch <= 160; epoch++) {
-            MSELoss loss = Functional.mse_loss(nn.predict(data), target);
+            Tensor loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();
         }
 
+        Tensor pred = nn.predict(data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
-            assert Math.abs(target.value.getDouble(i) - nn.out.getDouble(i)) < 0.001;
+            assert Math.abs(target.data.getDouble(i) - pred.data.getDouble(i)) < 0.001;
         });
     }
 

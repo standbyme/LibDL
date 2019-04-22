@@ -26,15 +26,15 @@ public class RMSProp extends Optimizer {
         if(params == null) {
             cacheParams();
             this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
         }
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
             Sdparams[i].muli(beta).addi
-                    (param.dout.mul(param.dout).muli(1.0 - beta));
-            param.value.subi(param.dout.mul(alpha).divi(Transforms.sqrt(Sdparams[i]).add(eps)));
+                    (param.grad.mul(param.grad).muli(1.0 - beta));
+            param.data.subi(param.grad.mul(alpha).divi(Transforms.sqrt(Sdparams[i]).add(eps)));
         }
     }
 }

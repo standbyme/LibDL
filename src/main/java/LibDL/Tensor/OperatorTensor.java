@@ -16,18 +16,13 @@ public abstract class OperatorTensor extends Tensor {
                 .reduce(Boolean::logicalOr)
                 .get();
 
-        out = operatorInfo.forward.get();
-    }
-
-    @Override
-    public final void forwardWithInput() {
-
+        data = operatorInfo.forward.get();
     }
 
     @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.dout = operandInfo.backward.get();
+            if (operandInfo.tensor.requires_grad) operandInfo.tensor.grad = operandInfo.backward.get();
         }
 
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
@@ -36,9 +31,9 @@ public abstract class OperatorTensor extends Tensor {
     }
 
     @Override
-    public Variable[] parameters_core() {
+    public Variable[] parameters() {
         return Arrays.stream(operatorInfo.operandInfos)
-                .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters_core()))
+                .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters()))
                 .toArray(Variable[]::new);
     }
 }

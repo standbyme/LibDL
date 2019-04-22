@@ -19,15 +19,10 @@ public class ConcatTest {
                 {6, 7, 8},
         }), true);
 
-        data1.forwardWithInput();
-        data2.forwardWithInput();
 
         Tensor result = new Concat(data1, data2);
 
-        // forwardWithInput
-        result.forwardWithInput();
-
-        assertEquals(result.out, Nd4j.create(new double[][]{
+        assertEquals(result.data, Nd4j.create(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 6},
@@ -35,7 +30,7 @@ public class ConcatTest {
         }));
 
         // backward
-        result.dout = Nd4j.create(new double[][]{
+        result.grad = Nd4j.create(new double[][]{
                 {1, 2, 2},
                 {2, 5, 1},
                 {3, 6, 3},
@@ -44,11 +39,11 @@ public class ConcatTest {
 
         result.backward();
 
-        assertEquals(data1.dout, Nd4j.create(new double[][]{
+        assertEquals(data1.grad, Nd4j.create(new double[][]{
                 {1, 2, 2},
                 {2, 5, 1},
         }));
-        assertEquals(data2.dout, Nd4j.create(new double[][]{
+        assertEquals(data2.grad, Nd4j.create(new double[][]{
                 {3, 6, 3},
                 {5, 3, 4},
         }));

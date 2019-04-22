@@ -6,7 +6,7 @@ import LibDL.Tensor.Operator.NLLLoss;
 import LibDL.Tensor.Operator.Softmax;
 import LibDL.Tensor.Tensor;
 
-public class SoftmaxCrossEntropyLoss extends LossTensor {
+public class SoftmaxCrossEntropyLoss extends LossLayer {
 
     private final Tensor target;
 

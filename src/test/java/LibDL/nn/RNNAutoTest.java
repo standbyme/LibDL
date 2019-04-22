@@ -63,13 +63,13 @@ public class RNNAutoTest {
         rnn.setH0(h0);
         Tensor result = rnn.predict(input);
 
-        assert result.out.equalsWithEps(output, 1e-3);
+        assert result.data.equalsWithEps(output, 1e-3);
 
     }
 
     @Ignore("需要更新自动微分引擎")
     public void testBackward() {
-        rnn.dout = Nd4j.create(new double[][][]{{
+        INDArray dout = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
                 {-1.5350e+00, 7.6189e-01, 1.3230e+00, -4.2295e-01, 5.3208e-01},
                 {-1.4129e+00, -2.3161e+00, -2.5905e-02, 1.8038e+00, -7.0832e-01}},
@@ -100,12 +100,10 @@ public class RNNAutoTest {
                 {-0.9795, -0.1644, 1.5444, -0.5361, -1.5196}});
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
-        rnn.backward();
-
         //assert rnn.input.dout.equalsWithEps(inputGradient, 1e-3);
-        assert rnn.weight_ih.dout.equalsWithEps(weightGradient_ih, 1e-3);
-        assert rnn.weight_hh.dout.equalsWithEps(weightGradient_hh, 1e-3);
-        assert rnn.bias_ih.dout.equalsWithEps(biasGradient, 1e-3);
-        assert rnn.bias_hh.dout.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.weight_ih.grad.equalsWithEps(weightGradient_ih, 1e-3);
+        assert rnn.weight_hh.grad.equalsWithEps(weightGradient_hh, 1e-3);
+        assert rnn.bias_ih.grad.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.bias_hh.grad.equalsWithEps(biasGradient, 1e-3);
     }
 }

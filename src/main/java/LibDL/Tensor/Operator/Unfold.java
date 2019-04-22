@@ -51,7 +51,7 @@ public class Unfold extends OperatorTensor {
                             long offset_x = y / filter_w;
                             long offset_y = y % filter_w;
 
-                            result[(int) (base_x + offset_x)][(int) (base_y + offset_y)] += dout.getDouble(x, y);
+                            result[(int) (base_x + offset_x)][(int) (base_y + offset_y)] += grad.getDouble(x, y);
                         }
                     }
                     return Nd4j.create(result);
@@ -60,12 +60,12 @@ public class Unfold extends OperatorTensor {
 
         Supplier<INDArray> forward = () -> {
 
-            assert tensor.out.rank() == 2;
+            assert tensor.data.rank() == 2;
 
             // todo: padding
 
-            input_h = tensor.out.shape()[0];
-            input_w = tensor.out.shape()[1];
+            input_h = tensor.data.shape()[0];
+            input_w = tensor.data.shape()[1];
 
             // todo: stride
 
@@ -79,7 +79,7 @@ public class Unfold extends OperatorTensor {
 
             for (int x = 0; x < amount_h; x++) {
                 for (int y = 0; y < amount_w; y++) {
-                    INDArray res = Nd4j.toFlattened(tensor.out.get(NDArrayIndex.interval(x, x + kernel_size), NDArrayIndex.interval(y, y + kernel_size)));
+                    INDArray res = Nd4j.toFlattened(tensor.data.get(NDArrayIndex.interval(x, x + kernel_size), NDArrayIndex.interval(y, y + kernel_size)));
                     buffer.add(res);
                 }
             }

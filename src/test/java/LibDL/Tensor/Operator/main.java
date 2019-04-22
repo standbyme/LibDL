@@ -22,14 +22,12 @@ public class main {
 
         Max result = new Max(data);
 
-        result.forwardWithInput();
+        assertEquals(result.data, Nd4j.create(new double[]{4.0, 3.5, 6.5, 7.5}));
 
-        assertEquals(result.out, Nd4j.create(new double[]{4.0, 3.5, 6.5, 7.5}));
-
-        result.dout = Nd4j.create(new double[]{0.5, 1, 2, 4});
+        result.grad = Nd4j.create(new double[]{0.5, 1, 2, 4});
 
         result.backward();
-        assertEquals(data.dout, Nd4j.create(new double[][]{
+        assertEquals(data.grad, Nd4j.create(new double[][]{
                 {0, 0.5, 0},
                 {1, 0, 0},
                 {0, 0, 2},
@@ -44,18 +42,17 @@ public class main {
         Variable x = new Variable(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
 
         Unfold ret = new Unfold(x, 3, 0, 1);
-        ret.forwardWithInput();
 
         INDArray assertion_forward = Nd4j.create(new double[][]{{0, 1, 2, 4, 5, 6, 8, 9, 10}, {1, 2, 3, 5, 6, 7, 9, 10, 11}, {4, 5, 6, 8, 9, 10, 12, 13, 14}, {5, 6, 7, 9, 10, 11, 13, 14, 15}});
 
-        assertEquals(assertion_forward, ret.out);
+        assertEquals(assertion_forward, ret.data);
 
-        ret.dout = Nd4j.create(new double[][]{{0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}});
+        ret.grad = Nd4j.create(new double[][]{{0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}});
         ret.backward();
 
         INDArray assertion_backward = Nd4j.create(new double[][]{{0, 1, 3, 2}, {3, 4, 4, 3}, {5, 8, 4, 1}, {2, 5, 3, 0}});
 
-        assertEquals(assertion_backward, x.dout);
+        assertEquals(assertion_backward, x.grad);
     }
 
 
@@ -69,12 +66,11 @@ public class main {
         Variable x = new Variable(matrix_2_3, true);
         Reshape reshape = new Reshape(x, 3, 2);
 
-        reshape.forwardWithInput();
         assertArrayEquals(new long[]{2, 3}, reshape.from_shape);
 
-        reshape.dout = matrix_3_2;
+        reshape.grad = matrix_3_2;
         reshape.backward();
-        assertEquals(matrix_2_3, x.dout);
+        assertEquals(matrix_2_3, x.grad);
 
     }
 
@@ -86,13 +82,10 @@ public class main {
         Add add = new Add(data1, data2);
         Sub sub = new Sub(data1, data2);
 
-        add.forwardWithInput();
-        sub.forwardWithInput();
-
         {
-            double a = add.out.getDouble(0);
-            double b = add.out.getDouble(1);
-            double c = add.out.getDouble(2);
+            double a = add.data.getDouble(0);
+            double b = add.data.getDouble(1);
+            double c = add.data.getDouble(2);
 
             assert a == 2;
             assert b == 4;
@@ -100,9 +93,9 @@ public class main {
         }
 
         {
-            double a = sub.out.getDouble(0);
-            double b = sub.out.getDouble(1);
-            double c = sub.out.getDouble(2);
+            double a = sub.data.getDouble(0);
+            double b = sub.data.getDouble(1);
+            double c = sub.data.getDouble(2);
 
             assert a == 0;
             assert b == 0;
@@ -123,14 +116,13 @@ public class main {
 
         Average result = new Average(data);
 
-        result.forwardWithInput();
 
-        assertEquals(result.out, Nd4j.create(new double[]{2, 5, 8, 11}));
+        assertEquals(result.data, Nd4j.create(new double[]{2, 5, 8, 11}));
 
-        result.dout = Nd4j.create(new double[]{3, 6, 9, 12});
+        result.grad = Nd4j.create(new double[]{3, 6, 9, 12});
 
         result.backward();
-        assertEquals(data.dout, Nd4j.create(new double[][]{
+        assertEquals(data.grad, Nd4j.create(new double[][]{
                 {1, 1, 1},
                 {2, 2, 2},
                 {3, 3, 3},

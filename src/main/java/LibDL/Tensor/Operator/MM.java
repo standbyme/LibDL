@@ -12,11 +12,11 @@ public class MM extends OperatorTensor {
 
     public MM(Tensor mat1, Tensor mat2) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1, () -> dout.mmul(mat2.out.transpose())),
-                new OperandInfo(mat2, () -> mat1.out.transpose().mmul(dout)),
+                new OperandInfo(mat1, () -> grad.mmul(mat2.data.transpose())),
+                new OperandInfo(mat2, () -> mat1.data.transpose().mmul(grad)),
         };
 
-        Supplier<INDArray> forward = () -> mat1.out.mmul(mat2.out);
+        Supplier<INDArray> forward = () -> mat1.data.mmul(mat2.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
