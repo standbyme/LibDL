@@ -3,7 +3,7 @@ package LibDL.nn;
 import LibDL.Tensor.Operator.Sum;
 import LibDL.Tensor.Tensor;
 
-public class MSELoss extends LossTensor {
+public class MSELoss extends LossLayer {
 
     private final Tensor target;
     private final boolean size_average;

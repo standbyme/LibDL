@@ -23,15 +23,11 @@ public abstract class Tensor {
         return tensorName;
     }
 
-    boolean requires_grad;
+    public boolean requires_grad;
 
     abstract public void backward();
 
-    final public Parameters parameters(){
-        return new Parameters(this);
-    }
-
-    public abstract Variable[] parameters_core();
+    public abstract Variable[] parameters();
 
     final public Add add(Tensor that) {
         return new Add(this, that);

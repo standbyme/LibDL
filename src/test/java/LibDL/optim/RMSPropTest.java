@@ -23,7 +23,7 @@ public class RMSPropTest {
 
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.005f, 0.69f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
-            MSELoss loss = Functional.mse_loss(nn.predict(data), target);
+            Tensor loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();
         }

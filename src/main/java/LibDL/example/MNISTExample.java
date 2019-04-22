@@ -88,7 +88,7 @@ public class MNISTExample {
                     new DataLoader(mnist_train, 500, false, false)) {
                 Tensor pred = nn.predict(new Variable(batch.first));
                 Tensor target = new Variable(batch.second);
-                SoftmaxCrossEntropyLoss loss = Functional.cross_entropy(pred, target);
+                Tensor loss = Functional.cross_entropy(pred, target);
                 loss.backward();
                 optim.step();
                 if (cnt % 50 == 0) {

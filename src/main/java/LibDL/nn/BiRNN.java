@@ -75,10 +75,10 @@ public class BiRNN extends Tensor {
     }
 
     @Override
-    public Variable[] parameters_core() {
+    public Variable[] parameters() {
         return Stream.concat(
-                Arrays.stream(forwardRNN.parameters_core()),
-                Arrays.stream(backwardRNN.parameters_core())
+                Arrays.stream(forwardRNN.parameters()),
+                Arrays.stream(backwardRNN.parameters())
         ).toArray(Variable[]::new);
     }
 

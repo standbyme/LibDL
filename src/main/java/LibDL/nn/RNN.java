@@ -62,8 +62,8 @@ public class RNN extends Tensor {
 
 
     @Override
-    public Variable[] parameters_core() {
-        return Stream.concat(Arrays.stream(input.parameters_core()),
+    public Variable[] parameters() {
+        return Stream.concat(Arrays.stream(input.parameters()),
                 Arrays.stream(new Variable[]{weight_ih, weight_hh, bias_ih, bias_hh}))
                 .toArray(Variable[]::new);
     }
