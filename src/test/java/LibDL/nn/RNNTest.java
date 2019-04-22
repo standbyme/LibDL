@@ -74,7 +74,7 @@ public class RNNTest {
                         {-0.3656, -0.2373, -0.2324, -0.1165, 0.1217},
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
-        rnn.forwardWithInput();
+        rnn.forward();
 
         assert rnn.out.equalsWithEps(output, 1e-3);
 
@@ -104,7 +104,7 @@ public class RNNTest {
                 {-0.9795, -0.1644, 1.5444, -0.5361, -1.5196}});
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
-        rnn.forwardWithInput();
+        rnn.forward();
 
         rnn.backward();
 

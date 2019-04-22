@@ -19,13 +19,8 @@ public class ConcatTest {
                 {6, 7, 8},
         }), true);
 
-        data1.forwardWithInput();
-        data2.forwardWithInput();
 
         Tensor result = new Concat(data1, data2);
-
-        // forwardWithInput
-        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[][]{
                 {1, 2, 3},

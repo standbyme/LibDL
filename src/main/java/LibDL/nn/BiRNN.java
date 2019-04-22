@@ -40,10 +40,7 @@ public class BiRNN extends Tensor {
         this.h0 = h0;
     }
 
-    @Override
-    public void forwardWithInput() {
-        input.forwardWithInput();
-
+    private void forward() {
         Tensor inputReversed = reverseInput(input);
         Variable h0F = new Variable(h0.value.get(point(0), all(), all()));
         Variable h0B = new Variable(h0.value.get(point(1), all(), all()));
@@ -51,10 +48,10 @@ public class BiRNN extends Tensor {
         hidden = new Variable(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize*2), true);
 
         forwardRNN.setInput(input, h0F);
-        forwardRNN.forwardWithInput();
+        forwardRNN.forward();
 
         backwardRNN.setInput(inputReversed, h0B);
-        backwardRNN.forwardWithInput();
+        backwardRNN.forward();
 
         hidden.value.assign(Nd4j.hstack(forwardRNN.out, backwardRNN.out));
     }

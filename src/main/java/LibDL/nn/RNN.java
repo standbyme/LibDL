@@ -50,9 +50,7 @@ public class RNN extends Tensor {
         this.h0 = h0;
     }
 
-    @Override
-    public void forwardWithInput() {
-        input.forwardWithInput();
+    public void forward() {
         out = forwardHelper();
     }
 

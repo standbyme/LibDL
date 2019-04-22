@@ -17,9 +17,6 @@ public abstract class Module extends Tensor {
 
     }
 
-    @Override
-    public void forwardWithInput() {
-    }
 
     @Override
     public void backward() {

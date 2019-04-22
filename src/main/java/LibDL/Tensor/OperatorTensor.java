@@ -20,11 +20,6 @@ public abstract class OperatorTensor extends Tensor {
     }
 
     @Override
-    public final void forwardWithInput() {
-
-    }
-
-    @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
             if (operandInfo.tensor.requires_grad) operandInfo.tensor.dout = operandInfo.backward.get();

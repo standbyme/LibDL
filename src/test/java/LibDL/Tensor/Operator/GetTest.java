@@ -16,11 +16,9 @@ public class GetTest {
                 {0.5, 6, 6.5},
                 {0.5, 6, 7.5},
         }), true);
-        data.forwardWithInput();
 
         Tensor result = data.get(0);
 
-        result.forwardWithInput();
 
         assertEquals(result.out, Nd4j.create(new double[]{0.3, 4.0, 2.9}));
 
@@ -36,7 +34,6 @@ public class GetTest {
 
         Tensor result2 = data.get(2);
 
-        result2.forwardWithInput();
 
         assertEquals(result2.out, Nd4j.create(new double[]{0.5, 6, 6.5}));
 
