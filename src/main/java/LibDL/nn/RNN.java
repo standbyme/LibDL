@@ -51,12 +51,12 @@ public class RNN extends Tensor {
     }
 
     public void forward() {
-        out = forwardHelper();
+        data = forwardHelper();
     }
 
     @Override
     public void backward() {
-        backwardHelper(dout);
+        backwardHelper(grad);
         input.backward();
     }
 
@@ -70,12 +70,12 @@ public class RNN extends Tensor {
 
 
     INDArray forwardHelper() {
-        hidden = new Variable(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize), true);
+        hidden = new Variable(Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize), true);
         INDArray prevHidden = h0.value;
-        long times = input.out.size(0);
+        long times = input.data.size(0);
 
         for(long i = 0; i < times; i++) {
-            INDArray currIn = input.out.get(point(i), all(), all());
+            INDArray currIn = input.data.get(point(i), all(), all());
             INDArray currOut =  hidden.value.get(point(i), all(), all());
             currOut.assign(currIn.mmul(weight_ih.value.transpose())
                     .add(prevHidden.mmul(weight_hh.value.transpose()))
@@ -90,19 +90,19 @@ public class RNN extends Tensor {
     }
 
     void backwardHelper(INDArray epsilon) {
-        input.dout = Nd4j.emptyLike(input.out);
-        weight_hh.dout = Nd4j.zerosLike(weight_hh.value);
-        weight_ih.dout = Nd4j.zerosLike(weight_ih.value);
-        bias_hh.dout = Nd4j.zerosLike(bias_hh.value);
-        bias_ih.dout = Nd4j.zerosLike(bias_ih.value);
+        input.grad = Nd4j.emptyLike(input.data);
+        weight_hh.grad = Nd4j.zerosLike(weight_hh.value);
+        weight_ih.grad = Nd4j.zerosLike(weight_ih.value);
+        bias_hh.grad = Nd4j.zerosLike(bias_hh.value);
+        bias_ih.grad = Nd4j.zerosLike(bias_ih.value);
 
         INDArray dzNext = null;
-        for(long i = input.out.size(0) - 1; i >= 0; i--) {
+        for(long i = input.data.size(0) - 1; i >= 0; i--) {
             INDArray epsCurrent = epsilon.get(point(i), all(), all());
             INDArray hiddenCurrent = hidden.value.get(point(i), all(), all());
-            INDArray inCurrent = input.out.get(point(i), all(), all());
+            INDArray inCurrent = input.data.get(point(i), all(), all());
             INDArray hiddenPrevious = (i == 0) ? h0.value : hidden.value.get(point(i - 1), all(), all());
-            INDArray epsOutCurrent = input.dout.get(point(i), all(), all());
+            INDArray epsOutCurrent = input.grad.get(point(i), all(), all());
 
             if(dzNext != null)
                 epsCurrent.addi(dzNext.mmul(weight_hh.value));
@@ -111,10 +111,10 @@ public class RNN extends Tensor {
 
             epsOutCurrent.assign(dzCurrent.mmul(weight_ih.value));
 
-            weight_ih.dout.addi(dzCurrent.transpose().mmul(inCurrent));
-            weight_hh.dout.addi(dzCurrent.transpose().mmul(hiddenPrevious));
-            bias_hh.dout.addi(dzCurrent.sum(0));
-            bias_ih.dout.addi(dzCurrent.sum(0));
+            weight_ih.grad.addi(dzCurrent.transpose().mmul(inCurrent));
+            weight_hh.grad.addi(dzCurrent.transpose().mmul(hiddenPrevious));
+            bias_hh.grad.addi(dzCurrent.sum(0));
+            bias_ih.grad.addi(dzCurrent.sum(0));
 
             dzNext = dzCurrent;
         }

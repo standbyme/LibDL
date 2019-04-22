@@ -7,7 +7,7 @@ public abstract class LossLayer extends Module {
 
     public Tensor eval(Tensor input) {
         Tensor loss = apply(input);
-        loss.dout = Nd4j.create(new double[]{1.0});
+        loss.grad = Nd4j.create(new double[]{1.0});
         return loss;
     }
 

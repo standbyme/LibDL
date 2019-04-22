@@ -63,7 +63,7 @@ public class RNNAutoTest {
         rnn.setH0(h0);
         Tensor result = rnn.predict(input);
 
-        assert result.out.equalsWithEps(output, 1e-3);
+        assert result.data.equalsWithEps(output, 1e-3);
 
     }
 
@@ -101,9 +101,9 @@ public class RNNAutoTest {
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
         //assert rnn.input.dout.equalsWithEps(inputGradient, 1e-3);
-        assert rnn.weight_ih.dout.equalsWithEps(weightGradient_ih, 1e-3);
-        assert rnn.weight_hh.dout.equalsWithEps(weightGradient_hh, 1e-3);
-        assert rnn.bias_ih.dout.equalsWithEps(biasGradient, 1e-3);
-        assert rnn.bias_hh.dout.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.weight_ih.grad.equalsWithEps(weightGradient_ih, 1e-3);
+        assert rnn.weight_hh.grad.equalsWithEps(weightGradient_hh, 1e-3);
+        assert rnn.bias_ih.grad.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.bias_hh.grad.equalsWithEps(biasGradient, 1e-3);
     }
 }

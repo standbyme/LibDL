@@ -6,7 +6,6 @@ import LibDL.nn.*;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class RMSPropTest {
@@ -30,7 +29,7 @@ public class RMSPropTest {
 
         Tensor pred = nn.predict(data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
-            assert Math.abs(target.value.getInt(i) - pred.out.getDouble(i)) < 0.1;
+            assert Math.abs(target.value.getInt(i) - pred.data.getDouble(i)) < 0.1;
         });
     }
 

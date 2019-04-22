@@ -19,7 +19,7 @@ public class LogTest {
         }), true);
         softmax = new Softmax(data_to_backward, 2);
         Log log = new Log(softmax);
-        log.dout = Nd4j.create(new double[][][] {
+        log.grad = Nd4j.create(new double[][][] {
                 {
                     {-7.21521186828613281250, -6.81521177291870117188, -6.81521177291870117188}, {-6.81521177291870117188, -7.81521177291870117188, -6.81521177291870117188}
                 },
@@ -37,7 +37,7 @@ public class LogTest {
                     {-2.40760588645935058594, -1.40760588645935058594, -0.40760588645935058594}
                 }
         });
-        assertEquals(target, log.out);
+        assertEquals(target, log.data);
         log.backward();
         target = Nd4j.create(new double[][][] {
                 {
@@ -49,6 +49,6 @@ public class LogTest {
                     {-4.86644268035888671875, -2.71790742874145507812,  7.58435297012329101562}
                 }
         });
-        assertEquals(target, data_to_backward.dout);
+        assertEquals(target, data_to_backward.grad);
     }
 }

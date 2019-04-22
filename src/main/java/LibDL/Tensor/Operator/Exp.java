@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 public class Exp extends OperatorTensor {
     public Exp(Tensor tensor) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> Transforms.exp(tensor.dout))
+                new OperandInfo(tensor, () -> Transforms.exp(tensor.grad))
         };
 
-        Supplier<INDArray> forward = () -> Transforms.exp(tensor.out);
+        Supplier<INDArray> forward = () -> Transforms.exp(tensor.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

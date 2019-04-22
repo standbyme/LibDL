@@ -11,7 +11,7 @@ public class Variable extends Tensor {
     }
 
     public Variable(INDArray value, Boolean requires_grad) {
-        this.value = this.out = value;
+        this.value = this.data = value;
         this.requires_grad = requires_grad;
 
     }

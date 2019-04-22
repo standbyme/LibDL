@@ -12,10 +12,10 @@ public class Mul extends OperatorTensor {
     public Mul(Tensor tensor, int times) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> dout.mul(times)),
+                new OperandInfo(tensor, () -> grad.mul(times)),
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.mul(times);
+        Supplier<INDArray> forward = () -> tensor.data.mul(times);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

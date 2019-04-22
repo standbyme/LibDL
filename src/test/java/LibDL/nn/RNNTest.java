@@ -52,7 +52,7 @@ public class RNNTest {
 
         rnn.setInput(new Variable(input), new Variable(h0));
 
-        rnn.dout = Nd4j.create(new double[][][]{{
+        rnn.grad = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
                 {-1.5350e+00, 7.6189e-01, 1.3230e+00, -4.2295e-01, 5.3208e-01},
                 {-1.4129e+00, -2.3161e+00, -2.5905e-02, 1.8038e+00, -7.0832e-01}},
@@ -76,7 +76,7 @@ public class RNNTest {
 
         rnn.forward();
 
-        assert rnn.out.equalsWithEps(output, 1e-3);
+        assert rnn.data.equalsWithEps(output, 1e-3);
 
     }
 
@@ -108,10 +108,10 @@ public class RNNTest {
 
         rnn.backward();
 
-        assert rnn.input.dout.equalsWithEps(inputGradient, 1e-3);
-        assert rnn.weight_ih.dout.equalsWithEps(weightGradient_ih, 1e-3);
-        assert rnn.weight_hh.dout.equalsWithEps(weightGradient_hh, 1e-3);
-        assert rnn.bias_ih.dout.equalsWithEps(biasGradient, 1e-3);
-        assert rnn.bias_hh.dout.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.input.grad.equalsWithEps(inputGradient, 1e-3);
+        assert rnn.weight_ih.grad.equalsWithEps(weightGradient_ih, 1e-3);
+        assert rnn.weight_hh.grad.equalsWithEps(weightGradient_hh, 1e-3);
+        assert rnn.bias_ih.grad.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.bias_hh.grad.equalsWithEps(biasGradient, 1e-3);
     }
 }

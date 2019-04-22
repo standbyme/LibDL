@@ -21,7 +21,7 @@ public class MSELoss extends LossLayer {
     @Override
     public Tensor forward(Tensor input) {
         if(size_average)
-            return new Sum(input.sub(target).pow(2)).div((int) target.out.length());
+            return new Sum(input.sub(target).pow(2)).div((int) target.data.length());
         else
             return new Sum(input.sub(target).pow(2));
     }

@@ -3,7 +3,6 @@ package LibDL.example;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
-import LibDL.optim.Parameters;
 import LibDL.optim.RMSProp;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
@@ -92,7 +91,7 @@ public class MNISTExample {
                 loss.backward();
                 optim.step();
                 if (cnt % 50 == 0) {
-                    System.out.println("CNT: " + cnt + " " + loss.out.getRow(0));
+                    System.out.println("CNT: " + cnt + " " + loss.data.getRow(0));
                 }
                 cnt++;
             }
@@ -100,7 +99,7 @@ public class MNISTExample {
 
         Tensor result = nn.predict(new Variable(mnist_test.reshapeData(784).data));
 
-        INDArray out = MNIST.revertOneHot(result.out);
+        INDArray out = MNIST.revertOneHot(result.data);
 
         int rightCnt = Arrays.stream(Transforms.abs(out.sub(mnist_test.target)).toDoubleVector())
                 .filter(i -> i < 1e-6).toArray().length;

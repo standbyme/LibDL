@@ -54,10 +54,10 @@ public class ModuleExample {
             optimizer.step();
         }
         Tensor pred = nn.predict(data);
-        System.out.println(Arrays.toString(pred.out.toDoubleVector()));
+        System.out.println(Arrays.toString(pred.data.toDoubleVector()));
 
         IntStream.rangeClosed(0, 3).forEach(i -> {
-            assert Math.abs(target.value.getInt(i) - pred.out.getDouble(i)) < 0.1;
+            assert Math.abs(target.value.getInt(i) - pred.data.getDouble(i)) < 0.1;
         });
     }
 }

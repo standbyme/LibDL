@@ -21,17 +21,17 @@ public class Concat extends OperatorTensor {
 
         final long size = toConcat[0].size(0);
         for(int i = 0; i < toConcat.length; i++) {
-            assert toConcat[i].out.rank() == 2;
+            assert toConcat[i].data.rank() == 2;
 
             final int fi = i;
             operandInfos[i] = new OperandInfo(toConcat[i],
-                    () -> dout.get(interval(size*fi, size*fi+size), all()));
+                    () -> grad.get(interval(size*fi, size*fi+size), all()));
         }
 
         Supplier<INDArray> forward = () -> {
             INDArray[] valList = new INDArray[toConcat.length];
             for(int i = 0; i < toConcat.length; i++)
-                valList[i] = toConcat[i].out;
+                valList[i] = toConcat[i].data;
             return Nd4j.concat(0, valList);
         };
 

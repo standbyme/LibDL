@@ -16,13 +16,13 @@ public abstract class OperatorTensor extends Tensor {
                 .reduce(Boolean::logicalOr)
                 .get();
 
-        out = operatorInfo.forward.get();
+        data = operatorInfo.forward.get();
     }
 
     @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.dout = operandInfo.backward.get();
+            if (operandInfo.tensor.requires_grad) operandInfo.tensor.grad = operandInfo.backward.get();
         }
 
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {

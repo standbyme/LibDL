@@ -26,7 +26,7 @@ public class XORExample {
             optimizer.step();
         }
 
-        System.out.println(nn.predict(data).out);
+        System.out.println(nn.predict(data).data);
 
     }
 

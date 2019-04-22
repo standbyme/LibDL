@@ -33,7 +33,7 @@ public class SGD extends Optimizer {
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
-            v[i].muli(momentum).subi(param.dout.mul(lr));
+            v[i].muli(momentum).subi(param.grad.mul(lr));
             param.value.addi(v[i]);
         }
     }

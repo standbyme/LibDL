@@ -15,13 +15,13 @@ public class Average extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
-                    return dout.transpose().div((double) tensor.out.size(1)).repeat(1, tensor.out.size(1));
+                    return grad.transpose().div((double) tensor.data.size(1)).repeat(1, tensor.data.size(1));
                 }),
         };
 
         Supplier<INDArray> forward = () -> {
             // returns average value of every row
-            return tensor.out.mean(1).transpose();
+            return tensor.data.mean(1).transpose();
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
