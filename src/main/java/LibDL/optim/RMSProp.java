@@ -13,23 +13,19 @@ public class RMSProp extends Optimizer {
     private float beta, alpha;
     private double eps;
 
-    public RMSProp(Parameters parameters, float lr, float alpha, double eps) {
+    public RMSProp(Variable[] parameters, float lr, float alpha, double eps) {
         super(parameters);
         this.alpha = lr;
         this.beta = alpha;
         this.eps = eps;
+        this.Sdparams = Arrays.stream(params)
+                .map(constant -> Nd4j.zerosLike(constant.value))
+                .toArray(INDArray[]::new);
     }
 
 
     @Override
     public void step() {
-        if(params == null) {
-            cacheParams();
-            this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
-                    .toArray(INDArray[]::new);
-        }
-
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
             Sdparams[i].muli(beta).addi

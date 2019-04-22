@@ -26,7 +26,7 @@ public class Variable extends Tensor {
     }
 
     @Override
-    public Variable[] parameters_core() {
+    public Variable[] parameters() {
         return requires_grad ? new Variable[]{this} : new Variable[]{};
     }
 }

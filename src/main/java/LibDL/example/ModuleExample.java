@@ -8,7 +8,6 @@ import LibDL.nn.Dense;
 import LibDL.nn.Functional;
 import LibDL.nn.LossTensor;
 import LibDL.nn.ReLU;
-import LibDL.optim.Parameters;
 import LibDL.optim.RMSProp;
 import org.nd4j.linalg.factory.Nd4j;
 
