@@ -35,11 +35,11 @@ public class Dense extends Module {
     }
 
     private void resetParameters() {
-        long fanIn = W.value.size(0);
-        WeightInit.kaimingUniform(W.value, Math.sqrt(5));
+        long fanIn = W.data.size(0);
+        WeightInit.kaimingUniform(W.data, Math.sqrt(5));
         if(bias) {
             double bound = 1 / Math.sqrt(fanIn);
-            WeightInit.uniform(B.value, -bound, bound);
+            WeightInit.uniform(B.data, -bound, bound);
         }
     }
 }

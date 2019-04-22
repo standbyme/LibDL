@@ -27,14 +27,14 @@ public class SGD extends Optimizer {
         if(params == null) {
             cacheParams();
             this.v = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
         }
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
             v[i].muli(momentum).subi(param.grad.mul(lr));
-            param.value.addi(v[i]);
+            param.data.addi(v[i]);
         }
     }
 }

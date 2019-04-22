@@ -29,7 +29,7 @@ public class RMSPropTest {
 
         Tensor pred = nn.predict(data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
-            assert Math.abs(target.value.getInt(i) - pred.data.getDouble(i)) < 0.1;
+            assert Math.abs(target.data.getInt(i) - pred.data.getDouble(i)) < 0.1;
         });
     }
 

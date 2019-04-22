@@ -31,7 +31,7 @@ public class SoftmaxTest {
         INDArray target, loss;
         double lossSum;
 
-        result = new Softmax(data_to_forward, data_to_forward.value.rank() - 1);
+        result = new Softmax(data_to_forward, data_to_forward.data.rank() - 1);
         target = Nd4j.create(new double[][][]{
                 {{0.8978, 0.0122, 0.0900}, {0.0132, 0.2654, 0.7214}},
                 {{0.8033, 0.0984, 0.0984}, {0.1880, 0.1880, 0.6241}}

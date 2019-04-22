@@ -34,19 +34,19 @@ public class Adam extends Optimizer {
         if(params == null) {
             cacheParams();
             this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
             this.Vdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
             this.one = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
             beta1_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
             beta2_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
         }
 
@@ -62,7 +62,7 @@ public class Adam extends Optimizer {
 //            update
             beta1_t[i] = beta1_t[i].muli(betas[0]);
             beta2_t[i] = beta2_t[i].muli(betas[1]);
-            param.value.subi(Vdparams[i].mul(lr).
+            param.data.subi(Vdparams[i].mul(lr).
                     divi(Transforms.sqrt(Sdparams[i]).add(eps)));
         }
 
