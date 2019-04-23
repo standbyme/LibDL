@@ -1,6 +1,6 @@
 package LibDL.optim;
 
-import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -10,27 +10,31 @@ public class SGD extends Optimizer {
     private final float lr;
     private final float momentum;
 
-    private final INDArray[] v;
+    private INDArray[] v;
 
-    public SGD(Constant[] params, float lr) {
-        this(params, lr, 0);
+    public SGD(Parameters parameters, float lr) {
+        this(parameters, lr, 0);
     }
 
-    public SGD(Constant[] params, float lr, float momentum) {
-        super(params);
+    public SGD(Parameters parameters, float lr, float momentum) {
+        super(parameters);
         this.lr = lr;
         this.momentum = momentum;
-        this.v = Arrays.stream(params)
-                .map(constant -> Nd4j.zerosLike(constant.value))
-                .toArray(INDArray[]::new);
     }
 
     @Override
     public void step() {
+        if(params == null) {
+            cacheParams();
+            this.v = Arrays.stream(params)
+                    .map(constant -> Nd4j.zerosLike(constant.data))
+                    .toArray(INDArray[]::new);
+        }
+
         for (int i = 0; i < params.length; i++) {
-            Constant param = params[i];
-            v[i].muli(momentum).subi(param.dout.mul(lr));
-            param.value.addi(v[i]);
+            Variable param = params[i];
+            v[i].muli(momentum).subi(param.grad.mul(lr));
+            param.data.addi(v[i]);
         }
     }
 }

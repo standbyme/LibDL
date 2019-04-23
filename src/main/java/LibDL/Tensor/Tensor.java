@@ -4,18 +4,35 @@ import LibDL.Tensor.Operator.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public abstract class Tensor {
-    public INDArray out = null;
-    public INDArray dout = null;
+    public INDArray data = null;
+    public INDArray grad = null;
 
-    boolean requires_grad;
+    private String tensorName;
+    public Tensor() {
+        tensorName = this.getClass().getName();
+    }
 
-    abstract public void forward();
+    public Tensor withName(String name) {
+        tensorName = name;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return tensorName;
+    }
+
+    public boolean requires_grad;
 
     abstract public void backward();
 
-    abstract public Constant[] parameters();
+    public abstract Variable[] parameters();
 
-    final public BroadcastAdd add(Tensor that) {
+    final public Add add(Tensor that) {
+        return new Add(this, that);
+    }
+
+    final public BroadcastAdd addVector(Tensor that) {
         return new BroadcastAdd(this, that);
     }
 
@@ -36,14 +53,31 @@ public abstract class Tensor {
     }
 
     final public Reshape reshapeLike(Tensor that) {
-        return new Reshape(this, that.out.shape());
+        return new Reshape(this, that.data.shape());
     }
 
     final public Reshape reshape(long... shape) {
         return new Reshape(this, shape);
     }
 
+    final public Mul mul(int times) {
+        return new Mul(this, times);
+    }
+
     final public Div div(int divisor) {
         return new Div(this, divisor);
     }
+
+    final public Transpose transpose() {
+        return new Transpose(this);
+    }
+
+    final public Tensor get(long i) {
+        return new Get(this, i);
+    }
+
+    final public long size(int i) {
+        return this.data.size(i);
+    }
+
 }
