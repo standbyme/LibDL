@@ -13,10 +13,10 @@ import java.util.function.Supplier;
 public class Tanh extends OperatorTensor {
     public Tanh(Tensor tensor) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> ND4JUtil.TanhDerivative(tensor.out).muli(dout)),
+                new OperandInfo(tensor, () -> ND4JUtil.TanhDerivative(tensor.data).muli(grad)),
         };
 
-        Supplier<INDArray> forward = () -> Transforms.tanh(tensor.out);
+        Supplier<INDArray> forward = () -> Transforms.tanh(tensor.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

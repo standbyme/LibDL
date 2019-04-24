@@ -14,11 +14,11 @@ public class Broadcast extends OperatorTensor {
     public Broadcast(Tensor mat, long... dim) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat, () -> dout.sum(Arrays.stream(dim)
+                new OperandInfo(mat, () -> grad.sum(Arrays.stream(dim)
                         .mapToInt(i -> (int) i).toArray())),
         };
 
-        Supplier<INDArray> forward = () -> mat.out.broadcast(dim);
+        Supplier<INDArray> forward = () -> mat.data.broadcast(dim);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

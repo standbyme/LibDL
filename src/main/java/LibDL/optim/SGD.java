@@ -29,8 +29,8 @@ public class SGD extends Optimizer {
     public void step() {
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
-            v[i].muli(momentum).subi(param.dout.mul(lr));
-            param.value.addi(v[i]);
+            v[i].muli(momentum).subi(param.grad.mul(lr));
+            param.data.addi(v[i]);
         }
     }
 }

@@ -55,7 +55,6 @@ public class MNISTExample {
 //
 //
 //            for (int i = 0; i < 1; i++) {
-//                loss.forwardWithInput();
 //                loss.backward();
 //                optim.step();
 //                System.out.println("time " + i + " " + loss.out.getRow(0));
@@ -88,11 +87,11 @@ public class MNISTExample {
                     new DataLoader(mnist_train, 500, false, false)) {
                 Tensor pred = nn.predict(new Variable(batch.first));
                 Tensor target = new Variable(batch.second);
-                SoftmaxCrossEntropyLoss loss = Functional.cross_entropy(pred, target);
+                Tensor loss = Functional.cross_entropy(pred, target);
                 loss.backward();
                 optim.step();
                 if (cnt % 50 == 0) {
-                    System.out.println("CNT: " + cnt + " " + loss.out.getRow(0));
+                    System.out.println("CNT: " + cnt + " " + loss.data.getRow(0));
                 }
                 cnt++;
             }
@@ -100,7 +99,7 @@ public class MNISTExample {
 
         Tensor result = nn.predict(new Variable(mnist_test.reshapeData(784).data));
 
-        INDArray out = MNIST.revertOneHot(result.out);
+        INDArray out = MNIST.revertOneHot(result.data);
 
         int rightCnt = Arrays.stream(Transforms.abs(out.sub(mnist_test.target)).toDoubleVector())
                 .filter(i -> i < 1e-6).toArray().length;

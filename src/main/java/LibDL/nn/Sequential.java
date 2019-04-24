@@ -1,6 +1,5 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
 
 public class Sequential extends Module {

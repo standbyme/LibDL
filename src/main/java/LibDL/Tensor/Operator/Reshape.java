@@ -14,12 +14,12 @@ public class Reshape extends OperatorTensor {
 
     public Reshape(Tensor tensor, long... to_shape) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> dout.reshape(from_shape))
+                new OperandInfo(tensor, () -> grad.reshape(from_shape))
         };
 
         Supplier<INDArray> forward = () -> {
-            from_shape = tensor.out.shape();
-            return tensor.out.reshape(to_shape);
+            from_shape = tensor.data.shape();
+            return tensor.data.reshape(to_shape);
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);

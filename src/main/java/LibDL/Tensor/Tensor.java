@@ -4,8 +4,8 @@ import LibDL.Tensor.Operator.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public abstract class Tensor {
-    public INDArray out = null;
-    public INDArray dout = null;
+    public INDArray data = null;
+    public INDArray grad = null;
 
     private String tensorName;
     public Tensor() {
@@ -22,9 +22,7 @@ public abstract class Tensor {
         return tensorName;
     }
 
-    boolean requires_grad;
-
-    abstract public void forwardWithInput();
+    public boolean requires_grad;
 
     abstract public void backward();
 
@@ -55,7 +53,7 @@ public abstract class Tensor {
     }
 
     final public Reshape reshapeLike(Tensor that) {
-        return new Reshape(this, that.out.shape());
+        return new Reshape(this, that.data.shape());
     }
 
     final public Reshape reshape(long... shape) {
@@ -79,7 +77,7 @@ public abstract class Tensor {
     }
 
     final public long size(int i) {
-        return this.out.size(i);
+        return this.data.size(i);
     }
 
 }

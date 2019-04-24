@@ -32,7 +32,7 @@ public class Softmax extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
             new OperandInfo(tensor, () -> {
-                int rank = out.rank();
+                int rank = data.rank();
                 int _dim;
                 if(withDim) {
                     _dim = dim < 0 ? dim + rank : dim;
@@ -40,11 +40,11 @@ public class Softmax extends OperatorTensor {
                     _dim = (rank == 1 || rank == 3) ? 0 : 1;
                 }
 
-                if(tensor.out.rank() == 1) {
-                    return dout.reshape(1, dout.shape()[0]).mmul(Softmax.DjSi(out.dup())).reshape(dout.shape()[0]);
+                if(tensor.data.rank() == 1) {
+                    return grad.reshape(1, grad.shape()[0]).mmul(Softmax.DjSi(data.dup())).reshape(grad.shape()[0]);
                 }else {
-                    INDArray out = this.out.dup();
-                    INDArray dout = this.dout.dup();
+                    INDArray out = this.data.dup();
+                    INDArray dout = this.grad.dup();
 
                     int[] rearrange = Nd4j.linspace(0, rank - 1, rank).toIntVector();
                     rearrange[_dim] = rank - 1;
@@ -77,7 +77,7 @@ public class Softmax extends OperatorTensor {
 
         Supplier<INDArray> forward = () -> {
 
-            int rank = tensor.out.rank();
+            int rank = tensor.data.rank();
             int _dim;
             if(withDim) {
                 _dim = dim < 0 ? dim + rank : dim;
@@ -85,13 +85,13 @@ public class Softmax extends OperatorTensor {
                 _dim = (rank == 1 || rank == 3) ? 0 : 1;
             }
 
-            long[] shape = tensor.out.dup().shape();
+            long[] shape = tensor.data.dup().shape();
             shape[_dim] = 1;
 
-            INDArray maxAlongDim = tensor.out.max(_dim);
-            maxAlongDim = maxAlongDim.reshape(shape).broadcast(tensor.out.shape());
+            INDArray maxAlongDim = tensor.data.max(_dim);
+            maxAlongDim = maxAlongDim.reshape(shape).broadcast(tensor.data.shape());
 
-            INDArray exp = ND4JUtil.Exp(tensor.out.sub(maxAlongDim));
+            INDArray exp = ND4JUtil.Exp(tensor.data.sub(maxAlongDim));
             INDArray sumOfExpAlongDim = exp.sum(_dim);
             sumOfExpAlongDim = sumOfExpAlongDim.reshape(shape).broadcast(exp.shape());
 

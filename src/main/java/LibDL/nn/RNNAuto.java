@@ -1,7 +1,6 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Variable;
-import LibDL.Tensor.Module;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Operator.Tanh;
 import LibDL.Tensor.Tensor;

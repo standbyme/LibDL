@@ -13,12 +13,12 @@ public class Div extends OperatorTensor {
     public Div(Tensor dividend, Tensor divisor) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(dividend, () -> dout.div(divisor.out)),
-                new OperandInfo(divisor, () -> dividend.out.mul(dout).mul(-1.0)
-                        .div(divisor.out.mul(divisor.out)))
+                new OperandInfo(dividend, () -> grad.div(divisor.data)),
+                new OperandInfo(divisor, () -> dividend.data.mul(grad).mul(-1.0)
+                        .div(divisor.data.mul(divisor.data)))
         };
 
-        Supplier<INDArray> forward = () -> dividend.out.div(divisor.out);
+        Supplier<INDArray> forward = () -> dividend.data.div(divisor.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
@@ -29,10 +29,10 @@ public class Div extends OperatorTensor {
         assert (divisor != 0);
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(dividend, () -> dout.div(divisor)),
+                new OperandInfo(dividend, () -> grad.div(divisor)),
         };
 
-        Supplier<INDArray> forward = () -> dividend.out.div(divisor);
+        Supplier<INDArray> forward = () -> dividend.data.div(divisor);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
