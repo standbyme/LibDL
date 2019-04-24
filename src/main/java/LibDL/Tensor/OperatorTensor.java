@@ -1,5 +1,7 @@
 package LibDL.Tensor;
 
+import org.nd4j.linalg.factory.Nd4j;
+
 import java.util.Arrays;
 
 public abstract class OperatorTensor extends Tensor {
@@ -8,6 +10,13 @@ public abstract class OperatorTensor extends Tensor {
     protected void setOperatorInfo(OperatorInfo operatorInfo) {
         this.operatorInfo = operatorInfo;
         OperandInfo[] operandInfos = this.operatorInfo.operandInfos;
+
+        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
+            if (operandInfo.tensor.requires_grad) {
+                operandInfo.tensor.grad = Nd4j.emptyLike(operandInfo.tensor.data);
+                operandInfo.tensor.outNumber++;
+            }
+        }
 
 //        System.out.println(Arrays.toString(operandInfos));
         // If operandInfos is empty, this line will panic
@@ -22,11 +31,15 @@ public abstract class OperatorTensor extends Tensor {
     @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.grad = operandInfo.backward.get();
+            if (operandInfo.tensor.requires_grad) {
+                operandInfo.tensor.grad.addi(operandInfo.backward.get());
+                operandInfo.tensor.outNumber--;
+            }
         }
 
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.backward();
+            if (operandInfo.tensor.requires_grad && operandInfo.tensor.outNumber == 0)
+                operandInfo.tensor.backward();
         }
     }
 
