@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class BroadcastMul extends OperatorTensor {
 
     /**
-     * Only used in <code>Conv2d</code>
+     * Only for <code>Conv2d</code>
      * @param input tensor of shape(N, size*in_channel*out_channel, L)
      * @param weight tensor of shape(size*in_channel*out_channel)
      * */

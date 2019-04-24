@@ -23,4 +23,21 @@ public class BroadcastAdd extends OperatorTensor {
 
         setOperatorInfo(operatorInfo);
     }
+
+    /**
+     * Only for <code>Conv2d</code>*/
+    public BroadcastAdd(Tensor input, Tensor bias, boolean isConv2d) {
+
+        OperandInfo[] operandInfos = {
+                new OperandInfo(input, () -> null)
+        };
+
+        Supplier<INDArray> forward = () -> input.out.add(bias.out
+                .reshape(1, bias.out.shape()[0], 1, 1)
+                .broadcast(input.out.shape()));
+
+        OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
+
+        setOperatorInfo(operatorInfo);
+    }
 }
