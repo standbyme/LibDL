@@ -19,7 +19,7 @@ public class RMSProp extends Optimizer {
         this.beta = alpha;
         this.eps = eps;
         this.Sdparams = Arrays.stream(params)
-                .map(constant -> Nd4j.zerosLike(constant.value))
+                .map(constant -> Nd4j.zerosLike(constant.data))
                 .toArray(INDArray[]::new);
     }
 

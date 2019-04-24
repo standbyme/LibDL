@@ -7,9 +7,6 @@ import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import static org.nd4j.linalg.indexing.NDArrayIndex.all;
 import static org.nd4j.linalg.indexing.NDArrayIndex.point;
 
@@ -58,14 +55,6 @@ public class RNN extends Tensor {
     public void backward() {
         backwardHelper(grad);
         input.backward();
-    }
-
-
-    @Override
-    public Variable[] parameters() {
-        return Stream.concat(Arrays.stream(input.parameters()),
-                Arrays.stream(new Variable[]{weight_ih, weight_hh, bias_ih, bias_hh}))
-                .toArray(Variable[]::new);
     }
 
 

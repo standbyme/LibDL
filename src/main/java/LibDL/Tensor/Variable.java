@@ -17,8 +17,4 @@ public class Variable extends Tensor {
     public void backward() {
     }
 
-    @Override
-    public Variable[] parameters() {
-        return requires_grad ? new Variable[]{this} : new Variable[]{};
-    }
 }

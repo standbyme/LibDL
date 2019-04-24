@@ -23,6 +23,22 @@ public class Adam extends Optimizer {
         this.lr = lr;
         this.betas = betas;
         this.eps = eps;
+
+        this.Sdparams = Arrays.stream(params)
+                .map(constant -> Nd4j.zerosLike(constant.data))
+                .toArray(INDArray[]::new);
+        this.Vdparams = Arrays.stream(params)
+                .map(constant -> Nd4j.zerosLike(constant.data))
+                .toArray(INDArray[]::new);
+        this.one = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
+        beta1_t = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
+        beta2_t = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
     }
 
     public Adam(Variable[] parameters, float lr) {
@@ -31,24 +47,6 @@ public class Adam extends Optimizer {
 
     @Override
     public void step() {
-        if(params == null) {
-            cacheParams();
-            this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.data))
-                    .toArray(INDArray[]::new);
-            this.Vdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.data))
-                    .toArray(INDArray[]::new);
-            this.one = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-            beta1_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-            beta2_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-        }
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];

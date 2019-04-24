@@ -10,8 +10,5 @@ public abstract class Optimizer {
         this.params = params;
     }
 
-    final protected void cacheParams() {
-    }
-
     public abstract void step();
 }

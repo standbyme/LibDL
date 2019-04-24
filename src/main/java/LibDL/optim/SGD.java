@@ -21,7 +21,7 @@ public class SGD extends Optimizer {
         this.lr = lr;
         this.momentum = momentum;
         this.v = Arrays.stream(params)
-                .map(constant -> Nd4j.zerosLike(constant.value))
+                .map(constant -> Nd4j.zerosLike(constant.data))
                 .toArray(INDArray[]::new);
     }
 
