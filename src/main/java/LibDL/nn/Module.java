@@ -1,7 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
+import LibDL.optim.Parameter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ public abstract class Module {
         return apply(input);
     }
 
-    public Variable[] parameters() {
+    public Parameter[] parameters() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        List<Variable> result = new ArrayList<>();
+        List<Parameter> result = new ArrayList<>();
         List<Module> modules = new ArrayList<>();
         for(Field f: fields) {
             f.setAccessible(true);
@@ -36,9 +36,9 @@ public abstract class Module {
                 e.printStackTrace();
             }
 
-            if(value instanceof Variable) {
+            if(value instanceof Parameter) {
                 // Add the class's own parameters
-                result.add((Variable)value);
+                result.add((Parameter)value);
             }
             else if(value instanceof Module) {
                 modules.add((Module) value);
@@ -52,13 +52,13 @@ public abstract class Module {
         for(Module module: modules)
             result.addAll(module.getDeclaredParameters());
 
-        return result.toArray(new Variable[0]);
+        return result.toArray(new Parameter[0]);
     }
 
-    private  Collection<Variable> getDeclaredParameters() {
+    private  Collection<Parameter> getDeclaredParameters() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        List<Variable> parameters = new ArrayList<>();
+        List<Parameter> parameters = new ArrayList<>();
         for(Field f: fields) {
             f.setAccessible(true);
             Object value = null;
@@ -68,8 +68,8 @@ public abstract class Module {
                 e.printStackTrace();
             }
 
-            if(value instanceof Variable) {
-                parameters.add((Variable)value);
+            if(value instanceof Parameter) {
+                parameters.add((Parameter)value);
             }
         }
         return parameters;

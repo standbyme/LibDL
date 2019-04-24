@@ -2,6 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
+import LibDL.optim.Parameter;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -19,10 +20,10 @@ public class RNN extends Tensor {
     private IActivation activation = new ActivationTanH();
 
     // Layer parameters
-    Variable weight_ih;
-    Variable weight_hh;
-    Variable bias_ih;
-    Variable bias_hh;
+    Parameter weight_ih;
+    Parameter weight_hh;
+    Parameter bias_ih;
+    Parameter bias_hh;
 
     // Input
     Tensor input;
@@ -36,10 +37,10 @@ public class RNN extends Tensor {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
 
-        weight_hh = new Variable(Nd4j.create(hiddenSize, hiddenSize), true);
-        weight_ih = new Variable(Nd4j.create(inputSize, hiddenSize),true);
-        bias_hh = new Variable(Nd4j.create(1, hiddenSize), true);
-        bias_ih = new Variable(Nd4j.create(1, hiddenSize), true);
+        weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        weight_ih = new Parameter(Nd4j.create(inputSize, hiddenSize));
+        bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
     }
 
     public void setInput(Tensor input, Variable h0) {

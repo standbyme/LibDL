@@ -1,13 +1,13 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
+import LibDL.optim.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Dense extends Module {
 
-    private final Variable W;
-    private final Variable B;
+    private final Parameter W;
+    private final Parameter B;
     private final boolean bias;
 
 
@@ -17,9 +17,9 @@ public class Dense extends Module {
 
     public Dense(int in_features, int out_features, boolean bias) {
 //        super(false);
-        W = new Variable(Nd4j.create(in_features, out_features), true);
+        W = new Parameter(Nd4j.create(in_features, out_features));
         if (bias) {
-            B = new Variable(Nd4j.create(1, out_features), true);
+            B = new Parameter(Nd4j.create(1, out_features));
         } else {
             B = null;
         }
