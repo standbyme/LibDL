@@ -11,13 +11,10 @@ import java.util.List;
 
 public abstract class Module {
 
-    public Tensor core;
-
     public abstract Tensor forward(Tensor input);
 
     public Tensor apply(Tensor input) {
-        core = forward(input);
-        return core;
+        return forward(input);
     }
 
     public final Tensor predict(Tensor input) {        // make them happy
