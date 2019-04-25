@@ -23,11 +23,11 @@ public abstract class Module {
     }
 
     public Parameter[] parameters() {
-        Collection<Parameter> result = getParameters();
+        Collection<Parameter> result = getParams_kakkokari(this);
 
         // Add submodules' parameters
-        for (Pair<String, Module> p : getSubModules())
-            result.addAll(p.second.getParameters());
+//        for (Pair<String, Module> p : getSubModules())
+//            result.addAll(p.second.getParameters());
 
         return result.toArray(new Parameter[0]);
     }
@@ -36,13 +36,39 @@ public abstract class Module {
     public String toString() {
         StringBuilder str = new StringBuilder(this.getClass().getSimpleName());
         Collection<Pair<String, Module>> modules = getSubModules();
-        if(modules.isEmpty())
+        if (modules.isEmpty())
             return str.append("()").toString();
         str.append("(\n");
         for (Pair<String, Module> m : getSubModules())
             str.append("  (").append(m.first).append("): ").append(m.second).append("\n");
         str.append(")");
         return str.toString();
+    }
+
+    private static Collection<Parameter> getParams_kakkokari(Module now) {
+        Class<? extends Module> cls = now.getClass();
+        Field[] fields = cls.getDeclaredFields();
+        List<Parameter> parameters = new ArrayList<>();
+        for (Field f : fields) {
+            f.setAccessible(true);
+            Object value = null;
+            try {
+                value = f.get(now);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            if (value instanceof Parameter) {
+                parameters.add((Parameter) value);
+            } else if (value instanceof Module) {
+                parameters.addAll(getParams_kakkokari((Module) value));
+            } else if (value instanceof Module[]) {
+                for (Module module : (Module[]) value) {
+                    parameters.addAll(getParams_kakkokari(module));
+                }
+            }
+        }
+        return parameters;
     }
 
     private Collection<Pair<String, Module>> getSubModules() {
@@ -61,11 +87,11 @@ public abstract class Module {
             }
 
             if (value instanceof Module) {
-                modules.add(new Pair<> (name, (Module)value));
+                modules.add(new Pair<>(name, (Module) value));
             } else if (value instanceof Module[]) {
                 int counter = 0;
-                for(Module module: (Module[]) value) {
-                    modules.add(new Pair<> (Integer.toString(counter), module));
+                for (Module module : (Module[]) value) {
+                    modules.add(new Pair<>(Integer.toString(counter), module));
                     counter++;
                 }
             }

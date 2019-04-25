@@ -21,7 +21,6 @@ public class XORExample {
 
         for (int epoch = 1; epoch <= 1000; epoch++) {
             optimizer.zero_grad();
-            optimizer.zero_grad();
             Tensor output = nn.predict(data);
             Tensor loss = criterion.eval(output);
             loss.backward();
