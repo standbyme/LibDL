@@ -2,7 +2,10 @@ package LibDL.Tensor;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class OperatorTensor extends Tensor {
     private OperatorInfo operatorInfo;
@@ -23,6 +26,28 @@ public abstract class OperatorTensor extends Tensor {
 
     @Override
     public final void backward() {
+//        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
+//            if (operandInfo.tensor.requires_grad)
+//                if (operandInfo.tensor.grad != null) {
+//                    INDArray back = operandInfo.backward.get();
+//                    operandInfo.tensor.grad = operandInfo.tensor.grad.broadcast(back).addi(back);
+//                } else operandInfo.tensor.grad = operandInfo.backward.get();
+//        }
+//
+//        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
+//            if (operandInfo.tensor.requires_grad) operandInfo.tensor.backward();
+//        }
+        ArrayList<Tensor> stack = new ArrayList<>();
+        HashSet<Tensor> vis = new HashSet<>();
+        dfs(this, vis, stack);
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            Tensor tensor = stack.get(i);
+            if (tensor instanceof OperatorTensor)
+                ((OperatorTensor) tensor).backprop();
+        }
+    }
+
+    private void backprop() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
             if (operandInfo.tensor.requires_grad)
                 if (operandInfo.tensor.grad != null) {
@@ -30,10 +55,16 @@ public abstract class OperatorTensor extends Tensor {
                     operandInfo.tensor.grad = operandInfo.tensor.grad.broadcast(back).addi(back);
                 } else operandInfo.tensor.grad = operandInfo.backward.get();
         }
-
-        for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.backward();
-        }
     }
 
+    private static void dfs(Tensor now, Set<Tensor> vis, ArrayList<Tensor> stack) {
+        vis.add(now);
+        if (now instanceof OperatorTensor) {
+            for (OperandInfo operandInfo : ((OperatorTensor) now).operatorInfo.operandInfos) {
+                Tensor t = operandInfo.tensor;
+                if (t.requires_grad && !vis.contains(t)) dfs(t, vis, stack);
+            }
+        }
+        stack.add(now);
+    }
 }
