@@ -46,6 +46,8 @@ public class ModuleExample {
                 {1.0}, {0.0}}));
 
         Model nn = new Model();
+        System.out.println(nn);
+
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
             Tensor output = nn.predict(data);

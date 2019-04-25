@@ -22,11 +22,33 @@ public abstract class Module {
     }
 
     public Parameter[] parameters() {
+        Collection<Parameter> result = getParameters();
+
+        // Add submodules' parameters
+        for (Module m : getSubModules())
+            result.addAll(m.getParameters());
+
+        return result.toArray(new Parameter[0]);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder(this.getClass().getSimpleName());
+        Collection<Module> modules = getSubModules();
+        if(modules.isEmpty())
+            return str.toString();
+        str.append("(\n");
+        for (Module m : getSubModules())
+            str.append("  ").append(m).append("\n");
+        str.append(")");
+        return str.toString();
+    }
+
+    private Collection<Module> getSubModules() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        List<Parameter> result = new ArrayList<>();
         List<Module> modules = new ArrayList<>();
-        for(Field f: fields) {
+        for (Field f : fields) {
             f.setAccessible(true);
             Object value = null;
             try {
@@ -36,30 +58,21 @@ public abstract class Module {
                 e.printStackTrace();
             }
 
-            if(value instanceof Parameter) {
-                // Add the class's own parameters
-                result.add((Parameter)value);
-            }
-            else if(value instanceof Module) {
+            if (value instanceof Module) {
                 modules.add((Module) value);
-            }
-            else if(value instanceof Module[]) {
+            } else if (value instanceof Module[]) {
                 modules.addAll(Arrays.asList((Module[]) value));
             }
         }
 
-        // Add submodules' parameters
-        for(Module module: modules)
-            result.addAll(module.getDeclaredParameters());
-
-        return result.toArray(new Parameter[0]);
+        return modules;
     }
 
-    private  Collection<Parameter> getDeclaredParameters() {
+    private Collection<Parameter> getParameters() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
         List<Parameter> parameters = new ArrayList<>();
-        for(Field f: fields) {
+        for (Field f : fields) {
             f.setAccessible(true);
             Object value = null;
             try {
@@ -68,8 +81,8 @@ public abstract class Module {
                 e.printStackTrace();
             }
 
-            if(value instanceof Parameter) {
-                parameters.add((Parameter)value);
+            if (value instanceof Parameter) {
+                parameters.add((Parameter) value);
             }
         }
         return parameters;

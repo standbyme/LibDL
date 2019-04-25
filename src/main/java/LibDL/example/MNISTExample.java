@@ -11,6 +11,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.ops.transforms.Transforms;
 import vision.datasets.MNIST;
 
+import java.awt.*;
 import java.util.Arrays;
 
 public class MNISTExample {
@@ -77,7 +78,7 @@ public class MNISTExample {
                 new Dense(20, 10)
 //                new Softmax().withName("SoftMax")
         );
-
+        System.out.println(nn);
 
         RMSProp optim = new RMSProp(nn.parameters(), 0.0002f, 0.99f, 5e-8);
 
