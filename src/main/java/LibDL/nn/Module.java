@@ -2,10 +2,10 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 import LibDL.optim.Parameter;
+import LibDL.utils.Pair;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,8 +25,8 @@ public abstract class Module {
         Collection<Parameter> result = getParameters();
 
         // Add submodules' parameters
-        for (Module m : getSubModules())
-            result.addAll(m.getParameters());
+        for (Pair<String, Module> p : getSubModules())
+            result.addAll(p.second.getParameters());
 
         return result.toArray(new Parameter[0]);
     }
@@ -34,22 +34,23 @@ public abstract class Module {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder(this.getClass().getSimpleName());
-        Collection<Module> modules = getSubModules();
+        Collection<Pair<String, Module>> modules = getSubModules();
         if(modules.isEmpty())
-            return str.toString();
+            return str.append("()").toString();
         str.append("(\n");
-        for (Module m : getSubModules())
-            str.append("  ").append(m).append("\n");
+        for (Pair<String, Module> m : getSubModules())
+            str.append("  (").append(m.first).append("): ").append(m.second).append("\n");
         str.append(")");
         return str.toString();
     }
 
-    private Collection<Module> getSubModules() {
+    private Collection<Pair<String, Module>> getSubModules() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        List<Module> modules = new ArrayList<>();
+        List<Pair<String, Module>> modules = new ArrayList<>();
         for (Field f : fields) {
             f.setAccessible(true);
+            String name = f.getName();
             Object value = null;
             try {
                 value = f.get(this);
@@ -59,12 +60,15 @@ public abstract class Module {
             }
 
             if (value instanceof Module) {
-                modules.add((Module) value);
+                modules.add(new Pair<> (name, (Module)value));
             } else if (value instanceof Module[]) {
-                modules.addAll(Arrays.asList((Module[]) value));
+                int counter = 0;
+                for(Module module: (Module[]) value) {
+                    modules.add(new Pair<> (Integer.toString(counter), module));
+                    counter++;
+                }
             }
         }
-
         return modules;
     }
 

@@ -6,9 +6,11 @@ import org.nd4j.linalg.factory.Nd4j;
 
 public class Dense extends Module {
 
-    private final Parameter W;
-    private final Parameter B;
-    private final boolean bias;
+    private Parameter W;
+    private Parameter B;
+    private int in_features;
+    private int out_features;
+    private boolean bias;
 
 
     public Dense(int in_features, int out_features) {
@@ -16,14 +18,16 @@ public class Dense extends Module {
     }
 
     public Dense(int in_features, int out_features, boolean bias) {
-//        super(false);
+        this.in_features = in_features;
+        this.out_features = out_features;
+        this.bias = bias;
+
         W = new Parameter(Nd4j.create(in_features, out_features));
         if (bias) {
             B = new Parameter(Nd4j.create(1, out_features));
         } else {
             B = null;
         }
-        this.bias = bias;
 
         resetParameters();
     }
@@ -41,5 +45,11 @@ public class Dense extends Module {
             double bound = 1 / Math.sqrt(fanIn);
             WeightInit.uniform(B.data, -bound, bound);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Dense(in_features=" + in_features + ", out_features=" + out_features
+                + ", bias=" + bias + ")";
     }
 }
