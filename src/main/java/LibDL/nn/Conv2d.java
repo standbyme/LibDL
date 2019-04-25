@@ -5,6 +5,7 @@ import LibDL.Tensor.Operator.Reshape;
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Module;
 import LibDL.Tensor.Tensor;
+import com.sun.imageio.plugins.common.BitFile;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -48,10 +49,10 @@ public class Conv2d extends Module {
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
-        W = new Variable(zeros.reshape(out_channels, in_channels*kernel_size[0]*kernel_size[1], 1), true);
+        W = new Variable(zeros, true);
 
         if(bias) {
-            B = new Variable(Nd4j.rand(new int[] {out_channels}).subi(0.5), true);
+            B = new Variable(Nd4j.rand(new int[] {out_channels}).reshape(out_channels).subi(0.5), true);
         }else {
             B = null;
         }
@@ -69,12 +70,20 @@ public class Conv2d extends Module {
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
-        W = new Variable(zeros.reshape(out_channels, in_channels*kernel_size[0]*kernel_size[1], 1), true);
+        W = new Variable(zeros, true);
     }
 
     // TODO can be removed. This function is only for testing
     public void setB(INDArray value) {
         B = new Variable(value, true);
+    }
+
+    public Variable getW() {
+        return W;
+    }
+
+    public Variable getB() {
+        return B;
     }
 
     @Override
@@ -90,7 +99,8 @@ public class Conv2d extends Module {
                 .build();
         BroadcastMul broadcastMul = new BroadcastMul(
                 new Concat(unfold, out_channels, 1),
-                new Reshape(W, 1, in_channels*out_channels*kernel_size[0]*kernel_size[1], 1));
+                new Reshape(W, 1, in_channels*out_channels*kernel_size[0]*kernel_size[1], 1),
+                in_channels, out_channels, groups);
         Sum sum = new Sum(new Reshape(broadcastMul,
                 broadcastMul.out.shape()[0], out_channels,
                 kernel_size[0] * kernel_size[1] * in_channels,  amount_h, amount_w), 2);

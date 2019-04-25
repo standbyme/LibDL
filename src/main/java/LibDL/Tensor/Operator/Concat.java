@@ -9,7 +9,9 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.nd4j.linalg.indexing.NDArrayIndex.all;
@@ -43,13 +45,25 @@ public class Concat extends OperatorTensor {
         setOperatorInfo(operatorInfo);
     }
 
+    /**
+     * Self-concat
+     * @param dim the dimension to be concat
+     * @param times the times to be concat
+     * */
     public Concat(Tensor input, int times, int dim) {
         OperandInfo[] operandInfos = {
                 new OperandInfo(input, () -> {
-                    INDArrayIndex[] indArrayIndices = new INDArrayIndex[dout.rank()];
-                    Arrays.fill(indArrayIndices, NDArrayIndex.all());
-                    indArrayIndices[dim] = NDArrayIndex.interval(0, dout.shape()[dim] / times);
-                    return dout.get(indArrayIndices);
+                    long[] shape = new long[dout.shape().length + 1];
+                    int i = 0;
+                    for (; i < dim; i++) {
+                        shape[i] = dout.shape()[i];
+                    }
+                    shape[i++] = times;
+                    shape[i++] = dout.shape()[i - 2] / times;
+                    for (; i < shape.length; i++) {
+                        shape[i] = dout.shape()[i - 1];
+                    }
+                    return dout.reshape(shape).sum(dim);
                 })
         };
         Supplier<INDArray> forward = () -> {

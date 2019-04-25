@@ -25,15 +25,22 @@ public class BroadcastAdd extends OperatorTensor {
     }
 
     /**
-     * Only for <code>Conv2d</code>*/
-    public BroadcastAdd(Tensor input, Tensor bias, boolean isConv2d) {
+     * Only for <code>Conv2d</code>
+     * @see LibDL.nn.Conv2d
+     * @param input tensor of shape(N, out, ah, aw)
+     * @param B tensor of shape(out)
+     * @param forConv2d for override */
+    public BroadcastAdd(Tensor input, Tensor B, boolean forConv2d) {
+
+        assert B.out.rank() == 1;
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(input, () -> null)
+                new OperandInfo(input, () -> dout),
+                new OperandInfo(B, () -> dout.sum(0, 2, 3).reshape(dout.shape()[1]))
         };
 
-        Supplier<INDArray> forward = () -> input.out.add(bias.out
-                .reshape(1, bias.out.shape()[0], 1, 1)
+        Supplier<INDArray> forward = () -> input.out.add(B.out
+                .reshape(1, B.out.shape()[0], 1, 1)
                 .broadcast(input.out.shape()));
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
