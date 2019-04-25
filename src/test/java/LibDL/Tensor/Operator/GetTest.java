@@ -40,8 +40,13 @@ public class GetTest {
         result2.grad = Nd4j.create(new double[]{2, 1.0, 3});
 
         result2.backward();
+        /**
+         * IMPORTANT!
+         * Due to the implementation of accumulating grad, grad of input
+         * of the 2nd time backward will not be overwritten.
+         */
         assertEquals(data.grad, Nd4j.create(new double[][]{
-                {0, 0, 0},
+                {0.5, 1, 2},
                 {0, 0, 0},
                 {2, 1.0, 3},
                 {0, 0, 0}

@@ -50,6 +50,7 @@ public class ModuleExample {
 
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
+            optimizer.zero_grad();
             Tensor output = nn.predict(data);
             Tensor loss = Functional.mse_loss(output, target);
             loss.backward();

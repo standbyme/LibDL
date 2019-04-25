@@ -1,5 +1,7 @@
 package LibDL.Tensor;
 
+import org.nd4j.linalg.api.ndarray.INDArray;
+
 import java.util.Arrays;
 
 public abstract class OperatorTensor extends Tensor {
@@ -22,7 +24,11 @@ public abstract class OperatorTensor extends Tensor {
     @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.grad = operandInfo.backward.get();
+            if (operandInfo.tensor.requires_grad)
+                if (operandInfo.tensor.grad != null) {
+                    INDArray back = operandInfo.backward.get();
+                    operandInfo.tensor.grad = operandInfo.tensor.grad.broadcast(back).addi(back);
+                } else operandInfo.tensor.grad = operandInfo.backward.get();
         }
 
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {

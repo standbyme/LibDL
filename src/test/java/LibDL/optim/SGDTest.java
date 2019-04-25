@@ -19,12 +19,14 @@ public class SGDTest {
         SGD optimizer = new SGD(nn.parameters(), 0.3f, 0.8f);
 
         for (int epoch = 1; epoch <= 160; epoch++) {
+            optimizer.zero_grad();
             Tensor loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();
         }
 
         Tensor pred = nn.predict(data);
+        System.out.println(pred.data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
             assert Math.abs(target.data.getDouble(i) - pred.data.getDouble(i)) < 0.001;
         });

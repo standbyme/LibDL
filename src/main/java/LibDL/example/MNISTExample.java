@@ -86,6 +86,7 @@ public class MNISTExample {
         for (int epoch = 0; epoch < 10; epoch++) {
             for (Pair<INDArray, INDArray> batch :
                     new DataLoader(mnist_train, 500, false, false)) {
+                optim.zero_grad();
                 Tensor pred = nn.predict(new Variable(batch.first));
                 Tensor target = new Variable(batch.second);
                 Tensor loss = Functional.cross_entropy(pred, target);
