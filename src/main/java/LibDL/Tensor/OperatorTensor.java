@@ -51,8 +51,7 @@ public abstract class OperatorTensor extends Tensor {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
             if (operandInfo.tensor.requires_grad)
                 if (operandInfo.tensor.grad != null) {
-                    INDArray back = operandInfo.backward.get();
-                    operandInfo.tensor.grad = operandInfo.tensor.grad.broadcast(back).addi(back);
+                    operandInfo.tensor.grad.addi(operandInfo.backward.get());
                 } else operandInfo.tensor.grad = operandInfo.backward.get();
         }
     }
