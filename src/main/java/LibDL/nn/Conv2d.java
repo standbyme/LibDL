@@ -5,6 +5,7 @@ import LibDL.Tensor.Operator.*;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import LibDL.optim.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -21,8 +22,8 @@ public class Conv2d extends Module {
     private boolean bias;
 
     // TODO `W` and `B` should be modified by `final`
-    private Variable W;
-    private Variable B;
+    private Parameter W;
+    private Parameter B;
 
     // TODO  can be removed. These fields are only for testing
     public INDArray data;

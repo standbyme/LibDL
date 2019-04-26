@@ -38,6 +38,7 @@ public class GetTest {
         assertEquals(result2.data, Nd4j.create(new double[]{0.5, 6, 6.5}));
 
         result2.grad = Nd4j.create(new double[]{2, 1.0, 3});
+        data.grad.assign(0);
 
         result2.backward();
         assertEquals(data.grad, Nd4j.create(new double[][]{

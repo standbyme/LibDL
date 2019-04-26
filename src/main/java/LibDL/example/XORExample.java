@@ -20,6 +20,7 @@ public class XORExample {
         SGD optimizer = new SGD(nn.parameters(), 0.1f);
 
         for (int epoch = 1; epoch <= 1000; epoch++) {
+            optimizer.zero_grad();
             Tensor output = nn.predict(data);
             Tensor loss = criterion.eval(output);
             loss.backward();

@@ -18,37 +18,35 @@ public class Adam extends Optimizer {
     private INDArray[] beta1_t;
     private INDArray[] beta2_t;
 
-    public Adam(Parameters parameters, float lr, float[] betas, double eps) {
+    public Adam(Variable[] parameters, float lr, float[] betas, double eps) {
         super(parameters);
         this.lr = lr;
         this.betas = betas;
         this.eps = eps;
+
+        this.Sdparams = Arrays.stream(params)
+                .map(constant -> Nd4j.zerosLike(constant.data))
+                .toArray(INDArray[]::new);
+        this.Vdparams = Arrays.stream(params)
+                .map(constant -> Nd4j.zerosLike(constant.data))
+                .toArray(INDArray[]::new);
+        this.one = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
+        beta1_t = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
+        beta2_t = Arrays.stream(params)
+                .map(constant -> Nd4j.onesLike(constant.data))
+                .toArray(INDArray[]::new);
     }
 
-    public Adam(Parameters parameters, float lr) {
+    public Adam(Variable[] parameters, float lr) {
         this(parameters, lr, new float[]{0.9f, 0.999f}, 1e-8);
     }
 
     @Override
     public void step() {
-        if(params == null) {
-            cacheParams();
-            this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.data))
-                    .toArray(INDArray[]::new);
-            this.Vdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.data))
-                    .toArray(INDArray[]::new);
-            this.one = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-            beta1_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-            beta2_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.data))
-                    .toArray(INDArray[]::new);
-        }
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];

@@ -2,6 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import LibDL.optim.Parameter;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,23 +16,23 @@ public class RNNAutoTest {
     @BeforeClass
     public static void initRNN() {
         rnn = new RNNAuto(3, 5);
-        rnn.weight_hh = new Variable(Nd4j.create(new double[][]{
+        rnn.weight_hh = new Parameter(Nd4j.create(new double[][]{
                 {-0.2759, -0.2183, 0.4454, -0.0331, 0.0015},
                 {-0.4196, -0.1691, -0.1807, 0.3347, -0.2393},
                 {-0.3233, 0.4190, -0.3819, -0.1739, -0.2363},
                 {-0.0749, 0.1831, 0.1638, 0.1701, 0.4200},
                 {0.4375, -0.1900, -0.3810, -0.2224, -0.4320}}));
 
-        rnn.weight_ih = new Variable(Nd4j.create(new double[][]{
+        rnn.weight_ih = new Parameter(Nd4j.create(new double[][]{
                 {-0.0862, 0.1885, 0.1464},
                 {-0.0782, -0.0145, -0.2172},
                 {0.1067, 0.0100, -0.4008},
                 {-0.0921, -0.1040, 0.1249},
                 {0.0167, -0.1631, 0.1717}}));
 
-        rnn.bias_hh = new Variable(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
+        rnn.bias_hh = new Parameter(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
-        rnn.bias_ih = new Variable(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
+        rnn.bias_ih = new Parameter(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
     }
 
     @Test

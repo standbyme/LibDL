@@ -22,7 +22,11 @@ public abstract class OperatorTensor extends Tensor {
     @Override
     public final void backward() {
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
-            if (operandInfo.tensor.requires_grad) operandInfo.tensor.grad = operandInfo.backward.get();
+            if (operandInfo.tensor.requires_grad)
+                if (operandInfo.tensor.grad != null)
+                    operandInfo.tensor.grad.addi(operandInfo.backward.get());
+                else
+                    operandInfo.tensor.grad = operandInfo.backward.get();
         }
 
         for (OperandInfo operandInfo : operatorInfo.operandInfos) {
@@ -30,10 +34,4 @@ public abstract class OperatorTensor extends Tensor {
         }
     }
 
-    @Override
-    public Variable[] parameters() {
-        return Arrays.stream(operatorInfo.operandInfos)
-                .flatMap(operandInfo -> Arrays.stream(operandInfo.tensor.parameters()))
-                .toArray(Variable[]::new);
-    }
 }

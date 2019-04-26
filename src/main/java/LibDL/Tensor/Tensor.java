@@ -26,8 +26,6 @@ public abstract class Tensor {
 
     abstract public void backward();
 
-    public abstract Variable[] parameters();
-
     final public Add add(Tensor that) {
         return new Add(this, that);
     }
