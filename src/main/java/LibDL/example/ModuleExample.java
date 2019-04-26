@@ -16,20 +16,20 @@ import java.util.stream.IntStream;
 public class ModuleExample {
 
     private static class Model extends Module {
-        private Module linear2_5, relu, linear5_1;
+        private Module fc1, relu, fc2;
 
         Model() {
-            linear2_5 = new Dense(2, 5);
+            fc1 = new Dense(2, 5);
             relu = new ReLU();
-            linear5_1 = new Dense(5, 1);
+            fc2 = new Dense(5, 1);
         }
 
         @Override
         public Tensor forward(Tensor input) {
             // Still not good
-            Tensor output = linear2_5.forward(input);
+            Tensor output = fc1.forward(input);
             output = relu.forward(output);
-            output = linear5_1.forward(output);
+            output = fc2.forward(output);
             return output;
         }
     }
@@ -46,8 +46,11 @@ public class ModuleExample {
                 {1.0}, {0.0}}));
 
         Model nn = new Model();
+        System.out.println(nn);
+
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
+            optimizer.zero_grad();
             Tensor output = nn.predict(data);
             Tensor loss = Functional.mse_loss(output, target);
             loss.backward();

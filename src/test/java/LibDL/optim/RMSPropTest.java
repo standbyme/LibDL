@@ -2,7 +2,10 @@ package LibDL.optim;
 
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.nn.*;
+import LibDL.nn.Dense;
+import LibDL.nn.Functional;
+import LibDL.nn.ReLU;
+import LibDL.nn.Sequential;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -22,6 +25,7 @@ public class RMSPropTest {
 
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.005f, 0.69f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
+            optimizer.zero_grad();
             Tensor loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();

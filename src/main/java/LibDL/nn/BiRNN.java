@@ -5,9 +5,6 @@ import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import static org.nd4j.linalg.indexing.NDArrayIndex.*;
 
 
@@ -72,14 +69,6 @@ public class BiRNN extends Tensor {
 
         forwardRNN.backward();
         backwardRNN.backward();
-    }
-
-    @Override
-    public Variable[] parameters() {
-        return Stream.concat(
-                Arrays.stream(forwardRNN.parameters()),
-                Arrays.stream(backwardRNN.parameters())
-        ).toArray(Variable[]::new);
     }
 
 }

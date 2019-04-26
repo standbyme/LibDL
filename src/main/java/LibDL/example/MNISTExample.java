@@ -14,54 +14,6 @@ import vision.datasets.MNIST;
 import java.util.Arrays;
 
 public class MNISTExample {
-//    @Test
-//    public void testMNISTWithAutoEncoder() {
-//
-//        MNIST mnist_train = new MNIST("resource/MNIST/", true);
-//        MNIST mnist_test = new MNIST("resource/MNIST/", false);
-//        Sequential encoder = new Sequential(
-//                new Dense(784, 100).withName("784-100"),
-//                new ReLU().withName("ReLU1"),
-//                new Dense(100, 10).withName("100-10"),
-//                new ReLU().withName("ReLU2"),
-//                new Dense(10, 1).withName("10-1"),
-//                new ReLU().withName("ReLU3")
-//        );
-//
-//        Sequential decoder = new Sequential(
-//                new Dense(1, 10).withName("1-10"),
-//                new ReLU().withName("ReLU3"),
-//                new Dense(10, 100).withName("10-100"),
-//                new ReLU().withName("ReLU4"),
-//                new Dense(100, 784).withName("100-784"),
-//                new ReLU()
-//        );
-//
-//        Sequential nn = new Sequential(
-//                encoder.withName("Encoder"),
-//                decoder.withName("Decoder")
-//        );
-//
-//        for (Pair<INDArray, INDArray> e :
-//                new DataLoader(mnist_train, 10, false, false)) {
-////            System.out.println(Arrays.toString(e.first.shape()));
-////            System.out.println(Arrays.toString(e.second.shape()));
-//            nn.setInput(new Variable(e.first));
-//
-//            MSELoss loss = new MSELoss(new Variable(e.first));
-//            loss.withName("Loss");
-//            loss.setInput(nn);
-//            LibDL.optim.SGD optim = new SGD(nn.parameters(), 0.0005f, 0.7f);
-//
-//
-//            for (int i = 0; i < 1; i++) {
-//                loss.backward();
-//                optim.step();
-//                System.out.println("time " + i + " " + loss.out.getRow(0));
-//            }
-//
-//        }
-//    }
 
     public static void main(String[] args) {
         Dataset mnist_train = new MNIST("resource/MNIST/", true).reshapeData(784);
@@ -77,7 +29,7 @@ public class MNISTExample {
                 new Dense(20, 10)
 //                new Softmax().withName("SoftMax")
         );
-
+        System.out.println(nn);
 
         RMSProp optim = new RMSProp(nn.parameters(), 0.0002f, 0.99f, 5e-8);
 
@@ -85,6 +37,7 @@ public class MNISTExample {
         for (int epoch = 0; epoch < 10; epoch++) {
             for (Pair<INDArray, INDArray> batch :
                     new DataLoader(mnist_train, 500, false, false)) {
+                optim.zero_grad();
                 Tensor pred = nn.predict(new Variable(batch.first));
                 Tensor target = new Variable(batch.second);
                 Tensor loss = Functional.cross_entropy(pred, target);

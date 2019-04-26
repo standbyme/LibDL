@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class Adagrad extends Optimizer {
 
-    public Adagrad(Parameters parameters) {
+    public Adagrad(Variable[] parameters) {
         super(parameters);
         throw new UnsupportedOperationException();
     }
