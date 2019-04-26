@@ -13,11 +13,11 @@ public class BroadcastAdd extends OperatorTensor {
     public BroadcastAdd(Tensor mat1, Tensor mat2) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1,()->dout),
-                new OperandInfo(mat2,()->dout.mean(0)),
+                new OperandInfo(mat1,()-> grad),
+                new OperandInfo(mat2,()-> grad.mean(0)),
         };
 
-        Supplier<INDArray> forward = () -> mat1.out.addRowVector(mat2.out);
+        Supplier<INDArray> forward = () -> mat1.data.addRowVector(mat2.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

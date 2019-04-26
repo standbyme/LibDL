@@ -12,10 +12,10 @@ public class Transpose extends OperatorTensor {
 
     public Transpose(Tensor tensor) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> dout.transpose())
+                new OperandInfo(tensor, () -> grad.transpose())
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.transpose();
+        Supplier<INDArray> forward = () -> tensor.data.transpose();
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

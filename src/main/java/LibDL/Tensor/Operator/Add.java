@@ -11,11 +11,11 @@ import java.util.function.Supplier;
 public class Add extends OperatorTensor {
     public Add(Tensor mat1, Tensor mat2) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1, () -> dout),
-                new OperandInfo(mat2, () -> dout),
+                new OperandInfo(mat1, () -> grad),
+                new OperandInfo(mat2, () -> grad),
         };
 
-        Supplier<INDArray> forward = () -> mat1.out.add(mat2.out);
+        Supplier<INDArray> forward = () -> mat1.data.add(mat2.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

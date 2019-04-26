@@ -16,18 +16,16 @@ public class GetTest {
                 {0.5, 6, 6.5},
                 {0.5, 6, 7.5},
         }), true);
-        data.forwardWithInput();
 
         Tensor result = data.get(0);
 
-        result.forwardWithInput();
 
-        assertEquals(result.out, Nd4j.create(new double[]{0.3, 4.0, 2.9}));
+        assertEquals(result.data, Nd4j.create(new double[]{0.3, 4.0, 2.9}));
 
-        result.dout = Nd4j.create(new double[]{0.5, 1, 2});
+        result.grad = Nd4j.create(new double[]{0.5, 1, 2});
 
         result.backward();
-        assertEquals(data.dout, Nd4j.create(new double[][]{
+        assertEquals(data.grad, Nd4j.create(new double[][]{
                 {0.5, 1, 2},
                 {0, 0, 0},
                 {0, 0, 0},
@@ -36,14 +34,13 @@ public class GetTest {
 
         Tensor result2 = data.get(2);
 
-        result2.forwardWithInput();
 
-        assertEquals(result2.out, Nd4j.create(new double[]{0.5, 6, 6.5}));
+        assertEquals(result2.data, Nd4j.create(new double[]{0.5, 6, 6.5}));
 
-        result2.dout = Nd4j.create(new double[]{2, 1.0, 3});
+        result2.grad = Nd4j.create(new double[]{2, 1.0, 3});
 
         result2.backward();
-        assertEquals(data.dout, Nd4j.create(new double[][]{
+        assertEquals(data.grad, Nd4j.create(new double[][]{
                 {0, 0, 0},
                 {0, 0, 0},
                 {2, 1.0, 3},

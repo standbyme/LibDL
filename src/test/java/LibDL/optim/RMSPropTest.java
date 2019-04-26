@@ -6,7 +6,6 @@ import LibDL.nn.*;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class RMSPropTest {
@@ -23,14 +22,14 @@ public class RMSPropTest {
 
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.005f, 0.69f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
-            MSELoss loss = Functional.mse_loss(nn.predict(data), target);
+            Tensor loss = Functional.mse_loss(nn.predict(data), target);
             loss.backward();
             optimizer.step();
         }
 
         Tensor pred = nn.predict(data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
-            assert Math.abs(target.value.getInt(i) - pred.out.getDouble(i)) < 0.1;
+            assert Math.abs(target.data.getInt(i) - pred.data.getDouble(i)) < 0.1;
         });
     }
 

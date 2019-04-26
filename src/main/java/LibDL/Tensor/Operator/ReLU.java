@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 public class ReLU extends OperatorTensor {
     public ReLU(Tensor tensor) {
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> ND4JUtil.Step(tensor.out).muli(dout)),
+                new OperandInfo(tensor, () -> ND4JUtil.Step(tensor.data).muli(grad)),
         };
 
-        Supplier<INDArray> forward = () -> ND4JUtil.ReLU(tensor.out);
+        Supplier<INDArray> forward = () -> ND4JUtil.ReLU(tensor.data);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

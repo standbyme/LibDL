@@ -40,48 +40,45 @@ public class BiRNN extends Tensor {
         this.h0 = h0;
     }
 
-    @Override
-    public void forwardWithInput() {
-        input.forwardWithInput();
-
+    private void forward() {
         Tensor inputReversed = reverseInput(input);
-        Variable h0F = new Variable(h0.value.get(point(0), all(), all()));
-        Variable h0B = new Variable(h0.value.get(point(1), all(), all()));
+        Variable h0F = new Variable(h0.data.get(point(0), all(), all()));
+        Variable h0B = new Variable(h0.data.get(point(1), all(), all()));
 
-        hidden = new Variable(Nd4j.create(input.out.shape()[0], input.out.shape()[1], hiddenSize*2), true);
+        hidden = new Variable(Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize*2), true);
 
         forwardRNN.setInput(input, h0F);
-        forwardRNN.forwardWithInput();
+        forwardRNN.forward();
 
         backwardRNN.setInput(inputReversed, h0B);
-        backwardRNN.forwardWithInput();
+        backwardRNN.forward();
 
-        hidden.value.assign(Nd4j.hstack(forwardRNN.out, backwardRNN.out));
+        hidden.data.assign(Nd4j.hstack(forwardRNN.data, backwardRNN.data));
     }
 
     private Variable reverseInput(Tensor input) {
-        INDArray rev = Nd4j.emptyLike(input.out);
-        long times = input.out.size(0);
+        INDArray rev = Nd4j.emptyLike(input.data);
+        long times = input.data.size(0);
         for(long i = 0; i < times; i++) {
-            rev.get(point(i), all(), all()).assign(input.out.get(point(times - 1 - i), all(), all()));
+            rev.get(point(i), all(), all()).assign(input.data.get(point(times - 1 - i), all(), all()));
         }
         return new Variable(rev);
     }
 
     @Override
     public void backward() {
-        forwardRNN.dout = dout.get(all(), all(), interval(0, hiddenSize));
-        backwardRNN.dout = dout.get(all(), all(), interval(hiddenSize+1, hiddenSize*2));
+        forwardRNN.grad = grad.get(all(), all(), interval(0, hiddenSize));
+        backwardRNN.grad = grad.get(all(), all(), interval(hiddenSize+1, hiddenSize*2));
 
         forwardRNN.backward();
         backwardRNN.backward();
     }
 
     @Override
-    public Variable[] parameters_core() {
+    public Variable[] parameters() {
         return Stream.concat(
-                Arrays.stream(forwardRNN.parameters_core()),
-                Arrays.stream(backwardRNN.parameters_core())
+                Arrays.stream(forwardRNN.parameters()),
+                Arrays.stream(backwardRNN.parameters())
         ).toArray(Variable[]::new);
     }
 

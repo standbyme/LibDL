@@ -16,9 +16,9 @@ import static org.nd4j.linalg.indexing.NDArrayIndex.point;
 public class Get extends OperatorTensor {
 
     public Get(Tensor tensor, long i) {
-        assert i < tensor.out.size(0);
+        assert i < tensor.data.size(0);
 
-        INDArrayIndex[] indices = new INDArrayIndex[tensor.out.rank()];
+        INDArrayIndex[] indices = new INDArrayIndex[tensor.data.rank()];
         indices[0] = point(i);
         for(int i1 = 1; i1 < indices.length; i1++) {
             indices[i1] = all();
@@ -26,13 +26,13 @@ public class Get extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
-                    INDArray result = Nd4j.zerosLike(tensor.out);
-                    result.put(indices, dout);
+                    INDArray result = Nd4j.zerosLike(tensor.data);
+                    result.put(indices, grad);
                     return result;
                 }),
         };
 
-        Supplier<INDArray> forward = () -> tensor.out.get(indices);
+        Supplier<INDArray> forward = () -> tensor.data.get(indices);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

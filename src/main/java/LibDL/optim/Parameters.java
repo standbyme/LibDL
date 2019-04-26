@@ -1,16 +1,16 @@
 package LibDL.optim;
 
-import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import LibDL.nn.Module;
 
 public class Parameters {
-    private Tensor tensor;
+    private Module module;
 
-    public Parameters(Tensor tensor) {
-        this.tensor = tensor;
+    public Parameters(Module module) {
+        this.module = module;
     }
 
     public Variable[] get() {
-        return tensor.parameters_core();
+        return module.core.parameters();
     }
 }

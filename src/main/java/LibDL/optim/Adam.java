@@ -34,35 +34,35 @@ public class Adam extends Optimizer {
         if(params == null) {
             cacheParams();
             this.Sdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
             this.Vdparams = Arrays.stream(params)
-                    .map(constant -> Nd4j.zerosLike(constant.value))
+                    .map(constant -> Nd4j.zerosLike(constant.data))
                     .toArray(INDArray[]::new);
             this.one = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
             beta1_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
             beta2_t = Arrays.stream(params)
-                    .map(constant -> Nd4j.onesLike(constant.value))
+                    .map(constant -> Nd4j.onesLike(constant.data))
                     .toArray(INDArray[]::new);
         }
 
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
 //            System.out.println(Arrays.toString());
-            Vdparams[i].muli(betas[0]).addi(param.dout.mul(1 - betas[0]));
+            Vdparams[i].muli(betas[0]).addi(param.grad.mul(1 - betas[0]));
             Sdparams[i].muli(betas[1]).addi
-                    (param.dout.mul(param.dout).muli(1.0 - betas[1]));
+                    (param.grad.mul(param.grad).muli(1.0 - betas[1]));
 //            correction
             Vdparams[i].divi(beta1_t[i].sub(1).muli(-1));
             Sdparams[i].divi(beta2_t[i].sub(1).muli(-1));
 //            update
             beta1_t[i] = beta1_t[i].muli(betas[0]);
             beta2_t[i] = beta2_t[i].muli(betas[1]);
-            param.value.subi(Vdparams[i].mul(lr).
+            param.data.subi(Vdparams[i].mul(lr).
                     divi(Transforms.sqrt(Sdparams[i]).add(eps)));
         }
 

@@ -16,10 +16,10 @@ public class Pow extends OperatorTensor {
         assert (exponent == 2);
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(base, () -> dout.mul(base.out.mul(2))),
+                new OperandInfo(base, () -> grad.mul(base.data.mul(2))),
         };
 
-        Supplier<INDArray> forward = () -> ND4JUtil.pow(base.out, exponent);
+        Supplier<INDArray> forward = () -> ND4JUtil.pow(base.data, exponent);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

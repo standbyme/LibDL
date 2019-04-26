@@ -26,27 +26,27 @@ public class Sum extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
-                    long[] shape = new long[tensor.out.rank()];
-                    INDArrayIndex[] indices = new INDArrayIndex[tensor.out.rank()];
+                    long[] shape = new long[tensor.data.rank()];
+                    INDArrayIndex[] indices = new INDArrayIndex[tensor.data.rank()];
                     int dimi = 0, douti = 0;
                     for (int i = 0; i < shape.length; i++) {
                         if (dimi < dim.length && dim[dimi] == i) {
                             shape[i] = 1;
                             dimi++;
-                        } else shape[i] = dout.size(douti++);
+                        } else shape[i] = grad.size(douti++);
                         indices[i] = NDArrayIndex.all();
                     }
                     INDArray ret = Nd4j.ones(shape);
-                    ret.put(indices, dout);
-                    return ret.broadcast(tensor.out.shape());
+                    ret.put(indices, grad);
+                    return ret.broadcast(tensor.data.shape());
                 })
         };
 
         Supplier<INDArray> forward = () -> {
             if (this.dim == null)
-                this.dim = Nd4j.linspace(0, tensor.out.rank() - 1,
-                        tensor.out.rank()).toIntVector();
-            return tensor.out.sum(dim);
+                this.dim = Nd4j.linspace(0, tensor.data.rank() - 1,
+                        tensor.data.rank()).toIntVector();
+            return tensor.data.sum(dim);
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
