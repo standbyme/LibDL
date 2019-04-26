@@ -28,6 +28,7 @@ public class Conv2d extends Module {
     // TODO  can be removed. These fields are only for testing
     public INDArray data;
     public INDArray grad;
+    public Tensor core;
 
     private Conv2d(Builder builder) {
         this.in_channels = builder.in_channels;
@@ -50,10 +51,10 @@ public class Conv2d extends Module {
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
-        W = new Variable(zeros, true);
+        W = new Parameter(zeros);
 
         if(bias) {
-            B = new Variable(Nd4j.rand(new int[] {out_channels}).reshape(out_channels).subi(0.5), true);
+            B = new Parameter(Nd4j.rand(new int[] {out_channels}).reshape(out_channels).subi(0.5));
         }else {
             B = null;
         }
@@ -71,12 +72,12 @@ public class Conv2d extends Module {
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
-        W = new Variable(zeros, true);
+        W = new Parameter(zeros);
     }
 
     // TODO can be removed. This function is only for testing
     public void setB(INDArray value) {
-        B = new Variable(value, true);
+        B = new Parameter(value);
     }
 
     // TODO can be removed. This function is only for testing
