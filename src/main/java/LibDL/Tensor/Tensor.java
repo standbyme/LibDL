@@ -6,6 +6,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 public abstract class Tensor {
     public INDArray data = null;
     public INDArray grad = null;
+    protected int outNumber = 0;
 
     private String tensorName;
     public Tensor() {
