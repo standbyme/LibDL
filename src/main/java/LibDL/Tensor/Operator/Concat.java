@@ -6,12 +6,8 @@ import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.INDArrayIndex;
-import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 
 import static org.nd4j.linalg.indexing.NDArrayIndex.all;
@@ -53,22 +49,22 @@ public class Concat extends OperatorTensor {
     public Concat(Tensor input, int times, int dim) {
         OperandInfo[] operandInfos = {
                 new OperandInfo(input, () -> {
-                    long[] shape = new long[dout.shape().length + 1];
+                    long[] shape = new long[grad.shape().length + 1];
                     int i = 0;
                     for (; i < dim; i++) {
-                        shape[i] = dout.shape()[i];
+                        shape[i] = grad.shape()[i];
                     }
                     shape[i++] = times;
-                    shape[i++] = dout.shape()[i - 2] / times;
+                    shape[i++] = grad.shape()[i - 2] / times;
                     for (; i < shape.length; i++) {
-                        shape[i] = dout.shape()[i - 1];
+                        shape[i] = grad.shape()[i - 1];
                     }
-                    return dout.reshape(shape).sum(dim);
+                    return grad.reshape(shape).sum(dim);
                 })
         };
         Supplier<INDArray> forward = () -> {
             INDArray[] toConcat = new INDArray[times];
-            Arrays.fill(toConcat, input.out);
+            Arrays.fill(toConcat, input.data);
             return Nd4j.concat(dim, toConcat);
         };
 

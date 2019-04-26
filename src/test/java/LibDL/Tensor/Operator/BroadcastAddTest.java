@@ -12,9 +12,9 @@ public class BroadcastAddTest {
         Variable input = new Variable(Nd4j.rand(new int[] {2, 4, 3, 3}), true);
         Variable B = new Variable(Nd4j.rand(new int[] {4}), true);
         BroadcastAdd broadcastAdd = new BroadcastAdd(input, B, true);
-        broadcastAdd.dout = Nd4j.linspace(0, 71, 72).reshape(2, 4, 3, 3);
+        broadcastAdd.grad = Nd4j.linspace(0, 71, 72).reshape(2, 4, 3, 3);
         broadcastAdd.backward();
-        assertEquals(Nd4j.linspace(0, 71, 72).reshape(2, 4, 3, 3), input.dout);
-        assertEquals(Nd4j.create(new double[] {396, 558, 720, 882}), B.dout);
+        assertEquals(Nd4j.linspace(0, 71, 72).reshape(2, 4, 3, 3), input.grad);
+        assertEquals(Nd4j.create(new double[] {396, 558, 720, 882}), B.grad);
     }
 }

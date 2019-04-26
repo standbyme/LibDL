@@ -13,7 +13,6 @@ public class UnfoldTest {
     public void testUnfold() {
         Variable input = new Variable(Nd4j.linspace(1, 192, 192).reshape(2, 2, 8, 6), true);
         Unfold m = new Unfold.Builder(input, 2, 3).padding(2, 1).stride(2, 3).dilation(2, 1).build();
-        m.forwardWithInput();
         INDArray expected = Nd4j.create(new double[][][] {
                 {{  0.,   0.,   0.,   3.,   0.,  15.,   0.,  27.,   0.,  39.},
                  {  0.,   0.,   1.,   4.,  13.,  16.,  25.,  28.,  37.,  40.},
@@ -41,8 +40,8 @@ public class UnfoldTest {
                  {145., 148., 157., 160., 169., 172., 181., 184.,   0.,   0.},
                  {146., 149., 158., 161., 170., 173., 182., 185.,   0.,   0.}}
                 });
-        assertEquals(expected, m.out);
-        m.dout = Nd4j.onesLike(m.out);
+        assertEquals(expected, m.data);
+        m.grad = Nd4j.onesLike(m.data);
         m.backward();
         expected = Nd4j.create(new double[][][][]{
         {{{2., 2., 2., 2., 2., 0.},
@@ -81,6 +80,6 @@ public class UnfoldTest {
           {0., 0., 0., 0., 0., 0.},
           {2., 2., 2., 2., 2., 0.},
           {0., 0., 0., 0., 0., 0.}}}});
-        assertEquals(expected, input.dout);
+        assertEquals(expected, input.grad);
     }
 }

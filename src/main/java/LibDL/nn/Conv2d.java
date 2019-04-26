@@ -1,17 +1,13 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Operator.*;
 import LibDL.Tensor.Operator.Reshape;
-import LibDL.Tensor.Variable;
-import LibDL.Tensor.Module;
+import LibDL.Tensor.Operator.*;
 import LibDL.Tensor.Tensor;
-import com.sun.imageio.plugins.common.BitFile;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
-
-import java.util.Arrays;
 
 public class Conv2d extends Module {
 
@@ -27,6 +23,10 @@ public class Conv2d extends Module {
     // TODO `W` and `B` should be modified by `final`
     private Variable W;
     private Variable B;
+
+    // TODO  can be removed. These fields are only for testing
+    public INDArray data;
+    public INDArray grad;
 
     private Conv2d(Builder builder) {
         this.in_channels = builder.in_channels;
@@ -78,6 +78,19 @@ public class Conv2d extends Module {
         B = new Variable(value, true);
     }
 
+    // TODO can be removed. This function is only for testing
+    public void backward() {
+        core.grad = grad;
+        core.backward();
+    }
+
+    // TODO can be removed. This function is only for testing
+    public Tensor apply(Tensor input) {
+        core = forward(input);
+        data = core.data;
+        return core;
+    }
+
     public Variable getW() {
         return W;
     }
@@ -90,8 +103,8 @@ public class Conv2d extends Module {
     public Tensor forward(Tensor input) {
         int _filter_h = (kernel_size[0] - 1) * dilation[0] + 1;
         int _filter_w = (kernel_size[1] - 1) * dilation[1] + 1;
-        long amount_h = (input.out.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
-        long amount_w = (input.out.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
+        long amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
+        long amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
         Unfold unfold = new Unfold.Builder(input, kernel_size)
                 .padding(padding)
                 .stride(stride)
@@ -102,7 +115,7 @@ public class Conv2d extends Module {
                 new Reshape(W, 1, in_channels*out_channels*kernel_size[0]*kernel_size[1], 1),
                 in_channels, out_channels, groups);
         Sum sum = new Sum(new Reshape(broadcastMul,
-                broadcastMul.out.shape()[0], out_channels,
+                broadcastMul.data.shape()[0], out_channels,
                 kernel_size[0] * kernel_size[1] * in_channels,  amount_h, amount_w), 2);
         if(bias) {
             return new BroadcastAdd(sum, B, true);

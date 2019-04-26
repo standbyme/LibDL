@@ -32,16 +32,16 @@ public class BroadcastAdd extends OperatorTensor {
      * @param forConv2d for override */
     public BroadcastAdd(Tensor input, Tensor B, boolean forConv2d) {
 
-        assert B.out.rank() == 1;
+        assert B.data.rank() == 1;
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(input, () -> dout),
-                new OperandInfo(B, () -> dout.sum(0, 2, 3).reshape(dout.shape()[1]))
+                new OperandInfo(input, () -> grad),
+                new OperandInfo(B, () -> grad.sum(0, 2, 3).reshape(grad.shape()[1]))
         };
 
-        Supplier<INDArray> forward = () -> input.out.add(B.out
-                .reshape(1, B.out.shape()[0], 1, 1)
-                .broadcast(input.out.shape()));
+        Supplier<INDArray> forward = () -> input.data.add(B.data
+                .reshape(1, B.data.shape()[0], 1, 1)
+                .broadcast(input.data.shape()));
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

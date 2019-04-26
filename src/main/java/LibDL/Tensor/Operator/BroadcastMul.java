@@ -22,14 +22,14 @@ public class BroadcastMul extends OperatorTensor {
      * */
     public BroadcastMul(Tensor input, Tensor weight, int in_channels, int out_channels, int groups) {
 
-        assert input.out.rank() == 3;
-        assert weight.out.rank() == 3;
+        assert input.data.rank() == 3;
+        assert weight.data.rank() == 3;
 
         OperandInfo[] operandInfos = new OperandInfo[] {
-                new OperandInfo(input, () -> dout.mul(weight.out.broadcast(input.out.shape()))),
+                new OperandInfo(input, () -> grad.mul(weight.data.broadcast(input.data.shape()))),
                 new OperandInfo(weight, () -> {
-                    long size = weight.out.shape()[1] / in_channels / out_channels;
-                    INDArray zeros = Nd4j.zerosLike(dout);
+                    long size = weight.data.shape()[1] / in_channels / out_channels;
+                    INDArray zeros = Nd4j.zerosLike(grad);
                     int step = in_channels / groups;
                     for (int i = 0; i < out_channels; i++) {
                         int bias = i / (out_channels / groups); // 1 / 2 = 0
@@ -38,12 +38,12 @@ public class BroadcastMul extends OperatorTensor {
                                 NDArrayIndex.all(),
                                 NDArrayIndex.interval(begin * size, (begin + step) * size),
                                 NDArrayIndex.all()};
-                        zeros.put(indArrayIndices, dout.get(indArrayIndices));
+                        zeros.put(indArrayIndices, grad.get(indArrayIndices));
                     }
-                    return zeros.mul(input.out).sum(0, 2).reshape(weight.out.shape());
+                    return zeros.mul(input.data).sum(0, 2).reshape(weight.data.shape());
                 })
         };
-        Supplier<INDArray> forward = () -> input.out.mul(weight.out.broadcast(input.out.shape()));
+        Supplier<INDArray> forward = () -> input.data.mul(weight.data.broadcast(input.data.shape()));
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
         setOperatorInfo(operatorInfo);

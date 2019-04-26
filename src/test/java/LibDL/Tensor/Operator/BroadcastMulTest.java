@@ -10,7 +10,7 @@ public class BroadcastMulTest {
         Variable input = new Variable(Nd4j.rand(new int[] {2, 48, 3}), true);
         Variable weight = new Variable(Nd4j.rand(new int[] {1, 48, 1}), true);
         BroadcastMul broadcastMul = new BroadcastMul(input, weight, 4, 4 ,2);
-        broadcastMul.dout = Nd4j.rand(new int[] {2, 48, 3});
+        broadcastMul.grad = Nd4j.rand(new int[] {2, 48, 3});
         broadcastMul.backward();
     }
 }
