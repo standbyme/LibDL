@@ -26,7 +26,6 @@ public class SGDTest {
         }
 
         Tensor pred = nn.predict(data);
-        System.out.println(pred.data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
             assert Math.abs(target.data.getDouble(i) - pred.data.getDouble(i)) < 0.001;
         });
