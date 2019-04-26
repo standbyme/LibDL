@@ -1,5 +1,7 @@
 package LibDL.Tensor;
 
+import org.nd4j.linalg.factory.Nd4j;
+
 import java.util.*;
 
 public abstract class OperatorTensor extends Tensor {
@@ -20,6 +22,9 @@ public abstract class OperatorTensor extends Tensor {
 
     @Override
     public final void backward() {
+        if(data.length() == 1) // If this tensor is a scalar
+            grad = Nd4j.create(new double[] {1.0});
+
         LinkedList<Tensor> tensorList = new LinkedList<>();
         traverse(this, new HashSet<>(), tensorList);
 
