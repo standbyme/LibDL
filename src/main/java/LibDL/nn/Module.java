@@ -52,6 +52,7 @@ public abstract class Module {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
         Map<String, Module> modules = new HashMap<>();
+        int unnamedCount = 0;
         for (Field f : fields) {
             f.setAccessible(true);
             String name = f.getName();
@@ -66,10 +67,9 @@ public abstract class Module {
             if (value instanceof Module) {
                 modules.put(name, (Module) value);
             } else if (value instanceof Module[]) {
-                int counter = 0;
                 for (Module module : (Module[]) value) {
-                    modules.put(Integer.toString(counter), module);
-                    counter++;
+                    modules.put(Integer.toString(unnamedCount), module);
+                    unnamedCount++;
                 }
             }
         }
