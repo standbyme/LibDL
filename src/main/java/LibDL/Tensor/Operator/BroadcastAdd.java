@@ -14,7 +14,7 @@ public class BroadcastAdd extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(mat1,()-> grad),
-                new OperandInfo(mat2,()-> grad.mean(0)),
+                new OperandInfo(mat2,()-> grad.sum(0)),
         };
 
         Supplier<INDArray> forward = () -> mat1.data.addRowVector(mat2.data);
