@@ -51,7 +51,7 @@ public abstract class Module {
     private Map<String, Module> getSubModules() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        Map<String, Module> modules = new HashMap<>();
+        Map<String, Module> modules = new LinkedHashMap<>();
         int unnamedCount = 0;
         for (Field f : fields) {
             f.setAccessible(true);
