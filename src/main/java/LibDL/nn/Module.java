@@ -7,7 +7,9 @@ import LibDL.utils.Pair;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public abstract class Module {
@@ -23,11 +25,22 @@ public abstract class Module {
     }
 
     public Parameter[] parameters() {
-        Collection<Parameter> result = getParams_kakkokari(this);
+        ArrayList<Parameter> result = new ArrayList<>();
+        ArrayList<Module> modules = new ArrayList<>();
+        modules.add(this);
+        while (!modules.isEmpty()) {
+            Iterator<Module> it = modules.iterator();
+            Collection<Module> nxt = new ArrayList<>();
+            while (it.hasNext()) {
+                Module m = it.next();
+                nxt.addAll(getSubModules(m).stream()
+                        .map((p) -> p.second).collect(Collectors.toList()));
 
-        // Add submodules' parameters
-//        for (Pair<String, Module> p : getSubModules())
-//            result.addAll(p.second.getParameters());
+                result.addAll(getParameters(m));
+                it.remove();
+            }
+            modules.addAll(nxt);
+        }
 
         return result.toArray(new Parameter[0]);
     }
@@ -35,11 +48,11 @@ public abstract class Module {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder(this.getClass().getSimpleName());
-        Collection<Pair<String, Module>> modules = getSubModules();
+        Collection<Pair<String, Module>> modules = getSubModules(this);
         if (modules.isEmpty())
             return str.append("()").toString();
         str.append("(\n");
-        for (Pair<String, Module> m : getSubModules())
+        for (Pair<String, Module> m : getSubModules(this))
             str.append("  (").append(m.first).append("): ").append(m.second).append("\n");
         str.append(")");
         return str.toString();
@@ -71,8 +84,8 @@ public abstract class Module {
         return parameters;
     }
 
-    private Collection<Pair<String, Module>> getSubModules() {
-        Class<? extends Module> cls = this.getClass();
+    private static Collection<Pair<String, Module>> getSubModules(Module now) {
+        Class<? extends Module> cls = now.getClass();
         Field[] fields = cls.getDeclaredFields();
         List<Pair<String, Module>> modules = new ArrayList<>();
         for (Field f : fields) {
@@ -80,7 +93,7 @@ public abstract class Module {
             String name = f.getName();
             Object value = null;
             try {
-                value = f.get(this);
+                value = f.get(now);
             } catch (IllegalAccessException e) {
                 // will not happen.
                 e.printStackTrace();
@@ -99,15 +112,15 @@ public abstract class Module {
         return modules;
     }
 
-    private Collection<Parameter> getParameters() {
-        Class<? extends Module> cls = this.getClass();
+    private Collection<Parameter> getParameters(Module now) {
+        Class<? extends Module> cls = now.getClass();
         Field[] fields = cls.getDeclaredFields();
         List<Parameter> parameters = new ArrayList<>();
         for (Field f : fields) {
             f.setAccessible(true);
             Object value = null;
             try {
-                value = f.get(this);
+                value = f.get(now);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
