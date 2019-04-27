@@ -36,7 +36,7 @@ public class RNNAutoTest {
     }
 
     @Test
-    public void testForward() {
+    public void testRNNAuto() {
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
                         {-0.8522, 0.5896, 0.5357},
@@ -45,7 +45,7 @@ public class RNNAutoTest {
                 {{0.2956, 1.4636, 0.6051},
                         {1.0905, 0.5851, -0.4907},
                         {1.0333, -0.2276, -0.1532}}}
-        ));
+        ), true);
 
         Variable h0 = new Variable(Nd4j.create(new double[][]{
                 {0.4765, 0.3493, -0.8491, 0.7070, 0.6665},
@@ -66,11 +66,8 @@ public class RNNAutoTest {
 
         assert result.data.equalsWithEps(output, 1e-3);
 
-    }
 
-    @Ignore("需要更新自动微分引擎")
-    public void testBackward() {
-        INDArray dout = Nd4j.create(new double[][][]{{
+        result.grad = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
                 {-1.5350e+00, 7.6189e-01, 1.3230e+00, -4.2295e-01, 5.3208e-01},
                 {-1.4129e+00, -2.3161e+00, -2.5905e-02, 1.8038e+00, -7.0832e-01}},
@@ -79,6 +76,9 @@ public class RNNAutoTest {
                         {-3.6231e-03, 3.9820e-01, 4.9735e-01, -1.5231e+00, -2.8920e-03},
                         {-4.8295e-01, -2.3305e+00, -1.2397e+00, 1.6851e+00, 1.8875e-01}}}
         );
+        result.backward();
+
+
         INDArray inputGradient = Nd4j.create(new double[][][]{
                 {{-0.0317, 0.5793, -0.3325},
                         {0.2363, -0.2091, -0.7278},
@@ -101,7 +101,7 @@ public class RNNAutoTest {
                 {-0.9795, -0.1644, 1.5444, -0.5361, -1.5196}});
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
-        //assert rnn.input.dout.equalsWithEps(inputGradient, 1e-3);
+        assert input.grad.equalsWithEps(inputGradient, 1e-3);
         assert rnn.weight_ih.grad.equalsWithEps(weightGradient_ih, 1e-3);
         assert rnn.weight_hh.grad.equalsWithEps(weightGradient_hh, 1e-3);
         assert rnn.bias_ih.grad.equalsWithEps(biasGradient, 1e-3);

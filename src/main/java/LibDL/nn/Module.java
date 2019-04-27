@@ -2,12 +2,9 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 import LibDL.optim.Parameter;
-import LibDL.utils.Pair;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 
 public abstract class Module {
@@ -23,11 +20,17 @@ public abstract class Module {
     }
 
     public Parameter[] parameters() {
-        Collection<Parameter> result = getParameters();
-
-        // Add submodules' parameters
-        for (Pair<String, Module> p : getSubModules())
-            result.addAll(p.second.getParameters());
+        ArrayList<Parameter> result = new ArrayList<>();
+        ArrayList<Module> moduleList = new ArrayList<>();
+        moduleList.add(this);
+        while (!moduleList.isEmpty()) {
+            ArrayList<Module> subModuleList = new ArrayList<>();
+            for(Module m: moduleList) {
+                subModuleList.addAll(m.getSubModules().values());
+                result.addAll(m.getParameters());
+            }
+            moduleList = subModuleList;
+        }
 
         return result.toArray(new Parameter[0]);
     }
@@ -35,20 +38,21 @@ public abstract class Module {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder(this.getClass().getSimpleName());
-        Collection<Pair<String, Module>> modules = getSubModules();
-        if(modules.isEmpty())
+        Map<String, Module> modules = getSubModules();
+        if (modules.isEmpty())
             return str.append("()").toString();
         str.append("(\n");
-        for (Pair<String, Module> m : getSubModules())
-            str.append("  (").append(m.first).append("): ").append(m.second).append("\n");
+        for (Map.Entry<String, Module> m : modules.entrySet())
+            str.append("  (").append(m.getKey()).append("): ").append(m.getValue()).append("\n");
         str.append(")");
         return str.toString();
     }
 
-    private Collection<Pair<String, Module>> getSubModules() {
+    private Map<String, Module> getSubModules() {
         Class<? extends Module> cls = this.getClass();
         Field[] fields = cls.getDeclaredFields();
-        List<Pair<String, Module>> modules = new ArrayList<>();
+        Map<String, Module> modules = new LinkedHashMap<>();
+        int unnamedCount = 0;
         for (Field f : fields) {
             f.setAccessible(true);
             String name = f.getName();
@@ -61,12 +65,11 @@ public abstract class Module {
             }
 
             if (value instanceof Module) {
-                modules.add(new Pair<> (name, (Module)value));
+                modules.put(name, (Module) value);
             } else if (value instanceof Module[]) {
-                int counter = 0;
-                for(Module module: (Module[]) value) {
-                    modules.add(new Pair<> (Integer.toString(counter), module));
-                    counter++;
+                for (Module module : (Module[]) value) {
+                    modules.put(Integer.toString(unnamedCount), module);
+                    unnamedCount++;
                 }
             }
         }
