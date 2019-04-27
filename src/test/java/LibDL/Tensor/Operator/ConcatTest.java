@@ -61,6 +61,10 @@ public class ConcatTest {
         }}), concat.data);
         concat.grad = Nd4j.concat(1, a, a, a);
         concat.backward();
-        assertEquals(a, input.grad);
+        assertEquals(Nd4j.create(new double[][][]{
+                {
+                    { 3,  6,  9}, {12, 15, 18}
+                }
+        }), input.grad);
     }
 }
