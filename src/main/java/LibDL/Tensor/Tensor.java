@@ -9,7 +9,7 @@ public abstract class Tensor {
 
     private String tensorName;
     public Tensor() {
-        tensorName = this.getClass().getName();
+        tensorName = this.getClass().getSimpleName();
     }
 
     public Tensor withName(String name) {
@@ -19,7 +19,7 @@ public abstract class Tensor {
 
     @Override
     public String toString() {
-        return tensorName;
+        return tensorName + "(" + data + ")";
     }
 
     public boolean requires_grad;
