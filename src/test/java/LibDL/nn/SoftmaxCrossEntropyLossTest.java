@@ -13,7 +13,7 @@ public class SoftmaxCrossEntropyLossTest {
     public void testCEL() {
         Variable x = new Variable(Nd4j.create(new double[][]{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}), true);
         SoftmaxCrossEntropyLoss cel = new SoftmaxCrossEntropyLoss(new Constant(Nd4j.create(new double[]{1, 0, 2}).reshape(3)));
-        Tensor loss = cel.apply(x);
+        Tensor loss = cel.forward(x);
         assertEquals(Nd4j.create(new double[] {1.40760576725006103516}).reshape(1), loss.data);
         loss.backward();
         assertEquals(Nd4j.create(new double[][] {
