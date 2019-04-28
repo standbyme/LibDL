@@ -11,7 +11,7 @@ public class Reshape extends Module {
     }
 
     @Override
-    public Tensor apply(Tensor input) {
+    public Tensor forward(Tensor input) {
         return (new LibDL.Tensor.Operator.Reshape(input, shape));
     }
 }

@@ -14,7 +14,7 @@ public class Softmax extends Module {
     }
 
     @Override
-    public Tensor apply(Tensor input) {
+    public Tensor forward(Tensor input) {
         return (new LibDL.Tensor.Operator.Softmax(input, dim));
     }
 

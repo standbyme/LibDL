@@ -38,7 +38,7 @@ public class MNISTExample {
             for (Pair<INDArray, INDArray> batch :
                     new DataLoader(mnist_train, 500, false, false)) {
                 optim.zero_grad();
-                Tensor pred = nn.apply(new Constant(batch.first));
+                Tensor pred = nn.forward(new Constant(batch.first));
                 Tensor target = new Constant(batch.second);
                 Tensor loss = Functional.cross_entropy(pred, target);
                 loss.backward();
@@ -50,7 +50,7 @@ public class MNISTExample {
             }
         }
 
-        Tensor result = nn.apply(new Constant(mnist_test.reshapeData(784).data));
+        Tensor result = nn.forward(new Constant(mnist_test.reshapeData(784).data));
 
         INDArray out = MNIST.revertOneHot(result.data);
 

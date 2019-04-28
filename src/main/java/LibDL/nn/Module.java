@@ -9,7 +9,7 @@ import java.util.*;
 
 public abstract class Module {
 
-    public abstract Tensor apply(Tensor input);
+    public abstract Tensor forward(Tensor input);
 
     public Parameter[] parameters() {
         ArrayList<Parameter> result = new ArrayList<>();

@@ -33,7 +33,7 @@ public class Dense extends Module {
     }
 
     @Override
-    public Tensor apply(Tensor input) {
+    public Tensor forward(Tensor input) {
         if (bias) return (input.mm(W).addVector(B));
         else return (input.mm(W));
     }

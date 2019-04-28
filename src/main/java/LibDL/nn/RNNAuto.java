@@ -32,7 +32,7 @@ public class RNNAuto extends Module {
     }
 
     @Override
-    public Tensor apply(Tensor input) {
+    public Tensor forward(Tensor input) {
         int times = (int)input.size(0);
 
         Tensor[] outList = new Tensor[times];

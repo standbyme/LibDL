@@ -14,7 +14,7 @@ public class MaxPool2d extends Module {
     }
 
     @Override
-    public Tensor apply(Tensor input) {
+    public Tensor forward(Tensor input) {
         Unfold col = new Unfold(input, kernel_size);
         return col.max().reshapeLike(input);
     }

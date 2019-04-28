@@ -26,12 +26,12 @@ public class RMSPropTest {
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.005f, 0.69f, 1e-8);
         for (int i = 1; i <= 1000; i++) {
             optimizer.zero_grad();
-            Tensor loss = Functional.mse_loss(nn.apply(data), target);
+            Tensor loss = Functional.mse_loss(nn.forward(data), target);
             loss.backward();
             optimizer.step();
         }
 
-        Tensor pred = nn.apply(data);
+        Tensor pred = nn.forward(data);
         IntStream.rangeClosed(0, 3).forEach(i -> {
             assert Math.abs(target.data.getInt(i) - pred.data.getDouble(i)) < 0.1;
         });
