@@ -2,7 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.api.ndarray.INDArray;

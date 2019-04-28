@@ -1,7 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Dense extends Module {

@@ -2,6 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Softmax;
+import LibDL.Tensor.Constant;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -14,7 +15,7 @@ public class SoftmaxTest {
     @Test
     public void testSoftmax() {
 
-        Variable data = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
+        Variable data = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}));
         Softmax f = new Softmax(data, 1);
         INDArray s = Transforms.abs(f.data.subi(Nd4j.create(new double[]{0.01821127329554753, 0.24519181293507392, 0.7365969137693786})), false);
         assert s.sumNumber().doubleValue() < 0.0000001;
@@ -23,7 +24,7 @@ public class SoftmaxTest {
 //        assert b1 == 0.24519184231758118;
 //        assert c1 == 0.736596941947937;
 
-        Variable data_to_forward = new Variable(Nd4j.create(new double[][][]{
+        Constant data_to_forward = new Constant(Nd4j.create(new double[][][]{
                 {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
                 {{4.1, 2.0, 2.0}, {0.0, 0.0, 1.2}}
         }));
@@ -58,7 +59,7 @@ public class SoftmaxTest {
         lossSum = Transforms.abs(loss).sumNumber().doubleValue() / 12;
         assert lossSum / 12 < 0.000002;
 
-        data_to_forward = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
+        data_to_forward = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
         result = new Softmax(data_to_forward);
         target = Nd4j.create(new double[]{0.0182, 0.2452, 0.7366}).reshape(3);
         loss = result.data.sub(target);

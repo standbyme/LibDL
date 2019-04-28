@@ -1,7 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 
 import java.lang.reflect.Field;
 import java.util.*;
