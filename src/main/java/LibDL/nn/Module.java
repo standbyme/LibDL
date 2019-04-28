@@ -9,15 +9,7 @@ import java.util.*;
 
 public abstract class Module {
 
-    public abstract Tensor forward(Tensor input);
-
-    public Tensor apply(Tensor input) {
-        return forward(input);
-    }
-
-    public final Tensor predict(Tensor input) {        // make them happy
-        return apply(input);
-    }
+    public abstract Tensor apply(Tensor input);
 
     public Parameter[] parameters() {
         ArrayList<Parameter> result = new ArrayList<>();

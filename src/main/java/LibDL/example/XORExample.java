@@ -22,13 +22,13 @@ public class XORExample {
 
         for (int epoch = 1; epoch <= 1000; epoch++) {
             optimizer.zero_grad();
-            Tensor output = nn.predict(data);
+            Tensor output = nn.apply(data);
             Tensor loss = criterion.eval(output);
             loss.backward();
             optimizer.step();
         }
 
-        System.out.println(nn.predict(data).data);
+        System.out.println(nn.apply(data).data);
 
     }
 

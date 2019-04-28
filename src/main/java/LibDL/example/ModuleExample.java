@@ -26,11 +26,11 @@ public class ModuleExample {
         }
 
         @Override
-        public Tensor forward(Tensor input) {
+        public Tensor apply(Tensor input) {
             // Still not good
-            Tensor output = fc1.forward(input);
-            output = relu.forward(output);
-            output = fc2.forward(output);
+            Tensor output = fc1.apply(input);
+            output = relu.apply(output);
+            output = fc2.apply(output);
             return output;
         }
     }
@@ -52,12 +52,12 @@ public class ModuleExample {
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
             optimizer.zero_grad();
-            Tensor output = nn.predict(data);
+            Tensor output = nn.apply(data);
             Tensor loss = Functional.mse_loss(output, target);
             loss.backward();
             optimizer.step();
         }
-        Tensor pred = nn.predict(data);
+        Tensor pred = nn.apply(data);
         System.out.println(Arrays.toString(pred.data.toDoubleVector()));
 
         IntStream.rangeClosed(0, 3).forEach(i -> {

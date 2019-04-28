@@ -11,11 +11,11 @@ public class Sequential extends Module {
     }
 
     @Override
-    public Tensor forward(Tensor input) {
+    public Tensor apply(Tensor input) {
         Tensor tensor = input;
 
         for (Module layer : layers) {
-            tensor = layer.forward(tensor);
+            tensor = layer.apply(tensor);
         }
 
         return tensor;

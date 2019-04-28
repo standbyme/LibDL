@@ -15,7 +15,7 @@ public class SoftmaxCrossEntropyLoss extends LossLayer {
     }
 
     @Override
-    public Tensor forward(Tensor input) {
+    public Tensor apply(Tensor input) {
         return (new NLLLoss.Builder(new Log(new Softmax(input, 1)), target).reduction("mean").build());
     }
 
