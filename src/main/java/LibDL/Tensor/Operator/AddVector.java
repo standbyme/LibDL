@@ -8,9 +8,9 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.function.Supplier;
 
-public class BroadcastAdd extends OperatorTensor {
+public class AddVector extends OperatorTensor {
 
-    public BroadcastAdd(Tensor mat1, Tensor mat2) {
+    public AddVector(Tensor mat1, Tensor mat2) {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(mat1,()-> grad),
