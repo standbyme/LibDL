@@ -5,6 +5,7 @@ import LibDL.Tensor.Operator.*;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Parameter;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -92,11 +93,11 @@ public class Conv2d extends Module {
         return core;
     }
 
-    public Variable getW() {
+    public Parameter getW() {
         return W;
     }
 
-    public Variable getB() {
+    public Parameter getB() {
         return B;
     }
 
