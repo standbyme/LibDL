@@ -1,7 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -10,14 +10,6 @@ import java.util.*;
 public abstract class Module {
 
     public abstract Tensor forward(Tensor input);
-
-    public Tensor apply(Tensor input) {
-        return forward(input);
-    }
-
-    public final Tensor predict(Tensor input) {        // make them happy
-        return apply(input);
-    }
 
     public Parameter[] parameters() {
         ArrayList<Parameter> result = new ArrayList<>();

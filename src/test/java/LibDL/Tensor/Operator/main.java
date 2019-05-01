@@ -1,6 +1,7 @@
 package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Variable;
+import LibDL.Tensor.Constant;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -56,8 +57,8 @@ public class main {
 
     @Test
     public void testAddAndSub() {
-        Variable data1 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
-        Variable data2 = new Variable(Nd4j.create(new double[]{1, 2, 3}));
+        Constant data1 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
+        Constant data2 = new Constant(Nd4j.create(new double[]{1, 2, 3}));
 
         Add add = new Add(data1, data2);
         Sub sub = new Sub(data1, data2);

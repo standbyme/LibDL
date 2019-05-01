@@ -7,6 +7,7 @@ import LibDL.Tensor.Variable;
 import LibDL.nn.Dense;
 import LibDL.nn.Functional;
 import LibDL.nn.ReLU;
+import LibDL.Tensor.Constant;
 import LibDL.optim.RMSProp;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -35,13 +36,13 @@ public class ModuleExample {
     }
 
     public static void main(String[] args) {
-        Variable data = new Variable(Nd4j.create(new double[][]{
+        Variable data = new Constant(Nd4j.create(new double[][]{
                         {1.0, 0.0},
                         {1.0, 1.0},
                         {0.0, 1.0},
                         {0.0, 0.0}}));
 
-        Variable target = new Variable(Nd4j.create(new double[][]{
+        Variable target = new Constant(Nd4j.create(new double[][]{
                 {1.0}, {0.0},
                 {1.0}, {0.0}}));
 
@@ -51,12 +52,12 @@ public class ModuleExample {
         RMSProp optimizer = new RMSProp(nn.parameters(), 0.01f, 0.99f, 1e-8);
         for (int epoch = 1; epoch <= 1000; epoch++) {
             optimizer.zero_grad();
-            Tensor output = nn.predict(data);
+            Tensor output = nn.forward(data);
             Tensor loss = Functional.mse_loss(output, target);
             loss.backward();
             optimizer.step();
         }
-        Tensor pred = nn.predict(data);
+        Tensor pred = nn.forward(data);
         System.out.println(Arrays.toString(pred.data.toDoubleVector()));
 
         IntStream.rangeClosed(0, 3).forEach(i -> {

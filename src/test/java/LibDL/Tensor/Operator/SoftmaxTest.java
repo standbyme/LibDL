@@ -1,6 +1,7 @@
 package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Variable;
+import LibDL.Tensor.Constant;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -10,16 +11,16 @@ import static org.junit.Assert.assertEquals;
 public class SoftmaxTest {
     @Test
     public void testForward() {
-        Variable data_to_forward;
+        Constant data_to_forward;
         Softmax result;
         INDArray target;
 
-        data_to_forward = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0})); // 2D test
+        data_to_forward = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0})); // 2D test
         result = new Softmax(data_to_forward, 1);
         target = Nd4j.create(new double[] {0.01821127347648143768, 0.24519184231758117676, 0.73659694194793701172});
         assertEquals(target, result.data); // 1.4901161193847656E-8
 
-        data_to_forward = new Variable(Nd4j.create(new double[][][]{
+        data_to_forward = new Constant(Nd4j.create(new double[][][]{
                 {{4.3, 0.0, 2.0}, {-2., 1.0, 2.0}},
                 {{4.1, 2.0, 2.0}, {0.0, 0.0, 1.2}}
         }));
@@ -44,7 +45,7 @@ public class SoftmaxTest {
         });
         assertEquals(target, result.data); // 3.725290298461914E-9
 
-        data_to_forward = new Variable(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
+        data_to_forward = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0}).reshape(3));
         result = new Softmax(data_to_forward);
         target = Nd4j.create(new double[] {0.01821127347648143768, 0.24519184231758117676, 0.73659694194793701172}).reshape(3);
         assertEquals(target, result.data); // 1.241763432820638E-9
