@@ -2,7 +2,7 @@ package LibDL.nn;
 
 public class FeatureDropout extends Dropout {
     public FeatureDropout(double p, boolean train) {
-        super(p, train, false, false);
+        super(p, train, true, false);
     }
 
     protected FeatureDropout(double p, boolean t, boolean f, boolean a) {
