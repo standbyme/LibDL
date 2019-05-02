@@ -13,5 +13,7 @@ public class Functional {
         return loss.eval(tensor);
     }
 
-
+    public static Tensor relu(Tensor tensor) {
+        return new LibDL.Tensor.Operator.ReLU(tensor);
+    }
 }
