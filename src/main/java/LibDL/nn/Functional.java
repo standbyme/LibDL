@@ -26,4 +26,13 @@ public class Functional {
     public static Tensor tanh(Tensor tensor) {
         return new Tanh(tensor);
     }
+
+    public static Tensor dropout(Tensor input, double p, boolean train) {
+        return Dropout.dropout_impl(input, p, train, false, false);
+    }
+
+    public static Tensor dropout(Tensor input, double p) {
+        return dropout(input, p, true);
+    }
+
 }
