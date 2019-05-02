@@ -63,15 +63,15 @@ public class Adam extends Optimizer {
             INDArray bias_correction2 = Nd4j.onesLike(beta2_t[i])
                     .subi(Transforms.pow(beta2_t[i], step_buffers[i]));
 
-            System.out.println("FUCKgd " + param.grad);
-            System.out.println("FUCKst " + step_buffers[i]);
-            System.out.println("FUCKea " + exp_average_buffers[i]);
-            System.out.println("FUCKsq " + exp_average_sq_buffers[i]);
-            System.out.println("FUCKc1 " + bias_correction1);
-            System.out.println("FUCKc2 " + bias_correction2);
+            System.out.println("HEXIE gd " + param.grad);
+            System.out.println("HEXIE st " + step_buffers[i]);
+            System.out.println("HEXIE ea " + exp_average_buffers[i]);
+            System.out.println("HEXIE sq " + exp_average_sq_buffers[i]);
+            System.out.println("HEXIE c1 " + bias_correction1);
+            System.out.println("HEXIE c2 " + bias_correction2);
             INDArray step_size = Transforms.sqrt(bias_correction2).muli(lr)
                     .divi(bias_correction1);
-            System.out.println("FUCK   " + step_size);
+            System.out.println("HEXIE    " + step_size);
             synchronized (this) {
                 param.data.subi(exp_average_buffers[i].add(exp_average_sq_buffers[i].add(eps).divi(step_size)));
             }

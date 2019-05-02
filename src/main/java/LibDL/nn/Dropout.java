@@ -48,10 +48,10 @@ public class Dropout extends Module {
         ));
     }
 
-    protected static Tensor dropout_impl(Tensor tensor, double p,
-                                         boolean train,
-                                         boolean feature_dropout,
-                                         boolean alpha_dropout) {
+    public static Tensor dropout_impl(Tensor tensor, double p,
+                                      boolean train,
+                                      boolean feature_dropout,
+                                      boolean alpha_dropout) {
 
         if (p == 0 || !train) {
             return tensor;
