@@ -7,6 +7,7 @@ import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import static org.nd4j.linalg.indexing.NDArrayIndex.all;
@@ -37,6 +38,37 @@ public class Concat extends OperatorTensor {
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
+        setOperatorInfo(operatorInfo);
+    }
+
+    /**
+     * Self-concat
+     * @param dim the dimension to be concat
+     * @param times the times to be concat
+     * */
+    public Concat(Tensor input, int times, int dim) {
+        OperandInfo[] operandInfos = {
+                new OperandInfo(input, () -> {
+                    long[] shape = new long[grad.shape().length + 1];
+                    int i = 0;
+                    for (; i < dim; i++) {
+                        shape[i] = grad.shape()[i];
+                    }
+                    shape[i++] = times;
+                    shape[i++] = grad.shape()[i - 2] / times;
+                    for (; i < shape.length; i++) {
+                        shape[i] = grad.shape()[i - 1];
+                    }
+                    return grad.reshape(shape).sum(dim);
+                })
+        };
+        Supplier<INDArray> forward = () -> {
+            INDArray[] toConcat = new INDArray[times];
+            Arrays.fill(toConcat, input.data);
+            return Nd4j.concat(dim, toConcat);
+        };
+
+        OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
         setOperatorInfo(operatorInfo);
     }
 
