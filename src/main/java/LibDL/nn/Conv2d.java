@@ -3,9 +3,9 @@ package LibDL.nn;
 import LibDL.Tensor.Operator.Reshape;
 import LibDL.Tensor.Operator.*;
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Operator.Unfold;
-import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -44,18 +44,18 @@ public class Conv2d extends Module {
 
         INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
         for (int i = 0; i < groups; i++) {
-            for(int j = 0; j < out_channels / groups; j++) {
-                INDArray w = Nd4j.rand(new int[] {in_channels / groups, kernel_size[0], kernel_size[1]}).subi(0.5);
-                zeros.put(new INDArrayIndex[] {NDArrayIndex.point(i*out_channels/groups+j),
-                        NDArrayIndex.interval(i*in_channels/groups, (i+1)*in_channels/groups),
+            for (int j = 0; j < out_channels / groups; j++) {
+                INDArray w = Nd4j.rand(new int[]{in_channels / groups, kernel_size[0], kernel_size[1]}).subi(0.5);
+                zeros.put(new INDArrayIndex[]{NDArrayIndex.point(i * out_channels / groups + j),
+                        NDArrayIndex.interval(i * in_channels / groups, (i + 1) * in_channels / groups),
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
         W = new Parameter(zeros);
 
-        if(bias) {
-            B = new Parameter(Nd4j.rand(new int[] {out_channels}).reshape(out_channels).subi(0.5));
-        }else {
+        if (bias) {
+            B = new Parameter(Nd4j.rand(new int[]{out_channels}).reshape(out_channels).subi(0.5));
+        } else {
             B = null;
         }
     }
@@ -64,11 +64,11 @@ public class Conv2d extends Module {
     public void setW(INDArray value) {
         INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
         for (int i = 0; i < groups; i++) {
-            for(int j = 0; j < out_channels / groups; j++) {
-                INDArray w = value.get(NDArrayIndex.point(i*out_channels/groups+j), NDArrayIndex.all(),
+            for (int j = 0; j < out_channels / groups; j++) {
+                INDArray w = value.get(NDArrayIndex.point(i * out_channels / groups + j), NDArrayIndex.all(),
                         NDArrayIndex.all(), NDArrayIndex.all());
-                zeros.put(new INDArrayIndex[] {NDArrayIndex.point(i*out_channels/groups+j),
-                        NDArrayIndex.interval(i*in_channels/groups, (i+1)*in_channels/groups),
+                zeros.put(new INDArrayIndex[]{NDArrayIndex.point(i * out_channels / groups + j),
+                        NDArrayIndex.interval(i * in_channels / groups, (i + 1) * in_channels / groups),
                         NDArrayIndex.all(), NDArrayIndex.all()}, w);
             }
         }
@@ -114,14 +114,14 @@ public class Conv2d extends Module {
                 .build();
         BroadcastMul broadcastMul = new BroadcastMul(
                 new Concat(unfold, out_channels, 1),
-                new Reshape(W, 1, in_channels*out_channels*kernel_size[0]*kernel_size[1], 1),
+                new Reshape(W, 1, in_channels * out_channels * kernel_size[0] * kernel_size[1], 1),
                 in_channels, out_channels, groups);
         Sum sum = new Sum(new Reshape(broadcastMul,
                 broadcastMul.data.shape()[0], out_channels,
-                kernel_size[0] * kernel_size[1] * in_channels,  amount_h, amount_w), 2);
-        if(bias) {
-            return new BroadcastAdd(sum, B, true);
-        }else {
+                kernel_size[0] * kernel_size[1] * in_channels, amount_h, amount_w), 2);
+        if (bias) {
+            return new AddVector(sum, B, true);
+        } else {
             return sum;
         }
     }
@@ -139,41 +139,47 @@ public class Conv2d extends Module {
         public Builder(int in_channels, int out_channels, int... kernel_size) {
             this.in_channels = in_channels;
             this.out_channels = out_channels;
-            if(kernel_size.length == 1) {
-                this.kernel_size = new int[] {kernel_size[0], kernel_size[0]};
-            }else {
+            if (kernel_size.length == 1) {
+                this.kernel_size = new int[]{kernel_size[0], kernel_size[0]};
+            } else {
                 this.kernel_size = kernel_size;
             }
         }
+
         public Builder stride(int... stride) {
-            if(stride.length == 1)
-                this.stride = new int[] {stride[0], stride[0]};
+            if (stride.length == 1)
+                this.stride = new int[]{stride[0], stride[0]};
             else
                 this.stride = stride;
             return this;
         }
+
         public Builder padding(int... padding) {
-            if(padding.length == 1)
-                this.padding = new int[] {padding[0], padding[0]};
+            if (padding.length == 1)
+                this.padding = new int[]{padding[0], padding[0]};
             else
                 this.padding = padding;
             return this;
         }
+
         public Builder dilation(int... dilation) {
-            if(dilation.length == 1)
-                this.dilation = new int[] {dilation[0], dilation[0]};
+            if (dilation.length == 1)
+                this.dilation = new int[]{dilation[0], dilation[0]};
             else
                 this.dilation = dilation;
             return this;
         }
+
         public Builder groups(int groups) {
             this.groups = groups;
             return this;
         }
+
         public Builder bias(boolean bias) {
             this.bias = bias;
             return this;
         }
+
         public Conv2d build() {
             return new Conv2d(this);
         }
