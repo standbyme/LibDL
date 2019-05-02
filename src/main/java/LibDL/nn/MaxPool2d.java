@@ -1,8 +1,12 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Operator.Max;
 import LibDL.Tensor.Operator.Padding;
+import LibDL.Tensor.Operator.Reshape;
 import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
+
+import java.util.Arrays;
 
 public class MaxPool2d extends Module {
 
@@ -24,11 +28,27 @@ public class MaxPool2d extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        return new Unfold.Builder(new Padding(input, kernel_size, padding, stride, dilation, ceil_mode), kernel_size)
+        long[] shape = input.data.shape();
+        long[] to_shape;
+        to_shape = new long[]{
+                input.data.rank() == 4 ? shape[0] * shape[1] : shape[0],
+                1, shape[input.data.rank() - 2], shape[input.data.rank() - 1]
+        };
+
+        Unfold unfold = new Unfold.Builder(
+                new Padding(
+                        new Reshape(input, to_shape), kernel_size, padding, stride, dilation, ceil_mode), kernel_size)
                 .stride(stride)
                 .dilation(dilation)
                 .padding(0) // required
                 .build();
+        Max max = new Max(unfold, 1);
+
+        to_shape = Arrays.copyOf(shape, shape.length);
+        to_shape[input.data.rank() - 2] = unfold.getAmount()[0];
+        to_shape[input.data.rank() - 1] = unfold.getAmount()[1];
+
+        return new Reshape(max, to_shape);
     }
 
     public static class Builder {

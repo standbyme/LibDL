@@ -166,6 +166,10 @@ public class Unfold extends OperatorTensor {
         setOperatorInfo(operatorInfo);
     }
 
+    public long[] getAmount() {
+        return new long[]{amount_h, amount_w};
+    }
+
     public static class Builder {
         private Tensor input;
         private int[] kernel_size;
