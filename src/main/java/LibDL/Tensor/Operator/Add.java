@@ -21,4 +21,8 @@ public class Add extends OperatorTensor {
 
         setOperatorInfo(operatorInfo);
     }
+
+    public Add(Tensor lhs, Number rhs) {
+        this(lhs, Tensor.numbers(rhs, lhs.sizes()));
+    }
 }
