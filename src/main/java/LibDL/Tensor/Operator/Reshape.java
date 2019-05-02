@@ -6,6 +6,7 @@ import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class Reshape extends OperatorTensor {
