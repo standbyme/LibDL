@@ -30,8 +30,8 @@ public abstract class Tensor {
         return new Add(this, that);
     }
 
-    final public BroadcastAdd addVector(Tensor that) {
-        return new BroadcastAdd(this, that);
+    final public AddVector addVector(Tensor that) {
+        return new AddVector(this, that);
     }
 
     final public Sub sub(Tensor that) {

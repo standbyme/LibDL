@@ -38,26 +38,6 @@ public class main {
     }
 
     @Test
-    public void testUnfold() {
-
-        Variable x = new Variable(Nd4j.linspace(0, 15, 16).reshape(4, 4), true);
-
-        Unfold ret = new Unfold(x, 3, 0, 1);
-
-        INDArray assertion_forward = Nd4j.create(new double[][]{{0, 1, 2, 4, 5, 6, 8, 9, 10}, {1, 2, 3, 5, 6, 7, 9, 10, 11}, {4, 5, 6, 8, 9, 10, 12, 13, 14}, {5, 6, 7, 9, 10, 11, 13, 14, 15}});
-
-        assertEquals(assertion_forward, ret.data);
-
-        ret.grad = Nd4j.create(new double[][]{{0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}, {0, 1, 2, 3, 0, 1, 2, 3, 0}});
-        ret.backward();
-
-        INDArray assertion_backward = Nd4j.create(new double[][]{{0, 1, 3, 2}, {3, 4, 4, 3}, {5, 8, 4, 1}, {2, 5, 3, 0}});
-
-        assertEquals(assertion_backward, x.grad);
-    }
-
-
-    @Test
     public void testReshape() {
 
         INDArray matrix = Nd4j.linspace(0, 5, 6);
