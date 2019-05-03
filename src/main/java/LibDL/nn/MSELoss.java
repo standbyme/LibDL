@@ -5,24 +5,34 @@ import LibDL.Tensor.Tensor;
 
 public class MSELoss extends LossLayer {
 
+    public enum Reduction {
+        mean,
+        sum
+    }
+
     private final Tensor target;
-    private final boolean size_average;
+    private final Reduction reduction;
 
 
     public MSELoss(Tensor target) {
-        this(target, true);
+        this(target, Reduction.mean);
     }
 
-    public MSELoss(Tensor target, boolean size_average) {
+    public MSELoss(Tensor target, Reduction reduction) {
         this.target = target;
-        this.size_average = size_average;
+        this.reduction = reduction;
     }
 
     @Override
     public Tensor forward(Tensor input) {
-        if(size_average)
-            return new Sum(input.sub(target).pow(2)).div((int) target.data.length());
-        else
-            return new Sum(input.sub(target).pow(2));
+        switch (reduction) {
+            case sum:
+                return new Sum(input.sub(target).pow(2));
+            case mean:
+                return new Sum(input.sub(target).pow(2)).div((int) target.data.length());
+            default:
+                assert false;
+        }
+        return Tensor.ones(null);
     }
 }
