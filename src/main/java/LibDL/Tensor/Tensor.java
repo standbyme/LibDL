@@ -2,12 +2,14 @@ package LibDL.Tensor;
 
 import LibDL.Tensor.Operator.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 public abstract class Tensor {
     public INDArray data = null;
     public INDArray grad = null;
 
     private String tensorName;
+
     public Tensor() {
         tensorName = this.getClass().getSimpleName();
     }
@@ -15,6 +17,14 @@ public abstract class Tensor {
     public Tensor withName(String name) {
         tensorName = name;
         return this;
+    }
+
+    static public Variable ones(int[] sizes) {
+        return ones(sizes, false);
+    }
+
+    static public Variable ones(int[] sizes, boolean requires_grad) {
+        return new Variable(Nd4j.ones(sizes), requires_grad);
     }
 
     @Override
