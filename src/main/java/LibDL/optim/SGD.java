@@ -27,7 +27,7 @@ public class SGD extends Optimizer {
         assert lr >= 0;
         assert momentum >= 0;
         assert lambda >= 0;
-        // todo: the lambda isn't the one in PyTorch
+        // todo: the lambda isn't the weight_decay in PyTorch
 
         this.lr = lr;
         this.momentum = momentum;
