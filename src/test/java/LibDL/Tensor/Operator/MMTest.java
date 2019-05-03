@@ -2,11 +2,13 @@ package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
 
 public class MMTest {
-    public static void main(String[] args) {
+    @Test
+    public void main() {
         Variable x1 = new Variable(Nd4j.randn(2, 3), true);
         Variable y1 = new Variable(Nd4j.randn(3, 4), true);
 
@@ -14,7 +16,6 @@ public class MMTest {
 
         u.grad = Nd4j.onesLike(u.data);
         u.backward();
-
 
         Variable x2 = new Variable(x1.data.dup(), true);
         Variable y2 = new Variable(y1.data.dup(), true);
