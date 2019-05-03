@@ -13,5 +13,9 @@ public class Functional {
         return loss.eval(tensor);
     }
 
+    public static Tensor nll_loss(Tensor tensor, Tensor target) {
+        NLLLoss loss = new LibDL.nn.NLLLoss(target);
+        return loss.eval(tensor);
+    }
 
 }

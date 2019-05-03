@@ -17,13 +17,27 @@ public class MaxPool2d extends Module {
     private boolean return_indices;
     private boolean ceil_mode;
 
-    public MaxPool2d(Builder builder) {
+    private MaxPool2d(Builder builder) {
         kernel_size = builder.kernel_size;
         stride = builder.stride;
         padding = builder.padding;
         dilation = builder.dilation;
         return_indices = builder.return_indices;
         ceil_mode = builder.ceil_mode;
+    }
+
+    public MaxPool2d(int[] kernel_size,
+                     int[] stride, int[] padding, int[] dilation, boolean return_indices, boolean ceil_mode) {
+        this.kernel_size = kernel_size;
+        this.stride = stride;
+        this.padding = padding;
+        this.dilation = dilation;
+        this.return_indices = return_indices;
+        this.ceil_mode = ceil_mode;
+
+        if(stride == null) {
+            this.stride = kernel_size;
+        }
     }
 
     @Override

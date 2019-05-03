@@ -15,24 +15,14 @@ class MaxPool extends MaxPool2d {
     private Tensor core;
 
     MaxPool(int[] kernel, int[] padding, int[] stride, int[] dilation, boolean ceil_mode) {
-        super(new MaxPool2d.Builder(kernel)
-                .padding(padding)
-                .stride(stride)
-                .dilation(dilation)
-                .ceil_mode(ceil_mode)
-        );
+        super(kernel, stride, padding, dilation, false, ceil_mode);
     }
-    MaxPool(int[] kernel, int[] padding, int[] dilation, boolean ceil_mode) {
-        super(new MaxPool2d.Builder(kernel)
-                .padding(padding)
-                .dilation(dilation)
-                .ceil_mode(ceil_mode)
-        );
-    }
+
     void backward() {
         core.grad = grad;
         core.backward();
     }
+
     void apply(Tensor input) {
         core = forward(input);
         data = core.data;
@@ -148,7 +138,7 @@ public class MaxPool2dTest {
         int[] kernel = new int[]{3, 2};
         int[] padding = new int[]{1, 1};
         int[] dilation = new int[]{1, 2};
-        MaxPool m = new MaxPool(kernel, padding, dilation, false);
+        MaxPool m = new MaxPool(kernel, padding, null, dilation, false);
         INDArray expected = Nd4j.create(new double[][][]{
          {{0.90173310041, 0.90173310041, 0.61415344477},
           {0.80105620623, 0.84797459841, 0.92736989260}},
