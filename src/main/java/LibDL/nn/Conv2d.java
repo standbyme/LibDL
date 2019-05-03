@@ -1,9 +1,8 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Unfold;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Conv2d extends Module {

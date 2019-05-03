@@ -1,6 +1,5 @@
-package LibDL.optim;
+package LibDL.Tensor;
 
-import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 public class Parameter extends Variable {

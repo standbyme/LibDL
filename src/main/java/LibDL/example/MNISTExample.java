@@ -1,8 +1,8 @@
 package LibDL.example;
 
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
 import LibDL.nn.*;
+import LibDL.Tensor.Constant;
 import LibDL.optim.RMSProp;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
@@ -38,8 +38,8 @@ public class MNISTExample {
             for (Pair<INDArray, INDArray> batch :
                     new DataLoader(mnist_train, 500, false, false)) {
                 optim.zero_grad();
-                Tensor pred = nn.predict(new Variable(batch.first));
-                Tensor target = new Variable(batch.second);
+                Tensor pred = nn.forward(new Constant(batch.first));
+                Tensor target = new Constant(batch.second);
                 Tensor loss = Functional.cross_entropy(pred, target);
                 loss.backward();
                 optim.step();
@@ -50,7 +50,7 @@ public class MNISTExample {
             }
         }
 
-        Tensor result = nn.predict(new Variable(mnist_test.reshapeData(784).data));
+        Tensor result = nn.forward(new Constant(mnist_test.reshapeData(784).data));
 
         INDArray out = MNIST.revertOneHot(result.data);
 

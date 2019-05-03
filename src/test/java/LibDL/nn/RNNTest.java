@@ -1,7 +1,7 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Variable;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Constant;
+import LibDL.Tensor.Parameter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class RNNTest {
                 {-0.3468, -0.0986, -0.5787, -0.6640, 0.5776},
                 {-0.6707, 0.6514, 0.6557, 0.1384, -0.9628}});
 
-        rnn.setInput(new Variable(input), new Variable(h0));
+        rnn.setInput(new Constant(input), new Constant(h0));
 
         rnn.grad = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},

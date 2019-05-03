@@ -2,9 +2,9 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Constant;
+import LibDL.Tensor.Parameter;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -47,7 +47,7 @@ public class RNNAutoTest {
                         {1.0333, -0.2276, -0.1532}}}
         ), true);
 
-        Variable h0 = new Variable(Nd4j.create(new double[][]{
+        Constant h0 = new Constant(Nd4j.create(new double[][]{
                 {0.4765, 0.3493, -0.8491, 0.7070, 0.6665},
                 {-0.3468, -0.0986, -0.5787, -0.6640, 0.5776},
                 {-0.6707, 0.6514, 0.6557, 0.1384, -0.9628}}));
@@ -62,7 +62,7 @@ public class RNNAutoTest {
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
         rnn.setH0(h0);
-        Tensor result = rnn.predict(input);
+        Tensor result = rnn.forward(input);
 
         assert result.data.equalsWithEps(output, 1e-3);
 

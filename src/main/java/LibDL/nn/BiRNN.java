@@ -2,6 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Variable;
 import LibDL.Tensor.Tensor;
+import LibDL.Tensor.Constant;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -39,8 +40,8 @@ public class BiRNN extends Tensor {
 
     private void forward() {
         Tensor inputReversed = reverseInput(input);
-        Variable h0F = new Variable(h0.data.get(point(0), all(), all()));
-        Variable h0B = new Variable(h0.data.get(point(1), all(), all()));
+        Constant h0F = new Constant(h0.data.get(point(0), all(), all()));
+        Constant h0B = new Constant(h0.data.get(point(1), all(), all()));
 
         hidden = new Variable(Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize*2), true);
 
@@ -53,13 +54,13 @@ public class BiRNN extends Tensor {
         hidden.data.assign(Nd4j.hstack(forwardRNN.data, backwardRNN.data));
     }
 
-    private Variable reverseInput(Tensor input) {
+    private Constant reverseInput(Tensor input) {
         INDArray rev = Nd4j.emptyLike(input.data);
         long times = input.data.size(0);
         for(long i = 0; i < times; i++) {
             rev.get(point(i), all(), all()).assign(input.data.get(point(times - 1 - i), all(), all()));
         }
-        return new Variable(rev);
+        return new Constant(rev);
     }
 
     @Override

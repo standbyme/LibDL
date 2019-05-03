@@ -4,7 +4,7 @@ import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Operator.Tanh;
 import LibDL.Tensor.Tensor;
-import LibDL.optim.Parameter;
+import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class RNNAuto extends Module {
