@@ -24,7 +24,7 @@ public class CNNExample {
                 new Conv2d.Builder(8, 16, 5).build(),
                 new ReLU(),
                 new MaxPool2d.Builder(2).build(),
-                new Reshape(64, 4 * 4 * 16),
+                new Reshape(60, 4 * 4 * 16),
                 new Dense(4 * 4 * 16, 100),
                 new ReLU(),
                 new Dense(100, 10)

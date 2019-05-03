@@ -2,10 +2,9 @@ package LibDL.nn;
 
 import LibDL.Tensor.Operator.Reshape;
 import LibDL.Tensor.Operator.*;
-import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -21,14 +20,8 @@ public class Conv2d extends Module {
     private int groups;
     private boolean bias;
 
-    // TODO `W` and `B` should be modified by `final`
     private Parameter W;
     private Parameter B;
-
-    // TODO  can be removed. These fields are only for testing
-    public INDArray data;
-    public INDArray grad;
-    public Tensor core;
 
     private Conv2d(Builder builder) {
         this.in_channels = builder.in_channels;
@@ -40,6 +33,23 @@ public class Conv2d extends Module {
         groups = builder.groups;
         bias = builder.bias;
 
+        init();
+    }
+
+    public Conv2d(int in_channels, int out_channels, int[] kernel_size, int[] stride, int[] padding, int[] dilation, int groups, boolean bias) {
+        this.in_channels = in_channels;
+        this.out_channels = out_channels;
+        this.kernel_size = kernel_size;
+        this.stride = stride;
+        this.padding = padding;
+        this.dilation = dilation;
+        this.groups = groups;
+        this.bias = bias;
+
+        init();
+    }
+
+    private void init() {
         assert (in_channels % groups == 0 && out_channels % groups == 0);
 
         INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
@@ -58,39 +68,6 @@ public class Conv2d extends Module {
         } else {
             B = null;
         }
-    }
-
-    // TODO can be removed. This function is only for testing, and may need more tests
-    public void setW(INDArray value) {
-        INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
-        for (int i = 0; i < groups; i++) {
-            for (int j = 0; j < out_channels / groups; j++) {
-                INDArray w = value.get(NDArrayIndex.point(i * out_channels / groups + j), NDArrayIndex.all(),
-                        NDArrayIndex.all(), NDArrayIndex.all());
-                zeros.put(new INDArrayIndex[]{NDArrayIndex.point(i * out_channels / groups + j),
-                        NDArrayIndex.interval(i * in_channels / groups, (i + 1) * in_channels / groups),
-                        NDArrayIndex.all(), NDArrayIndex.all()}, w);
-            }
-        }
-        W = new Parameter(zeros);
-    }
-
-    // TODO can be removed. This function is only for testing
-    public void setB(INDArray value) {
-        B = new Parameter(value);
-    }
-
-    // TODO can be removed. This function is only for testing
-    public void backward() {
-        core.grad = grad;
-        core.backward();
-    }
-
-    // TODO can be removed. This function is only for testing
-    public Tensor apply(Tensor input) {
-        core = forward(input);
-        data = core.data;
-        return core;
     }
 
     public Parameter getW() {

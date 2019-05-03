@@ -8,28 +8,29 @@ import org.nd4j.linalg.factory.Nd4j;
 
 import static org.junit.Assert.assertEquals;
 
-class MaxPool extends MaxPool2d {
-
-    INDArray data;
-    INDArray grad;
-    private Tensor core;
-
-    MaxPool(int[] kernel, int[] padding, int[] stride, int[] dilation, boolean ceil_mode) {
-        super(kernel, stride, padding, dilation, false, ceil_mode);
-    }
-
-    void backward() {
-        core.grad = grad;
-        core.backward();
-    }
-
-    void apply(Tensor input) {
-        core = forward(input);
-        data = core.data;
-    }
-}
-
 public class MaxPool2dTest {
+
+    class MaxPool extends MaxPool2d {
+
+        INDArray data;
+        INDArray grad;
+        private Tensor core;
+
+        MaxPool(int[] kernel, int[] padding, int[] stride, int[] dilation, boolean ceil_mode) {
+            super(kernel, stride, padding, dilation, false, ceil_mode);
+        }
+
+        void backward() {
+            core.grad = grad;
+            core.backward();
+        }
+
+        void apply(Tensor input) {
+            core = forward(input);
+            data = core.data;
+        }
+    }
+
     @Test
     public void testFxB_1() {
         Parameter input = new Parameter(Nd4j.create(new double[][][][]{

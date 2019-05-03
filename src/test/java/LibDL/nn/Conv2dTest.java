@@ -1,24 +1,137 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Operator.*;
+import LibDL.Tensor.Operator.Reshape;
+import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import static org.junit.Assert.assertEquals;
 
 public class Conv2dTest {
 
+    class Conv extends Conv2d {
+
+        private int in_channels;
+        private int out_channels;
+        private int[] kernel_size;
+        private int[] stride;
+        private int[] padding;
+        private int[] dilation;
+        private int groups;
+        private boolean bias;
+
+        INDArray data;
+        INDArray grad;
+        Tensor core;
+
+        private Parameter W;
+        private Parameter B;
+
+        Conv(int in_channels, int out_channels, int[] kernel_size, int[] stride, int[] padding, int[] dilation, int groups, boolean bias) {
+            super(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias);
+            this.in_channels = in_channels;
+            this.out_channels = out_channels;
+            this.kernel_size = kernel_size;
+            this.stride = stride;
+            this.padding = padding;
+            this.dilation = dilation;
+            this.groups = groups;
+            this.bias = bias;
+            init();
+        }
+        private void init() {
+            assert (in_channels % groups == 0 && out_channels % groups == 0);
+
+            INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
+            for (int i = 0; i < groups; i++) {
+                for (int j = 0; j < out_channels / groups; j++) {
+                    INDArray w = Nd4j.rand(new int[]{in_channels / groups, kernel_size[0], kernel_size[1]}).subi(0.5);
+                    zeros.put(new INDArrayIndex[]{NDArrayIndex.point(i * out_channels / groups + j),
+                            NDArrayIndex.interval(i * in_channels / groups, (i + 1) * in_channels / groups),
+                            NDArrayIndex.all(), NDArrayIndex.all()}, w);
+                }
+            }
+            W = new Parameter(zeros);
+
+            if (bias) {
+                B = new Parameter(Nd4j.rand(new int[]{out_channels}).reshape(out_channels).subi(0.5));
+            } else {
+                B = null;
+            }
+        }
+        void backward() {
+            core.grad = grad;
+            core.backward();
+        }
+
+        void apply(Tensor input) {
+            core = forward(input);
+            data = core.data;
+        }
+
+        void setB(INDArray value) {
+            B = new Parameter(value);
+        }
+
+        void setW(INDArray value) {
+            INDArray zeros = Nd4j.zeros(out_channels, in_channels, kernel_size[0], kernel_size[1]);
+            for (int i = 0; i < groups; i++) {
+                for (int j = 0; j < out_channels / groups; j++) {
+                    INDArray w = value.get(NDArrayIndex.point(i * out_channels / groups + j), NDArrayIndex.all(),
+                            NDArrayIndex.all(), NDArrayIndex.all());
+                    zeros.put(new INDArrayIndex[]{NDArrayIndex.point(i * out_channels / groups + j),
+                            NDArrayIndex.interval(i * in_channels / groups, (i + 1) * in_channels / groups),
+                            NDArrayIndex.all(), NDArrayIndex.all()}, w);
+                }
+            }
+            W = new Parameter(zeros);
+        }
+
+        public Parameter getW() {
+            return W;
+        }
+
+        public Parameter getB() {
+            return B;
+        }
+
+        @Override
+        public Tensor forward(Tensor input) {
+            int _filter_h = (kernel_size[0] - 1) * dilation[0] + 1;
+            int _filter_w = (kernel_size[1] - 1) * dilation[1] + 1;
+            long amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
+            long amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
+            Unfold unfold = new Unfold.Builder(input, kernel_size)
+                    .padding(padding)
+                    .stride(stride)
+                    .dilation(dilation)
+                    .build();
+            BroadcastMul broadcastMul = new BroadcastMul(
+                    new Concat(unfold, out_channels, 1),
+                    new LibDL.Tensor.Operator.Reshape(W, 1, in_channels * out_channels * kernel_size[0] * kernel_size[1], 1),
+                    in_channels, out_channels, groups);
+            Sum sum = new Sum(new Reshape(broadcastMul,
+                    broadcastMul.data.shape()[0], out_channels,
+                    kernel_size[0] * kernel_size[1] * in_channels, amount_h, amount_w), 2);
+            if (bias) {
+                return new AddVector(sum, B, true);
+            } else {
+                return sum;
+            }
+        }
+    }
+
     @Test
     public void testConv2d() {
         Variable input = new Variable(Nd4j.linspace(1, 192, 192).reshape(2, 2, 8, 6), true);
-        Conv2d conv2d = new Conv2d.Builder(2, 4, 3, 2)
-                .stride(2, 1)
-                .padding(1)
-                .dilation(1, 2)
-                .groups(2)
-                .bias(true)
-                .build();
+        Conv conv2d = new Conv(2, 4, new int[]{3, 2},
+                new int[]{2, 1}, new int[]{1, 1}, new int[]{1, 2}, 2, true);
         conv2d.setW(Nd4j.create(new double[][][][] {
         {{{-0.14339730144,  0.11298561096},
           {-0.30034396052, -0.20663771033},
