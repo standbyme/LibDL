@@ -1,6 +1,5 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Operator.MM;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.factory.Nd4j;
@@ -35,8 +34,8 @@ public class Dense extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        if (bias) return new MM(input, W, true).addVector(B);
-        else return (new MM(input, W, true));
+        if (bias) return input.matmul(W).addVector(B);
+        else return input.matmul(W);
     }
 
     private void resetParameters() {

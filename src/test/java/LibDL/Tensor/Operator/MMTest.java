@@ -26,7 +26,7 @@ public class MMTest {
 
         System.out.println(v.data);
         System.out.println(v.data.mul(2));
-        assert u.data.equals(v);
+        assert u.data.equals(v.data);
         assert x1.grad.equals(x2.grad);
         assert y1.grad.equals(y2.grad);
     }

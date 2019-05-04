@@ -48,6 +48,10 @@ public abstract class Tensor {
         return new MM(this, that);
     }
 
+    public MM matmul(Tensor mat) {
+        return new MM(this, mat, true);
+    }
+
     final public Pow pow(int exponent) {
         return new Pow(this, exponent);
     }
