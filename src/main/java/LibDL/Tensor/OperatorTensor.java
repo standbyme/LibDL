@@ -22,13 +22,13 @@ public abstract class OperatorTensor extends Tensor {
 
     @Override
     public final void backward() {
-        if(data.length() == 1) // If this tensor is a scalar
-            grad = Nd4j.create(new double[] {1.0});
+        if (data.length() == 1) // If this tensor is a scalar
+            grad = Nd4j.create(new double[]{1.0});
 
         LinkedList<Tensor> tensorList = new LinkedList<>();
         traverse(this, new HashSet<>(), tensorList);
 
-        for (Tensor tensor: tensorList) {
+        for (Tensor tensor : tensorList) {
             if (tensor instanceof OperatorTensor)
                 ((OperatorTensor) tensor).backprop();
         }

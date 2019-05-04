@@ -1,8 +1,11 @@
 package LibDL.example;
 
-import LibDL.Tensor.Tensor;
-import LibDL.nn.*;
 import LibDL.Tensor.Constant;
+import LibDL.Tensor.Tensor;
+import LibDL.nn.Dense;
+import LibDL.nn.Functional;
+import LibDL.nn.ReLU;
+import LibDL.nn.Sequential;
 import LibDL.optim.RMSProp;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;

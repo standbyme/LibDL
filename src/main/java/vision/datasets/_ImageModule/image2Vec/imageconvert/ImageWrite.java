@@ -16,7 +16,8 @@ public class ImageWrite {
 
     /**
      * 图片对象写入文件中 文件以创建时的毫秒数命名 所以在创建之前调用了{@link Thread#sleep(long)}暂停1毫秒 防止文件名重复
-     * @param image 图片对象
+     *
+     * @param image   图片对象
      * @param dirPath 待写入的文件夹路径 该方法会在该文件夹下创建名为"当前系统毫秒数.png"的图片文件 将图片写入
      */
     public static void toDir(BufferedImage image, String dirPath) {
@@ -33,7 +34,8 @@ public class ImageWrite {
 
     /**
      * 将图片对象写入INDArray
-     * @param image 图片对象
+     *
+     * @param image   图片对象
      * @param channel 指定该图片对象写入INDArray时的通道数
      * @return
      */

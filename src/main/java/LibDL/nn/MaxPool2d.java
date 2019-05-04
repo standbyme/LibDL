@@ -1,6 +1,5 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Operator.Unfold;
 import LibDL.Tensor.Tensor;
 
 public class MaxPool2d extends Module {

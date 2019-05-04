@@ -3,6 +3,7 @@ package vision.datasets;
 import LibDL.utils.data.Dataset;
 import org.apache.commons.lang3.ArrayUtils;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
 public class FakeData extends Dataset {
     private static int[] combineShape(int size, int[] image_size) {
@@ -11,6 +12,6 @@ public class FakeData extends Dataset {
 
     public FakeData(int size, int[] image_size, int num_classes) {
         super(Nd4j.rand(combineShape(size, image_size)),
-                Nd4j.rand(new int[]{size, num_classes}));
+                Transforms.floor(Nd4j.rand(new int[]{size, num_classes})));
     }
 }

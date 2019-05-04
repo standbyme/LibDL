@@ -20,7 +20,7 @@ public class Get extends OperatorTensor {
 
         INDArrayIndex[] indices = new INDArrayIndex[tensor.data.rank()];
         indices[0] = point(i);
-        for(int i1 = 1; i1 < indices.length; i1++) {
+        for (int i1 = 1; i1 < indices.length; i1++) {
             indices[i1] = all();
         }
 

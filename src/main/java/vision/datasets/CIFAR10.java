@@ -12,7 +12,7 @@ import java.io.InputStream;
 public class CIFAR10 extends Dataset {
 
 
-    private static String data_paths[] = {
+    private static String[] data_paths = {
             "data_batch_1.bin",
             "data_batch_2.bin",
             "data_batch_3.bin",

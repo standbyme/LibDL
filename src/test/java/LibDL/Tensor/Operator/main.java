@@ -1,7 +1,7 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.Variable;
 import LibDL.Tensor.Constant;
+import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;

@@ -16,6 +16,7 @@ public class Softmax extends OperatorTensor {
         this(tensor, 0, false);
         System.err.println("UserWarning: Implicit dimension choice for softmax has been deprecated. Change the call to include dim=X as an argument.");
     }
+
     public Softmax(Tensor tensor, int dim) {
         this(tensor, dim, true);
     }
@@ -31,57 +32,57 @@ public class Softmax extends OperatorTensor {
     private Softmax(Tensor tensor, int dim, boolean withDim) {
 
         OperandInfo[] operandInfos = {
-            new OperandInfo(tensor, () -> {
-                int rank = data.rank();
-                int _dim;
-                if(withDim) {
-                    _dim = dim < 0 ? dim + rank : dim;
-                }else {
-                    _dim = (rank == 1 || rank == 3) ? 0 : 1;
-                }
-
-                if(tensor.data.rank() == 1) {
-                    return grad.reshape(1, grad.shape()[0]).mmul(Softmax.DjSi(data.dup())).reshape(grad.shape()[0]);
-                }else {
-                    INDArray out = this.data.dup();
-                    INDArray dout = this.grad.dup();
-
-                    int[] rearrange = Nd4j.linspace(0, rank - 1, rank).toIntVector();
-                    rearrange[_dim] = rank - 1;
-                    rearrange[rank - 1] = _dim;
-                    out.permutei(rearrange);
-                    dout.permutei(rearrange);
-
-                    long[] __shape = out.shape();
-                    double[] _shape = new double[rank];
-                    for (int i = 0; i < rank; i++) {
-                        _shape[i] = __shape[i];
+                new OperandInfo(tensor, () -> {
+                    int rank = data.rank();
+                    int _dim;
+                    if (withDim) {
+                        _dim = dim < 0 ? dim + rank : dim;
+                    } else {
+                        _dim = (rank == 1 || rank == 3) ? 0 : 1;
                     }
 
-                    INDArray shape = Nd4j.create(_shape);
-                    long lastDim = new Double(shape.getDouble(rank - 1)).longValue();
-                    shape.putScalar(rank - 1, 1);
-                    long size = shape.prodNumber().longValue();
-                    out = out.reshape(size, lastDim);
-                    dout = dout.reshape(size, lastDim);
-                    INDArray result = Nd4j.zeros(size, lastDim);
-                    for(long i = 0; i < size; i++) {
-                        result.putRow(i, dout.getRow(i).mmul(Softmax.DjSi(out.getRow(i))));
+                    if (tensor.data.rank() == 1) {
+                        return grad.reshape(1, grad.shape()[0]).mmul(Softmax.DjSi(data.dup())).reshape(grad.shape()[0]);
+                    } else {
+                        INDArray out = this.data.dup();
+                        INDArray dout = this.grad.dup();
+
+                        int[] rearrange = Nd4j.linspace(0, rank - 1, rank).toIntVector();
+                        rearrange[_dim] = rank - 1;
+                        rearrange[rank - 1] = _dim;
+                        out.permutei(rearrange);
+                        dout.permutei(rearrange);
+
+                        long[] __shape = out.shape();
+                        double[] _shape = new double[rank];
+                        for (int i = 0; i < rank; i++) {
+                            _shape[i] = __shape[i];
+                        }
+
+                        INDArray shape = Nd4j.create(_shape);
+                        long lastDim = new Double(shape.getDouble(rank - 1)).longValue();
+                        shape.putScalar(rank - 1, 1);
+                        long size = shape.prodNumber().longValue();
+                        out = out.reshape(size, lastDim);
+                        dout = dout.reshape(size, lastDim);
+                        INDArray result = Nd4j.zeros(size, lastDim);
+                        for (long i = 0; i < size; i++) {
+                            result.putRow(i, dout.getRow(i).mmul(Softmax.DjSi(out.getRow(i))));
+                        }
+                        result = result.reshape(__shape);
+                        result.permutei(rearrange);
+                        return result;
                     }
-                    result = result.reshape(__shape);
-                    result.permutei(rearrange);
-                    return result;
-                }
-            })
+                })
         };
 
         Supplier<INDArray> forward = () -> {
 
             int rank = tensor.data.rank();
             int _dim;
-            if(withDim) {
+            if (withDim) {
                 _dim = dim < 0 ? dim + rank : dim;
-            }else {
+            } else {
                 _dim = (rank == 1 || rank == 3) ? 0 : 1;
             }
 
