@@ -7,17 +7,28 @@ import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 public class AddVector extends OperatorTensor {
 
-    public AddVector(Tensor mat1, Tensor mat2) {
+    public AddVector(Tensor tensor, Tensor vector) {
+
+        int rank = tensor.data.rank();
+        int[] dims = IntStream.range(0, rank - 1).toArray();
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1, () -> grad),
-                new OperandInfo(mat2, () -> grad.sum(0)),
+                new OperandInfo(tensor, () -> grad),
+                new OperandInfo(vector, () -> grad.sum(dims)),
         };
 
-        Supplier<INDArray> forward = () -> mat1.data.addRowVector(mat2.data);
+        long[] newShape = new long[rank];
+        for(int i = 0; i < rank - 1; i++)
+            newShape[i] = 1;
+        newShape[rank - 1] = vector.data.length();
+
+        Supplier<INDArray> forward = () -> tensor.data.add(vector.data
+                .reshape(newShape)
+                .broadcast(tensor.data.shape()));
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
