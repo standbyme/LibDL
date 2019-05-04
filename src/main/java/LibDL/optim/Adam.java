@@ -14,7 +14,8 @@ public class Adam extends Optimizer {
     private final double eps;
 //    private final int t;
 
-    private INDArray[] Vdparams, Sdparams, one;
+    private INDArray[] exp_average_buffers, exp_average_sq_buffers;
+    private long[] step_buffers;
     private INDArray[] beta1_t;
     private INDArray[] beta2_t;
 
@@ -24,21 +25,21 @@ public class Adam extends Optimizer {
         this.betas = betas;
         this.eps = eps;
 
-        this.Sdparams = Arrays.stream(params)
+        this.exp_average_sq_buffers = Arrays.stream(params)
                 .map(constant -> Nd4j.zerosLike(constant.data))
                 .toArray(INDArray[]::new);
-        this.Vdparams = Arrays.stream(params)
+        this.exp_average_buffers = Arrays.stream(params)
                 .map(constant -> Nd4j.zerosLike(constant.data))
                 .toArray(INDArray[]::new);
-        this.one = Arrays.stream(params)
-                .map(constant -> Nd4j.onesLike(constant.data))
-                .toArray(INDArray[]::new);
+        this.step_buffers = new long[params.length];
         beta1_t = Arrays.stream(params)
-                .map(constant -> Nd4j.onesLike(constant.data))
+                .map(constant -> Nd4j.zerosLike(constant.data).assign(betas[0]))
                 .toArray(INDArray[]::new);
         beta2_t = Arrays.stream(params)
-                .map(constant -> Nd4j.onesLike(constant.data))
+                .map(constant -> Nd4j.zerosLike(constant.data).assign(betas[1]))
                 .toArray(INDArray[]::new);
+//        System.out.println(beta1_t[0]);
+//        System.out.println(beta2_t[0]);
     }
 
     public Adam(Variable[] parameters, float lr) {
@@ -51,17 +52,29 @@ public class Adam extends Optimizer {
         for (int i = 0; i < params.length; i++) {
             Variable param = params[i];
 //            System.out.println(Arrays.toString());
-            Vdparams[i].muli(betas[0]).addi(param.grad.mul(1 - betas[0]));
-            Sdparams[i].muli(betas[1]).addi
-                    (param.grad.mul(param.grad).muli(1.0 - betas[1]));
+            exp_average_buffers[i].muli(betas[0]).addi(param.grad.mul(1.0 - betas[0]));
+            exp_average_sq_buffers[i].muli(betas[1]).addi
+                    (param.grad.mul(param.grad).mul(1.0 - betas[1]));
 //            correction
-            Vdparams[i].divi(beta1_t[i].sub(1).muli(-1));
-            Sdparams[i].divi(beta2_t[i].sub(1).muli(-1));
-//            update
-            beta1_t[i] = beta1_t[i].muli(betas[0]);
-            beta2_t[i] = beta2_t[i].muli(betas[1]);
-            param.data.subi(Vdparams[i].mul(lr).
-                    divi(Transforms.sqrt(Sdparams[i]).add(eps)));
+
+            step_buffers[i] += 1;
+            INDArray bias_correction1 = Nd4j.onesLike(beta1_t[i])
+                    .subi(Transforms.pow(beta1_t[i], step_buffers[i]));
+            INDArray bias_correction2 = Nd4j.onesLike(beta2_t[i])
+                    .subi(Transforms.pow(beta2_t[i], step_buffers[i]));
+
+            System.out.println("HEXIE gd " + param.grad);
+            System.out.println("HEXIE st " + step_buffers[i]);
+            System.out.println("HEXIE ea " + exp_average_buffers[i]);
+            System.out.println("HEXIE sq " + exp_average_sq_buffers[i]);
+            System.out.println("HEXIE c1 " + bias_correction1);
+            System.out.println("HEXIE c2 " + bias_correction2);
+            INDArray step_size = Transforms.sqrt(bias_correction2).muli(lr)
+                    .divi(bias_correction1);
+            System.out.println("HEXIE    " + step_size);
+            synchronized (param) {
+                param.data.subi(exp_average_buffers[i].add(exp_average_sq_buffers[i].add(eps).divi(step_size)));
+            }
         }
 
     }

@@ -90,18 +90,18 @@ public class Unfold extends OperatorTensor {
                     INDArray data = input.data;
                     long[] shape = data.shape();
 
-                    INDArray zeros = Nd4j.zeros(shape[0], shape[1], shape[2]+this.padding[0]*2, shape[3]+this.padding[1]*2);
+                    INDArray zeros = Nd4j.zeros(shape[0], shape[1], shape[2] + this.padding[0] * 2, shape[3] + this.padding[1] * 2);
                     INDArray result = zeros.dup();
 
                     INDArray column;
                     for (long i = 0; i < amount_h; i++) {
                         for (long j = 0; j < amount_w; j++) {
-                            column = grad.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j))
+                            column = grad.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i * amount_w + j))
                                     .reshape(shape[0], shape[1], filter_h, filter_w);
-                            zeros.put(new INDArrayIndex[] {
+                            zeros.put(new INDArrayIndex[]{
                                     NDArrayIndex.all(), NDArrayIndex.all(),
-                                    NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
-                                    NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])
+                                    NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + filter_h * dilation[0]),
+                                    NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + filter_w * dilation[1])
                             }, column);
                             result.addi(zeros);
                             zeros.muli(0);
@@ -111,8 +111,8 @@ public class Unfold extends OperatorTensor {
                     result = result.get(
                             NDArrayIndex.all(),
                             NDArrayIndex.all(),
-                            NDArrayIndex.interval(padding[0], padding[0]+shape[2]),
-                            NDArrayIndex.interval(padding[1], padding[1]+shape[3]));
+                            NDArrayIndex.interval(padding[0], padding[0] + shape[2]),
+                            NDArrayIndex.interval(padding[1], padding[1] + shape[3]));
 
                     return result;
                 })
@@ -124,12 +124,12 @@ public class Unfold extends OperatorTensor {
             INDArray data = input.data;
             long[] shape = data.shape();
 
-            if(padding[0] + padding[1] > 0) {
+            if (padding[0] + padding[1] > 0) {
                 INDArray padding = Nd4j.zeros(
-                        shape[0], shape[1], shape[2]+this.padding[0]*2, shape[3]+this.padding[1]*2);
+                        shape[0], shape[1], shape[2] + this.padding[0] * 2, shape[3] + this.padding[1] * 2);
                 padding.get(NDArrayIndex.all(), NDArrayIndex.all(),
-                        NDArrayIndex.interval(this.padding[0], this.padding[0]+shape[2]),
-                        NDArrayIndex.interval(this.padding[1], this.padding[1]+shape[3])).assign(data);
+                        NDArrayIndex.interval(this.padding[0], this.padding[0] + shape[2]),
+                        NDArrayIndex.interval(this.padding[1], this.padding[1] + shape[3])).assign(data);
                 data = padding;
             }
 
@@ -152,10 +152,10 @@ public class Unfold extends OperatorTensor {
                 for (long j = 0; j < amount_w; j++) {
                     INDArray column = Nd4j.toFlattened(data.get(
                             NDArrayIndex.all(), NDArrayIndex.all(),
-                            NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0]+filter_h*dilation[0]),
-                            NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])));
-                    result.put(new INDArrayIndex[] {
-                                    NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j)},
+                            NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + filter_h * dilation[0]),
+                            NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + filter_w * dilation[1])));
+                    result.put(new INDArrayIndex[]{
+                                    NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i * amount_w + j)},
                             column.reshape(shape[0], 1, output_h));
                 }
             }
@@ -176,34 +176,39 @@ public class Unfold extends OperatorTensor {
         private int[] stride = {1, 1};
         private int[] padding = {0, 0};
         private int[] dilation = {1, 1};
+
         public Builder(Tensor input, int... kernel_size) {
             this.input = input;
-            if(kernel_size.length == 1)
-                this.kernel_size = new int[] {kernel_size[0], kernel_size[0]};
+            if (kernel_size.length == 1)
+                this.kernel_size = new int[]{kernel_size[0], kernel_size[0]};
             else
                 this.kernel_size = kernel_size;
         }
+
         public Builder stride(int... stride) {
-            if(stride.length == 1)
-                this.stride = new int[] {stride[0], stride[0]};
+            if (stride.length == 1)
+                this.stride = new int[]{stride[0], stride[0]};
             else
                 this.stride = stride;
             return this;
         }
+
         public Builder padding(int... padding) {
-            if(padding.length == 1)
-                this.padding = new int[] {padding[0], padding[0]};
+            if (padding.length == 1)
+                this.padding = new int[]{padding[0], padding[0]};
             else
                 this.padding = padding;
             return this;
         }
+
         public Builder dilation(int... dilation) {
-            if(dilation.length == 1)
-                this.dilation = new int[] {dilation[0], dilation[0]};
+            if (dilation.length == 1)
+                this.dilation = new int[]{dilation[0], dilation[0]};
             else
                 this.dilation = dilation;
             return this;
         }
+
         public Unfold build() {
             return new Unfold(this);
         }

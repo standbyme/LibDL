@@ -1,10 +1,10 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Variable;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Operator.Tanh;
-import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class RNNAuto extends Module {
@@ -33,12 +33,12 @@ public class RNNAuto extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        int times = (int)input.size(0);
+        int times = (int) input.size(0);
 
         Tensor[] outList = new Tensor[times];
         Tensor prevHidden = h0;
 
-        for(int i = 0; i < times; i++) {
+        for (int i = 0; i < times; i++) {
             Tensor currIn = input.get(i);
             Tensor currOut = currIn.mm(weight_ih.transpose())
                     .add(prevHidden.mm(weight_hh.transpose()))

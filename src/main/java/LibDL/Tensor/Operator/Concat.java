@@ -21,17 +21,17 @@ public class Concat extends OperatorTensor {
         OperandInfo[] operandInfos = new OperandInfo[toConcat.length];
 
         final long size = toConcat[0].size(0);
-        for(int i = 0; i < toConcat.length; i++) {
+        for (int i = 0; i < toConcat.length; i++) {
             assert toConcat[i].data.rank() == 2;
 
             final int fi = i;
             operandInfos[i] = new OperandInfo(toConcat[i],
-                    () -> grad.get(interval(size*fi, size*fi+size), all()));
+                    () -> grad.get(interval(size * fi, size * fi + size), all()));
         }
 
         Supplier<INDArray> forward = () -> {
             INDArray[] valList = new INDArray[toConcat.length];
-            for(int i = 0; i < toConcat.length; i++)
+            for (int i = 0; i < toConcat.length; i++)
                 valList[i] = toConcat[i].data;
             return Nd4j.concat(0, valList);
         };
@@ -43,9 +43,10 @@ public class Concat extends OperatorTensor {
 
     /**
      * Self-concat
-     * @param dim the dimension to be concat
+     *
+     * @param dim   the dimension to be concat
      * @param times the times to be concat
-     * */
+     */
     public Concat(Tensor input, int times, int dim) {
         OperandInfo[] operandInfos = {
                 new OperandInfo(input, () -> {

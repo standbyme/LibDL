@@ -1,9 +1,12 @@
 package LibDL.example;
 
+import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.nn.*;
-import LibDL.Tensor.Constant;
+import LibDL.nn.Dense;
+import LibDL.nn.MSELoss;
+import LibDL.nn.ReLU;
+import LibDL.nn.Sequential;
 import LibDL.optim.SGD;
 import org.nd4j.linalg.factory.Nd4j;
 

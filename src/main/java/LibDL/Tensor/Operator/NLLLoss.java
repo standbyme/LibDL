@@ -26,11 +26,11 @@ public class NLLLoss extends OperatorTensor {
                     INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.data);
                     INDArray result = Nd4j.zeros(rows * cols)
                             .put(indices, Nd4j.onesLike(indices)).reshape(rows, cols).muli(-1);
-                    if(reduction.equals("none")) {
+                    if (reduction.equals("none")) {
                         return null;
-                    }else if(reduction.equals("sum")) {
+                    } else if (reduction.equals("sum")) {
                         return result;
-                    }else {
+                    } else {
                         return result.divi(rows);
                     }
                 }),
@@ -42,11 +42,11 @@ public class NLLLoss extends OperatorTensor {
             long cols = input.data.columns();
             INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.data);
             INDArray result = input.data.reshape(rows * cols).get(indices).muli(-1);
-            if(reduction.equals("none")) {
+            if (reduction.equals("none")) {
                 return result.reshape(rows);
-            }else if(reduction.equals("sum")) {
+            } else if (reduction.equals("sum")) {
                 return result.sum();
-            }else {
+            } else {
                 return result.mean();
             }
         };
@@ -56,7 +56,6 @@ public class NLLLoss extends OperatorTensor {
         setOperatorInfo(operatorInfo);
 
     }
-
 
 
     public static class Builder {
@@ -71,10 +70,12 @@ public class NLLLoss extends OperatorTensor {
             this.target = target;
             this.reduction = "mean";
         }
+
         public Builder reduction(String reduction) {
             this.reduction = reduction;
             return this;
         }
+
         public NLLLoss build() {
             return new NLLLoss(this);
         }

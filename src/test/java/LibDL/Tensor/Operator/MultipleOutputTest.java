@@ -20,7 +20,7 @@ public class MultipleOutputTest {
 
     @Test
     public void test1_1() {
-        Variable v = new Variable(Nd4j.create(new double[] {0.5}), true);
+        Variable v = new Variable(Nd4j.create(new double[]{0.5}), true);
         Tensor x = v.mul(1);
         Tensor l = x.mul(5).add(x);
 
@@ -30,7 +30,7 @@ public class MultipleOutputTest {
 
     @Test
     public void test1_2() {
-        Variable v = new Variable(Nd4j.create(new double[] {0.5}), true);
+        Variable v = new Variable(Nd4j.create(new double[]{0.5}), true);
         Tensor x = v.mul(1);
         Tensor l = x.add(x.mul(5));
 
@@ -40,7 +40,7 @@ public class MultipleOutputTest {
 
     @Test
     public void test2() {
-        Variable v = new Variable(Nd4j.create(new double[] {0.3}), true);
+        Variable v = new Variable(Nd4j.create(new double[]{0.3}), true);
         Tensor x = v.mul(1);
         Tensor l = x.add(x);
 
@@ -50,7 +50,7 @@ public class MultipleOutputTest {
 
     @Test
     public void test3() {
-        Variable v = new Variable(Nd4j.create(new double[] {0.7}), true);
+        Variable v = new Variable(Nd4j.create(new double[]{0.7}), true);
         Tensor x = v.mul(1);
         Tensor y = x.mul(2);
         Tensor z = x.mul(3);

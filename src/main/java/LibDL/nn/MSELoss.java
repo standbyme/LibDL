@@ -33,6 +33,6 @@ public class MSELoss extends LossLayer {
             default:
                 assert false;
         }
-        return Tensor.ones(null);
+        return Tensor.ones(1);
     }
 }

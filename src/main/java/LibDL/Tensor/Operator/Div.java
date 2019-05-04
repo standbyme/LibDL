@@ -25,8 +25,8 @@ public class Div extends OperatorTensor {
         setOperatorInfo(operatorInfo);
     }
 
-    public Div(Tensor dividend, int divisor) {
-        assert (divisor != 0);
+    public Div(Tensor dividend, Number divisor) {
+        assert (!divisor.equals(0));
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(dividend, () -> grad.div(divisor)),
