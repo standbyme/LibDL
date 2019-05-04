@@ -1,8 +1,8 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Operator.MM;
-import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class Dense extends Module {
@@ -42,7 +42,7 @@ public class Dense extends Module {
     private void resetParameters() {
         long fanIn = W.data.size(0);
         WeightInit.kaimingUniform(W.data, Math.sqrt(5));
-        if(bias) {
+        if (bias) {
             double bound = 1 / Math.sqrt(fanIn);
             WeightInit.uniform(B.data, -bound, bound);
         }

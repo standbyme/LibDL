@@ -2,10 +2,10 @@ package LibDL.nn;
 
 import LibDL.Tensor.Operator.Reshape;
 import LibDL.Tensor.Operator.*;
+import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;

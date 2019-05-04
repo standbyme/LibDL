@@ -93,6 +93,7 @@ public class IndexMake {
 
     /**
      * 获取默认的索引值与标签值的一一对应关系
+     *
      * @param labels
      * @param <L>
      * @return
@@ -103,6 +104,7 @@ public class IndexMake {
 
     /**
      * 传入指定从索引值到标签值的关系的对象 返回指定从标签值到索引值的关系的对象
+     *
      * @param index2Label
      * @param <L>
      * @return

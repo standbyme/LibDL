@@ -1,7 +1,7 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -13,8 +13,8 @@ public class AddVector extends OperatorTensor {
     public AddVector(Tensor mat1, Tensor mat2) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(mat1,()-> grad),
-                new OperandInfo(mat2,()-> grad.sum(0)),
+                new OperandInfo(mat1, () -> grad),
+                new OperandInfo(mat2, () -> grad.sum(0)),
         };
 
         Supplier<INDArray> forward = () -> mat1.data.addRowVector(mat2.data);
@@ -26,10 +26,12 @@ public class AddVector extends OperatorTensor {
 
     /**
      * Only for <code>Conv2d</code>
+     *
+     * @param input     tensor of shape(N, out, ah, aw)
+     * @param B         tensor of shape(out)
+     * @param forConv2d for override
      * @see LibDL.nn.Conv2d
-     * @param input tensor of shape(N, out, ah, aw)
-     * @param B tensor of shape(out)
-     * @param forConv2d for override */
+     */
     public AddVector(Tensor input, Tensor B, boolean forConv2d) {
 
         assert B.data.rank() == 1;

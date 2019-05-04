@@ -14,13 +14,13 @@ public class Main {
      * The input necessary for XOR.
      */
     // z = 2x + y + 5
-    public static double XOR_INPUT[][] = {{0.0, 0.0}, {1.0, 0.0},
+    public static double[][] XOR_INPUT = {{0.0, 0.0}, {1.0, 0.0},
             {0.0, 1.0}, {1.0, 1.0}};
 
     /**
      * The ideal data necessary for XOR.
      */
-    public static double XOR_IDEAL[][] = {{0.0}, {1.0}, {1.0}, {0.0}};
+    public static double[][] XOR_IDEAL = {{0.0}, {1.0}, {1.0}, {0.0}};
 
     public static void main(String[] args) {
         DenseLayer inputLayer = new DenseLayer();

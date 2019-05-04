@@ -2,12 +2,14 @@ package LibDL.Tensor;
 
 import LibDL.Tensor.Operator.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 public abstract class Tensor {
     public INDArray data = null;
     public INDArray grad = null;
 
     private String tensorName;
+
     public Tensor() {
         tensorName = this.getClass().getSimpleName();
     }
@@ -28,6 +30,10 @@ public abstract class Tensor {
 
     final public Add add(Tensor that) {
         return new Add(this, that);
+    }
+
+    final public Add add(Number rhs) {
+        return new Add(this, rhs);
     }
 
     final public AddVector addVector(Tensor that) {
@@ -58,11 +64,15 @@ public abstract class Tensor {
         return new Reshape(this, shape);
     }
 
-    final public Mul mul(int times) {
+    final public Mul mul(Number times) {
         return new Mul(this, times);
     }
 
-    final public Div div(int divisor) {
+    final public Mul mul(Tensor times) {
+        return new Mul(this, times);
+    }
+
+    final public Div div(Number divisor) {
         return new Div(this, divisor);
     }
 
@@ -76,6 +86,28 @@ public abstract class Tensor {
 
     final public long size(int i) {
         return this.data.size(i);
+    }
+
+    final public long dim() {
+        return data.rank();
+    }
+
+    final public long[] sizes() {
+        return data.shape();
+    }
+
+    public static Tensor zeros(long... shape) {
+        return new Constant(Nd4j.zeros(shape));
+    }
+
+    public static Tensor ones(long... shape) {
+        return new Constant(Nd4j.ones(shape));
+    }
+
+    public static Tensor numbers(Number number, long... shape) {
+        Tensor r = new Constant(Nd4j.create(shape));
+        r.data.assign(number);
+        return r;
     }
 
 }

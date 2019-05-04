@@ -27,10 +27,10 @@ public class MultiLayerNetwork implements NeuralNetwork {
     }
 
     public static void main(String[] args) {
-        double XOR_INPUT[][] = {{0.0, 0.0}, {1.0, 0.0},
+        double[][] XOR_INPUT = {{0.0, 0.0}, {1.0, 0.0},
                 {0.0, 1.0}, {1.0, 1.0}};
 
-        double XOR_IDEAL[][] = {{0.0}, {1.0}, {1.0}, {0.0}};
+        double[][] XOR_IDEAL = {{0.0}, {1.0}, {1.0}, {0.0}};
         MultiLayerNetwork mln = new MultiLayerNetwork();
         DenseLayer l1 = new DenseLayer(2, 4, true);
         DenseLayer lm = new DenseLayer(4, 2, true);

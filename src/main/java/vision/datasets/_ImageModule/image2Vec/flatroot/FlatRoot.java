@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class FlatRoot {
     /**
      * 调用了{@link FileFlatRoot#flat(File, String[])}
+     *
      * @param rootFile
      * @param allowedExtensions
      * @return
@@ -16,6 +17,7 @@ public class FlatRoot {
 
     /**
      * 调用了{@link FlatRoot#fileFR(File, String[])}
+     *
      * @param dirName
      * @param allowedExtensions
      * @return

@@ -7,7 +7,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.RandomAccess;
 import java.util.Spliterator;
@@ -56,6 +55,7 @@ public class Dataset implements RandomAccess, Iterable {
     protected Dataset(Pair<INDArray, INDArray> pair) {
         this(pair.first, pair.second);
     }
+
     private class DatasetIterator implements Iterator<Pair<INDArray, INDArray>> {
 
         private Dataset dataset;

@@ -13,7 +13,9 @@ public abstract class Optimizer {
     public void zero_grad() {
         for (Variable param : params) {
             if (param.grad != null)
-                param.grad.assign(0);
+                synchronized (param) {
+                    param.grad.assign(0);
+                }
         }
     }
 

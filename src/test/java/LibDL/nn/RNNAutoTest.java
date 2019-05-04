@@ -1,9 +1,9 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
+import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
