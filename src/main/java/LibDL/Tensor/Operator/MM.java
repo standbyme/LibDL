@@ -35,16 +35,9 @@ public class MM extends OperatorTensor {
         OperandInfo[] operandInfos = {
                 new OperandInfo(mat1, () -> tensorMmul(grad, mat2.data.transpose())),
                 new OperandInfo(mat2, () -> {
-                    INDArray ret = Nd4j.zerosLike(mat2.data);
-                    INDArray X = mat1.data.reshape(-1, mat1.data.size(rank-2), mat1.data.size(rank-1));
-                    INDArray dZ = grad.reshape(-1, grad.size(rank-2), grad.size(rank-1));
-                    INDArray a, b;
-                    for(int i = 0; i < X.size(0); i++) {
-                        a = X.get(point(i), all(), all());
-                        b = dZ.get(point(i), all(), all());
-                        ret.addi(a.transpose().mmul(b));
-                    }
-                    return ret;
+                    INDArray X = mat1.data.reshape(-1, mat1.data.size(rank-1));
+                    INDArray dZ = grad.reshape(-1, grad.size(rank-1));
+                    return X.transpose().mmul(dZ);
                 }),
         };
 
