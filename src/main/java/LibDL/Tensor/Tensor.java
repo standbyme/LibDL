@@ -64,11 +64,6 @@ public abstract class Tensor {
         return new Reshape(this, shape);
     }
 
-    final public Tensor view(long... shape) {
-        this.data.reshape(shape);
-        return this;
-    }
-
     final public Mul mul(Number times) {
         return new Mul(this, times);
     }
