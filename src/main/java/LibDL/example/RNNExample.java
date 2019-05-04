@@ -19,10 +19,8 @@ public class RNNExample {
     static class Model extends Module {
         private RNNAuto rnn;
         private Dense output;
-        private long hiddenSize;
 
         Model(int inputSize, int hiddenSize) {
-            this.hiddenSize = hiddenSize;
             rnn = new RNNAuto(inputSize, hiddenSize);
             output = new Dense(hiddenSize, hiddenSize);
         }
@@ -31,7 +29,6 @@ public class RNNExample {
         public Tensor forward(Tensor input) {
             Tensor x;
             x = rnn.forward(input);
-            x = x.reshape(-1, hiddenSize);
             x = output.forward(x);
             return x;
         }
@@ -47,7 +44,7 @@ public class RNNExample {
         int features = LEARNSTRING_CHARS_LIST.size();
 
         INDArray input = Nd4j.zeros(seqlen, 1, LEARNSTRING_CHARS_LIST.size());
-        INDArray label = Nd4j.zeros(seqlen).reshape(seqlen);
+        INDArray label = Nd4j.zeros(seqlen);
         // loop through our sample-sentence
         int samplePos = 0;
         for (char currentChar : LEARNSTRING) {
@@ -71,12 +68,12 @@ public class RNNExample {
 
         for (int epoch = 0; epoch < 500; epoch++) {
             optim.zero_grad();
-            Tensor result = model.predict(inputTensor);
+            Tensor result = model.forward(inputTensor);
             System.out.println(epoch + ": " + tensor2str(result.data));
 //            System.out.println(Arrays.toString(result.data.shape()));
 //            System.out.println(Arrays.toString(labelTensor.data.shape()));
 
-            Tensor loss = Functional.cross_entropy(result, labelTensor);
+            Tensor loss = Functional.cross_entropy(result.reshape(seqlen, features), labelTensor);
             loss.backward();
             optim.step();
         }
