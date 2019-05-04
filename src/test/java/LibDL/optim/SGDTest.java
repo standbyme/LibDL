@@ -2,7 +2,9 @@ package LibDL.optim;
 
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
-import LibDL.nn.*;
+import LibDL.nn.Dense;
+import LibDL.nn.Functional;
+import LibDL.nn.Sequential;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 

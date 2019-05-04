@@ -1,13 +1,13 @@
 package LibDL.example;
 
 
-import LibDL.nn.Module;
+import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.Dense;
 import LibDL.nn.Functional;
+import LibDL.nn.Module;
 import LibDL.nn.ReLU;
-import LibDL.Tensor.Constant;
 import LibDL.optim.RMSProp;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -37,10 +37,10 @@ public class ModuleExample {
 
     public static void main(String[] args) {
         Variable data = new Constant(Nd4j.create(new double[][]{
-                        {1.0, 0.0},
-                        {1.0, 1.0},
-                        {0.0, 1.0},
-                        {0.0, 0.0}}));
+                {1.0, 0.0},
+                {1.0, 1.0},
+                {0.0, 1.0},
+                {0.0, 0.0}}));
 
         Variable target = new Constant(Nd4j.create(new double[][]{
                 {1.0}, {0.0},

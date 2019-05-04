@@ -1,7 +1,7 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -17,7 +17,7 @@ public abstract class Module {
         moduleList.add(this);
         while (!moduleList.isEmpty()) {
             ArrayList<Module> subModuleList = new ArrayList<>();
-            for(Module m: moduleList) {
+            for (Module m : moduleList) {
                 subModuleList.addAll(m.getSubModules().values());
                 result.addAll(m.getParameters());
             }

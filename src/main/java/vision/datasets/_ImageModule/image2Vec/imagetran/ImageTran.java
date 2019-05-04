@@ -14,21 +14,26 @@ import java.util.function.Function;
 public class ImageTran {
     /**
      * 将{@link Consumer}&lt;T&gt;对象转换为返回原传入值的{@link Function}&lt;T,T&gt;对象
+     *
      * @param consumer
      * @param <T>
      * @return
      */
-    public static <T> Function<T,T> C2F(Consumer<T> consumer) {
-        return t->{consumer.accept(t);return t;};
+    public static <T> Function<T, T> C2F(Consumer<T> consumer) {
+        return t -> {
+            consumer.accept(t);
+            return t;
+        };
     }
 
     /**
      * 展示图片
+     *
      * @param image 待展示的图片对象
      * @param title 展示时的标题
      */
     public static void display(final Image image, String title) {
-        JPanel jPanel = new JPanel(){
+        JPanel jPanel = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
                 g.drawImage(image, 0, 0, null);
@@ -45,6 +50,7 @@ public class ImageTran {
 
     /**
      * 展示图片 展示时的标题为默认的"display"
+     *
      * @param image
      */
     public static void display(Image image) {
@@ -53,6 +59,7 @@ public class ImageTran {
 
     /**
      * 将图片对象重新绘制为宽度为col 高度为row 类型为type的图片对象
+     *
      * @param oriImage
      * @param row
      * @param col
@@ -68,6 +75,7 @@ public class ImageTran {
 
     /**
      * 将图片转化为灰度图
+     *
      * @param oriImage
      * @return
      */
@@ -78,6 +86,7 @@ public class ImageTran {
 
     /**
      * 将图片反相
+     *
      * @param oriImage
      * @return
      */

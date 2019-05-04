@@ -1,8 +1,8 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Variable;
-import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Parameter;
+import LibDL.Tensor.Tensor;
+import LibDL.Tensor.Variable;
 import org.nd4j.linalg.activations.IActivation;
 import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -64,9 +64,9 @@ public class RNN extends Tensor {
         INDArray prevHidden = h0.data;
         long times = input.data.size(0);
 
-        for(long i = 0; i < times; i++) {
+        for (long i = 0; i < times; i++) {
             INDArray currIn = input.data.get(point(i), all(), all());
-            INDArray currOut =  hidden.data.get(point(i), all(), all());
+            INDArray currOut = hidden.data.get(point(i), all(), all());
             currOut.assign(currIn.mmul(weight_ih.data.transpose())
                     .add(prevHidden.mmul(weight_hh.data.transpose()))
                     .addRowVector(bias_hh.data)
@@ -87,14 +87,14 @@ public class RNN extends Tensor {
         bias_ih.grad = Nd4j.zerosLike(bias_ih.data);
 
         INDArray dzNext = null;
-        for(long i = input.data.size(0) - 1; i >= 0; i--) {
+        for (long i = input.data.size(0) - 1; i >= 0; i--) {
             INDArray epsCurrent = epsilon.get(point(i), all(), all());
             INDArray hiddenCurrent = hidden.data.get(point(i), all(), all());
             INDArray inCurrent = input.data.get(point(i), all(), all());
             INDArray hiddenPrevious = (i == 0) ? h0.data : hidden.data.get(point(i - 1), all(), all());
             INDArray epsOutCurrent = input.grad.get(point(i), all(), all());
 
-            if(dzNext != null)
+            if (dzNext != null)
                 epsCurrent.addi(dzNext.mmul(weight_hh.data));
 
             INDArray dzCurrent = epsCurrent.mul(hiddenCurrent.mul(hiddenCurrent).mul(-1).add(1));

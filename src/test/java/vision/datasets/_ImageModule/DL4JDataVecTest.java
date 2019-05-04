@@ -1,22 +1,22 @@
 package vision.datasets._ImageModule;
 
 
-import org.datavec.image.loader.BaseImageLoader;
-import org.datavec.api.split.FileSplit;
-import org.datavec.api.io.labels.ParentPathLabelGenerator;
 import org.datavec.api.io.filters.BalancedPathFilter;
+import org.datavec.api.io.labels.ParentPathLabelGenerator;
+import org.datavec.api.split.FileSplit;
 import org.datavec.api.split.InputSplit;
+import org.datavec.image.loader.BaseImageLoader;
 import org.datavec.image.recordreader.ImageRecordReader;
 import org.datavec.image.transform.ImageTransform;
 import org.datavec.image.transform.MultiImageTransform;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
+import org.nd4j.linalg.dataset.api.DataSet;
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import org.nd4j.linalg.dataset.api.*;
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 
 public class DL4JDataVecTest {
 
@@ -36,9 +36,9 @@ public class DL4JDataVecTest {
         //nyTest();
 
         List<Integer> arr = new ArrayList<>();
-        for (int i=0;i<10;i++)arr.add(i);
+        for (int i = 0; i < 10; i++) arr.add(i);
         System.out.println(arr.toString());
-        arr = arr.subList(0,5);
+        arr = arr.subList(0, 5);
         System.out.println(arr.toString());
         arr.add(6);
         System.out.println(arr.toString());
@@ -52,13 +52,13 @@ public class DL4JDataVecTest {
         BalancedPathFilter pathFilter = new BalancedPathFilter(randNumGen, allowedExtensions, labelMaker);
         InputSplit[] filesInDirSplit = filesInDir.sample(pathFilter, 50);
         InputSplit trainData = filesInDirSplit[0];
-        ImageRecordReader recordReader = new ImageRecordReader(height,width,channels,labelMaker);
+        ImageRecordReader recordReader = new ImageRecordReader(height, width, channels, labelMaker);
         ImageTransform transform = new MultiImageTransform(randNumGen
                 //, new FlipImageTransform()
                 //, new ShowImageTransform("After transform")
         );
         //ImageTransform transform = new MultiImageTransform(randNumGen,new ShowImageTransform("Display - before "));
-        recordReader.initialize(trainData,transform);
+        recordReader.initialize(trainData, transform);
 
         /*
         while(recordReader.hasNext()) {
@@ -80,7 +80,7 @@ public class DL4JDataVecTest {
             System.out.println(ds); // 在命令行中打印结果
             try {
                 Thread.sleep(3000);                 //1000 milliseconds is one second.
-            } catch(InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
         }

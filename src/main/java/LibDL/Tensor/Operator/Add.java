@@ -1,7 +1,7 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperandInfo;
+import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;

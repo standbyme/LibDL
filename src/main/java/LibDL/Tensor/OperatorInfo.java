@@ -12,5 +12,5 @@ public class OperatorInfo {
         this.operandInfos = operandInfos;
         this.forward = forward;
     }
-    
+
 }
