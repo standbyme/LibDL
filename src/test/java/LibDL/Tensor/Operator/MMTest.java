@@ -5,12 +5,14 @@ import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.Arrays;
+
 
 public class MMTest {
     @Test
-    public void main() {
-        Variable x1 = new Variable(Nd4j.randn(2, 3), true);
-        Variable y1 = new Variable(Nd4j.randn(3, 4), true);
+    public void testMM() {
+        Variable x1 = new Variable(Nd4j.randn(20, 30), true);
+        Variable y1 = new Variable(Nd4j.randn(30, 40), true);
 
         Tensor u = new MM(x1, y1);
 
@@ -20,13 +22,14 @@ public class MMTest {
         Variable x2 = new Variable(x1.data.dup(), true);
         Variable y2 = new Variable(y1.data.dup(), true);
 
-        Tensor v = new MM(x2, y2, true);
+        Tensor v = new MM(x2.reshape(2, 10, 30), y2, true);
         v.grad = Nd4j.onesLike(v.data);
         v.backward();
 
-        System.out.println(v.data);
-        System.out.println(v.data.mul(2));
-        assert u.data.equals(v.data);
+        // forward
+        assert Arrays.equals(v.data.shape(), new long[]{2, 10, 40});
+        assert u.data.equals(v.data.reshape(20, 40));
+        // backward
         assert x1.grad.equals(x2.grad);
         assert y1.grad.equals(y2.grad);
     }

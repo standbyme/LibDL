@@ -5,9 +5,14 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
+
+import static org.nd4j.linalg.indexing.NDArrayIndex.all;
+import static org.nd4j.linalg.indexing.NDArrayIndex.point;
 
 public class MM extends OperatorTensor {
 
@@ -25,10 +30,22 @@ public class MM extends OperatorTensor {
     }
 
     public MM(Tensor mat1, Tensor mat2, boolean tensorMmul) {
+        int rank = mat1.data.rank();
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(mat1, () -> tensorMmul(grad, mat2.data.transpose())),
-                new OperandInfo(mat2, () -> tensorMmul(mat1.data.transpose(), grad)),
+                new OperandInfo(mat2, () -> {
+                    INDArray ret = Nd4j.zerosLike(mat2.data);
+                    INDArray X = mat1.data.reshape(-1, mat1.data.size(rank-2), mat1.data.size(rank-1));
+                    INDArray dZ = grad.reshape(-1, grad.size(rank-2), grad.size(rank-1));
+                    INDArray a, b;
+                    for(int i = 0; i < X.size(0); i++) {
+                        a = X.get(point(i), all(), all());
+                        b = dZ.get(point(i), all(), all());
+                        ret.addi(a.transpose().mmul(b));
+                    }
+                    return ret;
+                }),
         };
 
         Supplier<INDArray> forward = () -> tensorMmul(mat1.data, mat2.data);
