@@ -36,7 +36,6 @@ public class RNN extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        System.err.println("Warning: Initial hidden state is not provided. Defaults to zero.");
         return new RNNImpl(input, new Variable(Nd4j.zeros(input.size(1), hiddenSize)));
     }
 

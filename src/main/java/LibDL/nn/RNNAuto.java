@@ -8,7 +8,6 @@ import LibDL.Tensor.Parameter;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class RNNAuto extends Module {
-
     // Layer configurations
     private long inputSize;
     private long hiddenSize;
@@ -18,8 +17,6 @@ public class RNNAuto extends Module {
     Parameter weight_hh;
     Parameter bias_ih;
     Parameter bias_hh;
-
-    private Variable h0;
 
     public RNNAuto(int inputSize, int hiddenSize) {
         this.inputSize = inputSize;
@@ -35,6 +32,10 @@ public class RNNAuto extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
+        return forward(input, new Variable(Nd4j.zeros(input.size(1), hiddenSize)));
+    }
+
+    public Tensor forward(Tensor input, Tensor h0) {
         int seqLen = (int)input.size(0);
         int batchSize = (int)input.size(1);
         if(h0 == null)
@@ -57,10 +58,6 @@ public class RNNAuto extends Module {
         Tensor output = new Concat(outList);
 
         return output.reshape(seqLen, batchSize, hiddenSize);
-    }
-
-    public void setH0(Variable h0) {
-        this.h0 = h0;
     }
 
     private void resetParameters() {
