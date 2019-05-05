@@ -12,7 +12,6 @@ import static org.nd4j.linalg.indexing.NDArrayIndex.all;
 import static org.nd4j.linalg.indexing.NDArrayIndex.point;
 
 public class RNN extends Module {
-
     // Layer configurations
     private long inputSize;
     private long hiddenSize;
@@ -22,8 +21,6 @@ public class RNN extends Module {
     Parameter weight_hh;
     Parameter bias_ih;
     Parameter bias_hh;
-
-    private Variable _h0;
 
     public RNN(int inputSize, int hiddenSize) {
         this.inputSize = inputSize;
@@ -37,17 +34,19 @@ public class RNN extends Module {
         resetParameters();
     }
 
+    @Override
     public Tensor forward(Tensor input) {
-        return new RNNImpl(input, _h0);
+        System.err.println("Warning: Initial hidden state is not provided. Defaults to zero.");
+        return new RNNImpl(input, new Variable(Nd4j.zeros(input.size(1), hiddenSize)));
     }
 
-    public void setH0(Variable h0) {
-        this._h0 = h0;
+    public Tensor forward(Tensor input, Tensor h0) {
+        return new RNNImpl(input, h0);
     }
 
     private void resetParameters() {
         double stdv = 1.0 / Math.sqrt(this.hiddenSize);
-        for(Parameter weight : this.parameters())
+        for (Parameter weight : this.parameters())
             WeightInit.uniform(weight.data, -stdv, stdv);
     }
 
@@ -56,22 +55,21 @@ public class RNN extends Module {
         return "RNN(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
     }
 
+
     private class RNNImpl extends OperatorTensor {
-        private Tensor input;
-        private Tensor h0;
-
-        private Tensor hidden;
-        private INDArray input_grad, weight_hh_grad, weight_ih_grad, bias_hh_grad, bias_ih_grad;
-
-        private IActivation activation = new ActivationTanH();
 
         RNNImpl(Tensor input, Tensor h0) {
-            this.input = input;
-            this.h0 = h0;
+            INDArray hidden = Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize);
+            INDArray input_grad = Nd4j.emptyLike(input.data);
+            INDArray weight_hh_grad = Nd4j.zerosLike(weight_hh.data);
+            INDArray weight_ih_grad = Nd4j.zerosLike(weight_ih.data);
+            INDArray bias_hh_grad = Nd4j.zerosLike(bias_hh.data);
+            INDArray bias_ih_grad = Nd4j.zerosLike(bias_ih.data);
 
             OperandInfo[] operandInfos = {
                     new OperandInfo(input, () -> {
-                        backwardHelper(this.grad);
+                        doBkwd(input.data, h0.data, hidden, this.grad, input_grad, weight_hh_grad, weight_ih_grad,
+                                bias_hh_grad, bias_ih_grad);
                         return input_grad;
                     }),
                     new OperandInfo(weight_hh, () -> weight_hh_grad),
@@ -80,46 +78,44 @@ public class RNN extends Module {
                     new OperandInfo(bias_ih, () -> bias_ih_grad),
             };
 
-            Supplier<INDArray> forward = this::forwardHelper;
+            Supplier<INDArray> forward = () -> doFwd(input.data, h0.data, hidden);
 
             OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
             setOperatorInfo(operatorInfo);
         }
 
-        INDArray forwardHelper() {
-            hidden = new Variable(Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize), true);
-            INDArray prevHidden = h0.data;
-            long times = input.data.size(0);
+
+        private INDArray doFwd(INDArray input, INDArray h0, INDArray hidden) {
+            INDArray prevHidden = h0;
+            long times = input.size(0);
 
             for (long i = 0; i < times; i++) {
-                INDArray currIn = input.data.get(point(i), all(), all());
-                INDArray currOut = hidden.data.get(point(i), all(), all());
+                INDArray currIn = input.get(point(i), all(), all());
+                INDArray currOut = hidden.get(point(i), all(), all());
                 currOut.assign(currIn.mmul(weight_ih.data.transpose())
                         .add(prevHidden.mmul(weight_hh.data.transpose()))
                         .addRowVector(bias_hh.data)
                         .addRowVector(bias_ih.data)
                 );
+                IActivation activation = new ActivationTanH();
                 activation.getActivation(currOut, true);
                 prevHidden = currOut;
             }
 
-            return hidden.data;
+            return hidden;
         }
 
-        void backwardHelper(INDArray epsilon) {
-            input_grad = Nd4j.emptyLike(input.data);
-            weight_hh_grad = Nd4j.zerosLike(weight_hh.data);
-            weight_ih_grad = Nd4j.zerosLike(weight_ih.data);
-            bias_hh_grad = Nd4j.zerosLike(bias_hh.data);
-            bias_ih_grad = Nd4j.zerosLike(bias_ih.data);
 
+        private void doBkwd(INDArray input, INDArray h0, INDArray hidden, INDArray epsilon, INDArray input_grad,
+                            INDArray weight_hh_grad, INDArray weight_ih_grad, INDArray bias_hh_grad,
+                            INDArray bias_ih_grad) {
             INDArray dzNext = null;
-            for (long i = input.data.size(0) - 1; i >= 0; i--) {
+            for (long i = input.size(0) - 1; i >= 0; i--) {
                 INDArray epsCurrent = epsilon.get(point(i), all(), all());
-                INDArray hiddenCurrent = hidden.data.get(point(i), all(), all());
-                INDArray inCurrent = input.data.get(point(i), all(), all());
-                INDArray hiddenPrevious = (i == 0) ? h0.data : hidden.data.get(point(i - 1), all(), all());
+                INDArray hiddenCurrent = hidden.get(point(i), all(), all());
+                INDArray inCurrent = input.get(point(i), all(), all());
+                INDArray hiddenPrevious = (i == 0) ? h0 : hidden.get(point(i - 1), all(), all());
                 INDArray epsOutCurrent = input_grad.get(point(i), all(), all());
 
                 if (dzNext != null)
@@ -129,14 +125,14 @@ public class RNN extends Module {
 
                 epsOutCurrent.assign(dzCurrent.mmul(weight_ih.data));
 
-                weight_ih_grad.addi(dzCurrent.transpose().mmul(inCurrent));
                 weight_hh_grad.addi(dzCurrent.transpose().mmul(hiddenPrevious));
+                weight_ih_grad.addi(dzCurrent.transpose().mmul(inCurrent));
                 bias_hh_grad.addi(dzCurrent.sum(0));
                 bias_ih_grad.addi(dzCurrent.sum(0));
 
                 dzNext = dzCurrent;
             }
-
         }
+
     }
 }

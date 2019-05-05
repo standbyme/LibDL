@@ -61,8 +61,7 @@ public class RNNTest {
                         {-0.3656, -0.2373, -0.2324, -0.1165, 0.1217},
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
-        rnn.setH0(h0);
-        Tensor result = rnn.forward(input);
+        Tensor result = rnn.forward(input, h0);
 
         assert result.data.equalsWithEps(output, 1e-3);
 
