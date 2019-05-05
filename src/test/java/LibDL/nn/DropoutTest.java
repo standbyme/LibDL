@@ -54,9 +54,9 @@ public class DropoutTest {
 
 //        System.out.println(y.data);
 //        System.out.println(net_dropped.forward(x).data);
-        System.out.println(Functional.mse_loss(net_dropped.forward(x_test), y_test).data);
+        System.out.println(Functional.mse_loss(net_dropped.forward(x_test), y_test));
 
-        System.out.println(Functional.mse_loss(net_overfitting.forward(x_test), y_test).data);
+        System.out.println(Functional.mse_loss(net_overfitting.forward(x_test), y_test));
 
         assert (Functional.mse_loss(net_dropped.forward(x_test), y_test).data.getDouble(0)
                 < Functional.mse_loss(net_overfitting.forward(x_test), y_test).data.getDouble(0));

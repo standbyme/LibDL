@@ -21,7 +21,7 @@ public abstract class Tensor {
 
     @Override
     public String toString() {
-        return tensorName + "(" + data + ")";
+        return "tensor(" + data + ", grad_fn=<" + tensorName + ">)";
     }
 
     public boolean requires_grad;
