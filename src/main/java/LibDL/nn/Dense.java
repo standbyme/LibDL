@@ -34,8 +34,9 @@ public class Dense extends Module {
 
     @Override
     public Tensor forward(Tensor input) {
-        if (bias) return (input.mm(W).addVector(B));
-        else return (input.mm(W));
+        Tensor m = input.dim() == 2 ? input.mm(W) : input.matmul(W);
+        if (bias) m = m.addVector(B);
+        return m;
     }
 
     private void resetParameters() {

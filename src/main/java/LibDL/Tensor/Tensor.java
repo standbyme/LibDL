@@ -21,7 +21,7 @@ public abstract class Tensor {
 
     @Override
     public String toString() {
-        return tensorName + "(" + data + ")";
+        return "tensor(" + data + ", grad_fn=<" + tensorName + ">)";
     }
 
     public boolean requires_grad;
@@ -46,6 +46,10 @@ public abstract class Tensor {
 
     final public MM mm(Tensor that) {
         return new MM(this, that);
+    }
+
+    public MM matmul(Tensor mat) {
+        return new MM(this, mat, true);
     }
 
     final public Pow pow(int exponent) {
