@@ -80,6 +80,10 @@ public abstract class Tensor {
         return new Div(this, divisor);
     }
 
+    public static Tensor tanh(Tensor tensor) {
+        return new Tanh(tensor);
+    }
+
     final public Transpose transpose() {
         return new Transpose(this);
     }
@@ -98,6 +102,18 @@ public abstract class Tensor {
 
     final public long[] sizes() {
         return data.shape();
+    }
+
+    public static Tensor exp(Tensor tensor) {
+        return new Exp(tensor);
+    }
+
+    public static Tensor log(Tensor tensor) {
+        return new Log(tensor);
+    }
+
+    final public Div div(Tensor divisor) {
+        return new Div(this, divisor);
     }
 
     public static Tensor zeros(long... shape) {
