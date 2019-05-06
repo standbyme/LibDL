@@ -11,6 +11,10 @@ public abstract class Module {
 
     public abstract Tensor forward(Tensor input);
 
+    public Tensor forward(Tensor... input) {
+        throw new UnsupportedOperationException();
+    }
+
     public Parameter[] parameters() {
         ArrayList<Parameter> result = new ArrayList<>();
         ArrayList<Module> moduleList = new ArrayList<>();

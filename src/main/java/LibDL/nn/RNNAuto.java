@@ -90,6 +90,12 @@ public class RNNAuto extends Module {
     }
 
     @Override
+    public Tensor forward(Tensor... input) {
+        this.setH0((Variable) input[1]);
+        return forward(input[0]);
+    }
+
+    @Override
     public Tensor forward(Tensor input) {
         int seqLen = (int) input.size(0);
         int batchSize = (int) input.size(1);
