@@ -12,20 +12,23 @@ public class RNNAuto extends Module {
     private long inputSize;
     private long hiddenSize;
 
-    Parameter gu_weight_ih;
 
     // Layer parameters
     Parameter weight_ih;
     Parameter weight_hh;
     Parameter bias_ih;
     Parameter bias_hh;
+
+    Parameter gu_weight_ih;
     Parameter gu_weight_hh;
     Parameter gu_bias_ih;
     Parameter gu_bias_hh;
+
     Parameter gro_weight_ih;
     Parameter gro_weight_hh;
     Parameter gro_bias_ih;
     Parameter gro_bias_hh;
+
     Parameter gf_weight_ih;
     Parameter gf_weight_hh;
     Parameter gf_bias_ih;
@@ -150,7 +153,8 @@ public class RNNAuto extends Module {
 
     @Override
     public String toString() {
-        return "RNN(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
+        return is_lstm ? "LSTM" : is_gru ? "GRU" : is_relu ? "ReluRNN" : "RNN" +
+                "(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
     }
 
 }
