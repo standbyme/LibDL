@@ -9,8 +9,8 @@ import org.nd4j.linalg.factory.Nd4j;
 public class RNNAuto extends Module {
 
     // Layer configurations
-    private long inputSize;
-    private long hiddenSize;
+    protected long inputSize;
+    protected long hiddenSize;
 
 
     // Layer parameters
@@ -33,20 +33,30 @@ public class RNNAuto extends Module {
     Parameter gf_weight_hh;
     Parameter gf_bias_ih;
     Parameter gf_bias_hh;
-    private boolean is_gru, is_lstm, is_relu;
 
+    protected Variable h0;
 
-    private Variable h0;
+    protected boolean relu;
 
-    protected RNNAuto(int inputSize, int hiddenSize, String type) {
-        is_lstm = type.equals("LSTM");
-        is_gru = type.equals("GRU");
-        is_relu = type.equals("RELU");
-    }
+    protected boolean batch_first;
+
+//    protected RNNAuto(int inputSize, int hiddenSize, String type) {
+//        is_lstm = type.equals("LSTM");
+//        is_gru = type.equals("GRU");
+//        is_relu = type.equals("RELU");
+//    }
 
     public RNNAuto(int inputSize, int hiddenSize) {
+        this(inputSize, hiddenSize, false, false);
+        assert !batch_first;
+    }
+
+    public RNNAuto(int inputSize, int hiddenSize, boolean relu, boolean batch_first) {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
+
+        this.relu = relu;
+        this.batch_first = batch_first;
 
 //        weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
 //        weight_ih = new Parameter(Nd4j.create(inputSize, hiddenSize));
@@ -55,28 +65,28 @@ public class RNNAuto extends Module {
 
         init_params(weight_hh, weight_ih, bias_hh, bias_ih);
 
-        if (is_gru) {
-            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
-        } else if (is_lstm) {
-            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-            init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
-            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
-        }
+//        if (is_gru) {
+//            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
+//            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+//        } else if (is_lstm) {
+//            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
+//            init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
+//            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+//        }
         resetParameters();
     }
 
-    private void init_params(Parameter... parameters) {
+    protected void init_params(Parameter... parameters) {
         parameters[0] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
         parameters[1] = new Parameter(Nd4j.create(inputSize, hiddenSize));
         parameters[2] = new Parameter(Nd4j.create(1, hiddenSize));
         parameters[3] = new Parameter(Nd4j.create(1, hiddenSize));
     }
 
-    private Tensor calculate_gate(Tensor input, Tensor last,
-                                  Tensor w1, Tensor w2,
-                                  Tensor b1, Tensor b2,
-                                  Tensor r) {
+    protected Tensor calculate_gate(Tensor input, Tensor last,
+                                    Tensor w1, Tensor w2,
+                                    Tensor b1, Tensor b2,
+                                    Tensor r) {
         if (r == null) {
             return input.mm(w1.transpose())
                     .add(last.mm(w2.transpose()))
@@ -95,6 +105,25 @@ public class RNNAuto extends Module {
         return forward(input[0]);
     }
 
+    protected Tensor compute_current(Tensor tensor) {
+        return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
+    }
+
+    protected void forward_loop(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+
+        for (int i = 0; i < seqLen; i++) {
+            Tensor currIn = input.get(i);
+            Tensor r = null;
+
+            Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, r);
+
+            currOut = compute_current(currOut);
+
+            outList[i] = currOut;
+            prevHidden = currOut;
+        }
+    }
+
     @Override
     public Tensor forward(Tensor input) {
         int seqLen = (int) input.size(0);
@@ -105,41 +134,7 @@ public class RNNAuto extends Module {
         Tensor[] outList = new Tensor[seqLen];
         Tensor prevHidden = h0;
 
-        for (int i = 0; i < seqLen; i++) {
-            Tensor currIn = input.get(i);
-            Tensor r = null;
-            if (is_gru) {
-                r = calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, bias_hh, bias_ih, null);
-            }
-
-            Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, r);
-
-            currOut = is_relu ? Functional.relu(currOut) : Tensor.tanh(currOut);
-            if (is_gru) {
-                Tensor u = Functional.sigmoid(
-                        calculate_gate(currIn, prevHidden, gu_weight_ih, gu_weight_hh, gu_bias_hh, gu_bias_ih, null)
-                );
-                outList[i] = u.mul(currOut)
-                        .add(Tensor.ones(u.sizes())
-                                .sub(u).mul(prevHidden));
-            } else if (is_lstm) {
-                Tensor u = Functional.sigmoid(
-                        calculate_gate(currIn, prevHidden, gu_weight_ih, gu_weight_hh, gu_bias_hh, gu_bias_ih, null)
-                );
-                Tensor f = Functional.sigmoid(
-                        calculate_gate(currIn, prevHidden, gf_weight_ih, gf_weight_hh, gf_bias_hh, gf_bias_ih, null)
-                );
-                Tensor o = Functional.sigmoid(
-                        calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, bias_hh, bias_ih, null)
-                );
-
-                outList[i] = o.mul(u.mul(currOut).add(f.mul(currOut)));
-
-            } else {
-                outList[i] = currOut;
-            }
-            prevHidden = currOut;
-        }
+        forward_loop(input, outList, prevHidden, seqLen);
 
         Tensor output = new Concat(outList);
 
@@ -159,7 +154,7 @@ public class RNNAuto extends Module {
 
     @Override
     public String toString() {
-        return is_lstm ? "LSTM" : is_gru ? "GRU" : is_relu ? "ReluRNN" : "RNN" +
+        return getClass().getName() +
                 "(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
     }
 
