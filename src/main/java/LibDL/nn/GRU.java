@@ -8,7 +8,7 @@ public class GRU extends RNNAuto {
     }
 
     @Override
-    protected void rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
             Tensor r = calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, gro_bias_hh, gro_bias_ih, null);
@@ -23,6 +23,7 @@ public class GRU extends RNNAuto {
             outList[i] = u.mul(currOut).add(Tensor.ones(u.sizes()).sub(u).mul(prevHidden));
             prevHidden = currOut;
         }
+        return outList;
     }
 
 }

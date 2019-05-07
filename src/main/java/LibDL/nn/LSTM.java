@@ -9,7 +9,7 @@ public class LSTM extends RNNAuto {
     }
 
     @Override
-    protected void rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
             Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, null);
@@ -30,6 +30,8 @@ public class LSTM extends RNNAuto {
 
             prevHidden = currOut;
         }
+        return outList;
     }
+
 
 }

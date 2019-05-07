@@ -1,6 +1,7 @@
 package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Constant;
+import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -109,6 +110,14 @@ public class main {
                 {3, 3, 3},
                 {4, 4, 4}
         }));
+    }
+
+    @Test
+    public void testSum() {
+        Variable a = new Variable(Nd4j.linspace(-10, 10, 10), true);
+        Tensor b = a.sum();
+        b.backward();
+        System.out.println(a.grad);
     }
 
 }

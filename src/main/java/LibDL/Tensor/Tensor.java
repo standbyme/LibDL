@@ -104,6 +104,10 @@ public abstract class Tensor {
         return data.shape();
     }
 
+    final public Sum sum(int... dim) {
+        return new Sum(this, dim);
+    }
+
     public static Tensor exp(Tensor tensor) {
         return new Exp(tensor);
     }

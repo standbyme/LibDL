@@ -141,7 +141,7 @@ public class RNNAuto extends Module {
         return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
     }
 
-    protected void rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
 
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
@@ -152,6 +152,7 @@ public class RNNAuto extends Module {
             outList[i] = currOut;
             prevHidden = currOut;
         }
+        return outList;
     }
 
     @Override
@@ -164,7 +165,7 @@ public class RNNAuto extends Module {
         Tensor[] outList = new Tensor[seqLen];
         Tensor prevHidden = h0;
 
-        rnn_impl(input, outList, prevHidden, seqLen);
+        outList = rnn_impl(input, outList, prevHidden, seqLen);
 
         Tensor output = new Concat(outList);
 

@@ -39,7 +39,7 @@ public class RNNAutoTest {
 
     @Test
     public void testRNNAuto() {
-        RNNAuto new_rnn = new RNNAuto(3, 5);
+        RNNAuto new_rnn = new LSTM(3, 5);
         System.out.println(Arrays.toString(rnn.weight_ih.sizes()));
         System.out.println(Arrays.toString(new_rnn.weight_ih.sizes()));
 
