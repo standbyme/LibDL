@@ -119,5 +119,4 @@ public class main {
         b.backward();
         System.out.println(a.grad);
     }
-
 }

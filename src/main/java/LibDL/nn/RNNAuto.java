@@ -4,7 +4,10 @@ import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 
 public class RNNAuto extends Module {
 
@@ -45,7 +48,9 @@ public class RNNAuto extends Module {
     //not implemented
     protected boolean batch_first;
 
-    static protected int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
+    protected int rnn_type;
+
+    static public int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
             WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3,
             PARAM = 0, OUTPUT = 1, RESET = 1, UPDATE = 2, FORGET = 3;
 
@@ -65,15 +70,35 @@ public class RNNAuto extends Module {
 
         this.relu = relu;
         this.batch_first = batch_first;
+        this.rnn_type = type;
 
         this.real_parameters = new_params(type);
+        update_references();
+        resetParameters();
+    }
 
+
+    public void setParam(INDArray param, int param_type) {
+        INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
+        for (int i = 1; i < indices.length; i++) {
+            indices[i] = NDArrayIndex.all();
+        }
+        for (int i = 0; i < rnn_type; i++) {
+            indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
+//            System.out.println("Expected" + Arrays.toString(real_parameters[pos(i, param_type)].sizes()));
+//            System.out.println("Gets" + Arrays.toString(param.get(indices).shape()));
+            real_parameters[pos(i, param_type)].data = param.get(indices);
+        }
+        update_references();
+    }
+
+    private void update_references() {
         weight_hh = real_parameters[pos(PARAM, WEIGHT_HH)];
         weight_ih = real_parameters[pos(PARAM, WEIGHT_IH)];
         bias_hh = real_parameters[pos(PARAM, BIAS_HH)];
         bias_ih = real_parameters[pos(PARAM, BIAS_IH)];
 
-        if (type == TYPE_GRU) {
+        if (rnn_type == TYPE_GRU) {
             gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
             gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
             gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
@@ -84,7 +109,7 @@ public class RNNAuto extends Module {
             gro_bias_hh = real_parameters[pos(RESET, BIAS_HH)];
             gro_bias_ih = real_parameters[pos(RESET, BIAS_IH)];
 
-        } else if (type == TYPE_LSTM) {
+        } else if (rnn_type == TYPE_LSTM) {
             gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
             gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
             gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
@@ -100,7 +125,6 @@ public class RNNAuto extends Module {
             gf_bias_hh = real_parameters[pos(FORGET, BIAS_HH)];
             gf_bias_ih = real_parameters[pos(FORGET, BIAS_IH)];
         }
-        resetParameters();
     }
 
     protected Parameter[] new_params(int gate_count) {

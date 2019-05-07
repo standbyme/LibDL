@@ -9,11 +9,11 @@ import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.Arrays;
-
 public class RNNAutoTest {
 
     private static RNNAuto rnn = null;
+    private static LSTM lstm = null;
+    private static GRU gru = null;
 
     @BeforeClass
     public static void initRNN() {
@@ -35,13 +35,52 @@ public class RNNAutoTest {
         rnn.bias_hh = new Parameter(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
         rnn.bias_ih = new Parameter(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
+
+        gru = new GRU(2, 1);
+
+        gru.setParam(Nd4j.create(
+                new double[][]{
+                        {0.3843, 0.4657},
+                        {0.6210, 0.6720},
+                        {-0.1863, -0.5902}
+                }
+        ), GRU.WEIGHT_IH);
+        gru.setParam(Nd4j.create(
+                new double[][]{
+                        {-0.7002},
+                        {0.0280},
+                        {-0.5358}
+                }
+        ), GRU.WEIGHT_HH);
+        gru.setParam(Nd4j.create(new double[]{
+                -0.1272, 0.0379, 0.5693
+        }).transpose(), GRU.BIAS_HH);
+        gru.setParam(Nd4j.create(new double[]{
+                -0.5876, 0.2169, 0.6330
+        }).transpose(), RNNAuto.BIAS_IH);
+
+    }
+
+    @Test
+    public void testGRU() {
+        Variable input = new Variable(Nd4j.create(new double[][][]{
+                {{-0.0066, -0.4290},
+                        {-1.5567, 0.1337},
+                        {-1.1240, 1.3008}},
+                {{0.7263, 1.4227},
+                        {0.3033, -0.5021},
+                        {2.6635, -0.3792}}}), true);
+        Constant h0 = new Constant(Nd4j.create(new double[][]{
+                {-0.5518},
+                {1.1885},
+                {-1.3882}}));
+        Tensor result = gru.forward(input, h0);
+        System.out.println(result);
     }
 
     @Test
     public void testRNNAuto() {
         RNNAuto new_rnn = new LSTM(3, 5);
-        System.out.println(Arrays.toString(rnn.weight_ih.sizes()));
-        System.out.println(Arrays.toString(new_rnn.weight_ih.sizes()));
 
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
