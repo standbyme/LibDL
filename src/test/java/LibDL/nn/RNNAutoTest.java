@@ -54,10 +54,10 @@ public class RNNAutoTest {
         ), GRU.WEIGHT_HH);
         gru.setParam(Nd4j.create(new double[]{
                 -0.1272, 0.0379, 0.5693
-        }).transpose(), GRU.BIAS_HH);
+        }).transpose(), GRU.BIAS_IH);
         gru.setParam(Nd4j.create(new double[]{
                 -0.5876, 0.2169, 0.6330
-        }).transpose(), RNNAuto.BIAS_IH);
+        }).transpose(), RNNAuto.BIAS_HH);
 
     }
 
@@ -74,6 +74,8 @@ public class RNNAutoTest {
                 {-0.5518},
                 {1.1885},
                 {-1.3882}}));
+        Parameter[] parameters = gru.parameters();
+
         Tensor result = gru.forward(input, h0);
         System.out.println(result);
     }
@@ -116,7 +118,7 @@ public class RNNAutoTest {
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
         Tensor result = rnn.forward(input, h0);
-        Tensor test_result = new_rnn.forward(new_input, h0);
+        Tensor test_result = new_rnn.forward(new_input, h0, new Variable(Nd4j.onesLike(h0.data)));
         assert result.data.equalsWithEps(output, 1e-3);
 
         result.grad = Nd4j.create(new double[][][]{{

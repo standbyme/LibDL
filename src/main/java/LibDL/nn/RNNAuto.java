@@ -16,10 +16,10 @@ public class RNNAuto extends Module {
     protected long hiddenSize;
 
     // Layer parameters
-    Parameter weight_ih;
-    Parameter weight_hh;
-    Parameter bias_ih;
-    Parameter bias_hh;
+    public Parameter weight_ih;
+    public Parameter weight_hh;
+    public Parameter bias_ih;
+    public Parameter bias_hh;
 
     //update gate params
     Parameter gu_weight_ih;
@@ -41,6 +41,7 @@ public class RNNAuto extends Module {
 
     Parameter[] real_parameters;
     protected Variable h0;
+    protected Variable c0;
 
     //use ReLU instead of tanh
     protected boolean relu;
@@ -79,12 +80,15 @@ public class RNNAuto extends Module {
 
 
     public void setParam(INDArray param, int param_type) {
+        int[] p = {2, 0, 1};
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();
         }
-        for (int i = 0; i < rnn_type; i++) {
-            indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
+        int j = 0;
+        for (int i : p) {
+            indices[0] = NDArrayIndex.interval(j * hiddenSize, j * hiddenSize + hiddenSize);
+            j++;
 //            System.out.println("Expected" + Arrays.toString(real_parameters[pos(i, param_type)].sizes()));
 //            System.out.println("Gets" + Arrays.toString(param.get(indices).shape()));
             real_parameters[pos(i, param_type)].data = param.get(indices);
@@ -158,6 +162,9 @@ public class RNNAuto extends Module {
     @Override
     public Tensor forward(Tensor... input) {
         this.setH0((Variable) input[1]);
+        if (rnn_type == TYPE_LSTM) {
+            this.setC0((Variable) input[2]);
+        }
         return forward(input[0]);
     }
 
@@ -165,7 +172,7 @@ public class RNNAuto extends Module {
         return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
     }
 
-    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell) {
 
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
@@ -189,7 +196,8 @@ public class RNNAuto extends Module {
         Tensor[] outList = new Tensor[seqLen];
         Tensor prevHidden = h0;
 
-        outList = rnn_impl(input, outList, prevHidden, seqLen);
+
+        outList = rnn_impl(input, outList, prevHidden, seqLen, c0);
 
         Tensor output = new Concat(outList);
 
@@ -198,6 +206,10 @@ public class RNNAuto extends Module {
 
     public void setH0(Variable h0) {
         this.h0 = h0;
+    }
+
+    public void setC0(Variable c0) {
+        this.c0 = c0;
     }
 
     private void resetParameters() {
