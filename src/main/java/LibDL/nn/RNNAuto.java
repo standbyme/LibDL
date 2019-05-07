@@ -12,92 +12,122 @@ public class RNNAuto extends Module {
     protected long inputSize;
     protected long hiddenSize;
 
-
     // Layer parameters
     Parameter weight_ih;
     Parameter weight_hh;
     Parameter bias_ih;
     Parameter bias_hh;
 
+    //update gate params
     Parameter gu_weight_ih;
     Parameter gu_weight_hh;
     Parameter gu_bias_ih;
     Parameter gu_bias_hh;
 
+    //reset(GRU)/output(LSTM) gate params
     Parameter gro_weight_ih;
     Parameter gro_weight_hh;
     Parameter gro_bias_ih;
     Parameter gro_bias_hh;
 
+    //forget(LSTM) gate params
     Parameter gf_weight_ih;
     Parameter gf_weight_hh;
     Parameter gf_bias_ih;
     Parameter gf_bias_hh;
 
+    Parameter[] real_parameters;
     protected Variable h0;
 
+    //use ReLU instead of tanh
     protected boolean relu;
 
+    //not implemented
     protected boolean batch_first;
 
-//    protected RNNAuto(int inputSize, int hiddenSize, String type) {
-//        is_lstm = type.equals("LSTM");
-//        is_gru = type.equals("GRU");
-//        is_relu = type.equals("RELU");
-//    }
+    static protected int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
+            WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3,
+            PARAM = 0, OUTPUT = 1, RESET = 1, UPDATE = 2, FORGET = 3;
 
-    static protected int TYPE_RNN = 0, TYPE_LSTM = 1, TYPE_GRU = 2;
+    static protected int pos(int gate_type, int param_type) {
+        return gate_type * 4 + param_type;
+    }
 
     public RNNAuto(int inputSize, int hiddenSize) {
         this(inputSize, hiddenSize, false, false, TYPE_RNN);
-        assert !batch_first;
     }
 
     public RNNAuto(int inputSize, int hiddenSize, boolean relu, boolean batch_first, int type) {
+        assert !batch_first;//batch_first not implemented
+
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
 
         this.relu = relu;
         this.batch_first = batch_first;
 
-//        weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-//        weight_ih = new Parameter(Nd4j.create(inputSize, hiddenSize));
-//        bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
-//        bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+        this.real_parameters = new_params(type);
 
-        init_params(weight_hh, weight_ih, bias_hh, bias_ih);
+        weight_hh = real_parameters[pos(PARAM, WEIGHT_HH)];
+        weight_ih = real_parameters[pos(PARAM, WEIGHT_IH)];
+        bias_hh = real_parameters[pos(PARAM, BIAS_HH)];
+        bias_ih = real_parameters[pos(PARAM, BIAS_IH)];
 
         if (type == TYPE_GRU) {
-            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+            gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
+            gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
+            gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
+            gu_bias_ih = real_parameters[pos(UPDATE, BIAS_IH)];
+
+            gro_weight_hh = real_parameters[pos(RESET, WEIGHT_HH)];
+            gro_weight_ih = real_parameters[pos(RESET, WEIGHT_IH)];
+            gro_bias_hh = real_parameters[pos(RESET, BIAS_HH)];
+            gro_bias_ih = real_parameters[pos(RESET, BIAS_IH)];
+
         } else if (type == TYPE_LSTM) {
-            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-            init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
-            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+            gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
+            gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
+            gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
+            gu_bias_ih = real_parameters[pos(UPDATE, BIAS_IH)];
+
+            gro_weight_hh = real_parameters[pos(OUTPUT, WEIGHT_HH)];
+            gro_weight_ih = real_parameters[pos(OUTPUT, WEIGHT_IH)];
+            gro_bias_hh = real_parameters[pos(OUTPUT, BIAS_HH)];
+            gro_bias_ih = real_parameters[pos(OUTPUT, BIAS_IH)];
+
+            gf_weight_hh = real_parameters[pos(FORGET, WEIGHT_HH)];
+            gf_weight_ih = real_parameters[pos(FORGET, WEIGHT_IH)];
+            gf_bias_hh = real_parameters[pos(FORGET, BIAS_HH)];
+            gf_bias_ih = real_parameters[pos(FORGET, BIAS_IH)];
         }
         resetParameters();
     }
 
-    protected void init_params(Parameter... parameters) {
-        parameters[0] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-        parameters[1] = new Parameter(Nd4j.create(inputSize, hiddenSize));
-        parameters[2] = new Parameter(Nd4j.create(1, hiddenSize));
-        parameters[3] = new Parameter(Nd4j.create(1, hiddenSize));
+    protected Parameter[] new_params(int gate_count) {
+        Parameter[] parameters = new Parameter[4 * gate_count];
+        for (int i = 0; i < gate_count; i++) {
+            parameters[i * 4 + 0] = new Parameter(Nd4j.create(hiddenSize, inputSize));
+            parameters[i * 4 + 1] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+            parameters[i * 4 + 2] = new Parameter(Nd4j.create(1, hiddenSize));
+            parameters[i * 4 + 3] = new Parameter(Nd4j.create(1, hiddenSize));
+        }
+        return parameters;
     }
 
     protected Tensor calculate_gate(Tensor input, Tensor last,
-                                    Tensor w1, Tensor w2,
-                                    Tensor b1, Tensor b2,
-                                    Tensor r) {
-        if (r == null) {
-            return input.mm(w1.transpose())
-                    .add(last.mm(w2.transpose()))
-                    .addVector(b1).addVector(b2);
+                                    Tensor w_ih, Tensor w_hh,
+                                    Tensor b_hh, Tensor b_ih,
+                                    Tensor r_gate) {
+        //r_gate is only for GRU
+        if (r_gate == null) {
+            return input.mm(w_ih.transpose())
+                    .add(last.mm(w_hh.transpose()))
+                    .addVector(b_hh).addVector(b_ih);
         } else {
-            Tensor rlast = last.mul(r);
-            return input.mm(w1.transpose())
-                    .add(rlast.mm(w2.transpose()))
-                    .addVector(b1).addVector(b2);
+            Tensor rlast = last.mul(r_gate);
+            return input.mm(w_ih.transpose())
+                    .add(rlast.mm(w_hh.transpose()))
+                    .addVector(b_hh).addVector(b_ih);
         }
     }
 
@@ -111,13 +141,11 @@ public class RNNAuto extends Module {
         return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
     }
 
-    protected void forward_loop(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
+    protected void rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen) {
 
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
-            Tensor r = null;
-
-            Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, r);
+            Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, null);
 
             currOut = compute_current(currOut);
 
@@ -136,7 +164,7 @@ public class RNNAuto extends Module {
         Tensor[] outList = new Tensor[seqLen];
         Tensor prevHidden = h0;
 
-        forward_loop(input, outList, prevHidden, seqLen);
+        rnn_impl(input, outList, prevHidden, seqLen);
 
         Tensor output = new Concat(outList);
 

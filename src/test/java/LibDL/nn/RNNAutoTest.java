@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.Arrays;
+
 public class RNNAutoTest {
 
     private static RNNAuto rnn = null;
@@ -37,7 +39,20 @@ public class RNNAutoTest {
 
     @Test
     public void testRNNAuto() {
+        RNNAuto new_rnn = new RNNAuto(3, 5);
+        System.out.println(Arrays.toString(rnn.weight_ih.sizes()));
+        System.out.println(Arrays.toString(new_rnn.weight_ih.sizes()));
+
         Variable input = new Variable(Nd4j.create(new double[][][]{
+                {{0.0053, -0.4601, -0.5414},
+                        {-0.8522, 0.5896, 0.5357},
+                        {-1.4926, 1.1163, -0.1855}},
+
+                {{0.2956, 1.4636, 0.6051},
+                        {1.0905, 0.5851, -0.4907},
+                        {1.0333, -0.2276, -0.1532}}}
+        ), true);
+        Variable new_input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
                         {-0.8522, 0.5896, 0.5357},
                         {-1.4926, 1.1163, -0.1855}},
@@ -62,9 +77,8 @@ public class RNNAutoTest {
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
         Tensor result = rnn.forward(input, h0);
-
+        Tensor test_result = new_rnn.forward(new_input, h0);
         assert result.data.equalsWithEps(output, 1e-3);
-
 
         result.grad = Nd4j.create(new double[][][]{{
                 {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
@@ -75,8 +89,20 @@ public class RNNAutoTest {
                         {-3.6231e-03, 3.9820e-01, 4.9735e-01, -1.5231e+00, -2.8920e-03},
                         {-4.8295e-01, -2.3305e+00, -1.2397e+00, 1.6851e+00, 1.8875e-01}}}
         );
+
+        test_result.grad = Nd4j.create(new double[][][]{{
+                {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
+                {-1.5350e+00, 7.6189e-01, 1.3230e+00, -4.2295e-01, 5.3208e-01},
+                {-1.4129e+00, -2.3161e+00, -2.5905e-02, 1.8038e+00, -7.0832e-01}},
+
+                {{-1.7072e+00, -3.1917e+00, 1.1541e+00, -1.9135e+00, 2.3066e-01},
+                        {-3.6231e-03, 3.9820e-01, 4.9735e-01, -1.5231e+00, -2.8920e-03},
+                        {-4.8295e-01, -2.3305e+00, -1.2397e+00, 1.6851e+00, 1.8875e-01}}}
+        );
+
         result.backward();
 
+        test_result.backward();
 
         INDArray inputGradient = Nd4j.create(new double[][][]{
                 {{-0.0317, 0.5793, -0.3325},
