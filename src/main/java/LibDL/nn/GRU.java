@@ -11,8 +11,9 @@ public class GRU extends RNNAuto {
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell) {
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
-            Tensor r = calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, gro_bias_hh, gro_bias_ih, null);
-
+            Tensor r = Functional.sigmoid(
+                    calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, gro_bias_hh, gro_bias_ih, null)
+            );
             Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, r);
 
             Tensor u = Functional.sigmoid(
@@ -21,7 +22,7 @@ public class GRU extends RNNAuto {
 
             currOut = compute_current(currOut);
 
-            outList[i] = u.mul(currOut).add(Tensor.ones(u.sizes()).sub(u).mul(prevHidden));
+            outList[i] = u.mul(prevHidden).add(Tensor.ones(u.sizes()).sub(u).mul(currOut));
             prevHidden = outList[i];
         }
         return outList;

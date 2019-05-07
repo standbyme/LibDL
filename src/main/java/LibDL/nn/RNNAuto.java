@@ -80,7 +80,7 @@ public class RNNAuto extends Module {
 
 
     public void setParam(INDArray param, int param_type) {
-        int[] p = {2, 0, 1};
+        int[] p = {1, 2, 0};
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();
@@ -152,10 +152,10 @@ public class RNNAuto extends Module {
                     .add(last.mm(w_hh.transpose()))
                     .addVector(b_hh).addVector(b_ih);
         } else {
-            Tensor rlast = last.mul(r_gate);
+            Tensor rlast = last.mm(w_hh.transpose()).addVector(b_hh).mul(r_gate);
             return input.mm(w_ih.transpose())
-                    .add(rlast.mm(w_hh.transpose()))
-                    .addVector(b_hh).addVector(b_ih);
+                    .add(rlast)
+                    .addVector(b_ih);
         }
     }
 

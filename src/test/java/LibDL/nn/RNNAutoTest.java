@@ -40,23 +40,23 @@ public class RNNAutoTest {
 
         gru.setParam(Nd4j.create(
                 new double[][]{
-                        {0.3843, 0.4657},
-                        {0.6210, 0.6720},
-                        {-0.1863, -0.5902}
+                        {1, 1},
+                        {0, 0},
+                        {3.5, 3.5}
                 }
         ), GRU.WEIGHT_IH);
         gru.setParam(Nd4j.create(
                 new double[][]{
-                        {-0.7002},
-                        {0.0280},
-                        {-0.5358}
+                        {1},
+                        {1},
+                        {1}
                 }
         ), GRU.WEIGHT_HH);
         gru.setParam(Nd4j.create(new double[]{
-                -0.1272, 0.0379, 0.5693
+                1, 0, 3
         }).transpose(), GRU.BIAS_IH);
         gru.setParam(Nd4j.create(new double[]{
-                -0.5876, 0.2169, 0.6330
+                1, 2, 0
         }).transpose(), RNNAuto.BIAS_HH);
 
     }
@@ -64,20 +64,22 @@ public class RNNAutoTest {
     @Test
     public void testGRU() {
         Variable input = new Variable(Nd4j.create(new double[][][]{
-                {{-0.0066, -0.4290},
-                        {-1.5567, 0.1337},
-                        {-1.1240, 1.3008}},
-                {{0.7263, 1.4227},
-                        {0.3033, -0.5021},
-                        {2.6635, -0.3792}}}), true);
+                {{1, 1},
+                        {0.5, 0.4},
+                        {1, 0.1}},
+                {{1, 1.9},
+                        {0, 1.9},
+                        {1, 1.9}}}), true);
         Constant h0 = new Constant(Nd4j.create(new double[][]{
-                {-0.5518},
-                {1.1885},
-                {-1.3882}}));
+                {1.5},
+                {1.6},
+                {1.1}}));
         Parameter[] parameters = gru.parameters();
 
         Tensor result = gru.forward(input, h0);
         System.out.println(result);
+        result.sum().backward();
+        System.out.println(input.grad);
     }
 
     @Test
