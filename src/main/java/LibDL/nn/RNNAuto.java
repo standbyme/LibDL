@@ -46,12 +46,14 @@ public class RNNAuto extends Module {
 //        is_relu = type.equals("RELU");
 //    }
 
+    static protected int TYPE_RNN = 0, TYPE_LSTM = 1, TYPE_GRU = 2;
+
     public RNNAuto(int inputSize, int hiddenSize) {
-        this(inputSize, hiddenSize, false, false);
+        this(inputSize, hiddenSize, false, false, TYPE_RNN);
         assert !batch_first;
     }
 
-    public RNNAuto(int inputSize, int hiddenSize, boolean relu, boolean batch_first) {
+    public RNNAuto(int inputSize, int hiddenSize, boolean relu, boolean batch_first, int type) {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
 
@@ -65,14 +67,14 @@ public class RNNAuto extends Module {
 
         init_params(weight_hh, weight_ih, bias_hh, bias_ih);
 
-//        if (is_gru) {
-//            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-//            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
-//        } else if (is_lstm) {
-//            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-//            init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
-//            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
-//        }
+        if (type == TYPE_GRU) {
+            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
+            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+        } else if (type == TYPE_LSTM) {
+            init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
+            init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
+            init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+        }
         resetParameters();
     }
 

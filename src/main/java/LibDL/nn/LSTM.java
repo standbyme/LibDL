@@ -4,11 +4,7 @@ import LibDL.Tensor.Tensor;
 
 public class LSTM extends RNNAuto {
     public LSTM(int inputSize, int hiddenSize) {
-        super(inputSize, hiddenSize);
-
-        init_params(gu_weight_hh, gu_bias_ih, gu_bias_hh, gu_bias_ih);
-        init_params(gf_weight_hh, gf_bias_ih, gf_bias_hh, gf_bias_ih);
-        init_params(gro_weight_hh, gro_bias_ih, gro_bias_hh, gro_bias_ih);
+        super(inputSize, hiddenSize, false, false, TYPE_LSTM);
 
     }
 
