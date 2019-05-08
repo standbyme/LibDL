@@ -80,13 +80,15 @@ public class RNNAuto extends Module {
         resetParameters();
     }
 
+    private static int[][] pytorch_data_order = {
+            {}, {PARAM}, {},
+            {RESET, UPDATE, PARAM},
+            {UPDATE, FORGET, PARAM, OUTPUT}
+    };
+
 
     public void setParam(INDArray param, int param_type) {
-        int[] p = null;
-        // the order of params in pytorch
-        if (rnn_type == TYPE_GRU) p = new int[]{RESET, UPDATE, PARAM};
-        else if (rnn_type == TYPE_LSTM) p = new int[]{UPDATE, FORGET, PARAM, OUTPUT};
-        else p = new int[]{PARAM};
+        int[] p = pytorch_data_order[rnn_type];
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();
@@ -95,8 +97,6 @@ public class RNNAuto extends Module {
         for (int i : p) {
             indices[0] = NDArrayIndex.interval(j * hiddenSize, j * hiddenSize + hiddenSize);
             j++;
-//            System.out.println("Expected" + Arrays.toString(real_parameters[pos(i, param_type)].sizes()));
-//            System.out.println("Gets" + Arrays.toString(param.get(indices).shape()));
             real_parameters[pos(i, param_type)].data = param.get(indices);
         }
         update_references();
