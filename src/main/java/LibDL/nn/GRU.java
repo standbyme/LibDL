@@ -70,16 +70,16 @@ public class GRU extends RNNBase {
         Parameter[] params = null;
         switch (param_type){
             case WEIGHT_HH:
-                params = new Parameter[]{weight_hh, gu_weight_hh, gro_weight_hh};
+                params = new Parameter[]{gro_weight_hh, gu_weight_hh, weight_hh};
                 break;
             case WEIGHT_IH:
-                params = new Parameter[]{weight_ih, gu_weight_ih, gro_weight_ih};
+                params = new Parameter[]{gro_weight_ih, gu_weight_ih, weight_ih};
                 break;
             case BIAS_HH:
-                params = new Parameter[]{bias_hh, gu_bias_hh, gro_bias_hh};
+                params = new Parameter[]{gro_bias_hh, gu_bias_hh, bias_hh};
                 break;
             case BIAS_IH:
-                params = new Parameter[]{bias_ih, gu_bias_ih, gro_bias_ih};
+                params = new Parameter[]{gro_bias_ih, gu_bias_ih, bias_ih};
         }
 
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];

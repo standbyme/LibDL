@@ -25,8 +25,7 @@ abstract public class RNNBase extends Module {
 
 
     public static final int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
-            WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3,
-            PARAM = 0, OUTPUT = 1, RESET = 1, UPDATE = 2, FORGET = 3;
+            WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3;
 
 
     public RNNBase(int inputSize, int hiddenSize, boolean relu, boolean batch_first, int type) {
