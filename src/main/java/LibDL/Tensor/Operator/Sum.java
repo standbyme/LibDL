@@ -45,9 +45,7 @@ public class Sum extends OperatorTensor {
                 })
         };
 
-        Supplier<INDArray> forward = () -> {
-            return tensor.data.sum(dim);
-        };
+        Supplier<INDArray> forward = () -> tensor.data.sum(dim);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
