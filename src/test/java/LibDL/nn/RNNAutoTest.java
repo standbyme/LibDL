@@ -12,8 +12,6 @@ import org.nd4j.linalg.factory.Nd4j;
 public class RNNAutoTest {
 
     private static RNNAuto rnn = null;
-    private static LSTM lstm = null;
-    private static GRU gru = null;
 
     @BeforeClass
     public static void initRNN() {
@@ -35,161 +33,10 @@ public class RNNAutoTest {
         rnn.bias_hh = new Parameter(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
         rnn.bias_ih = new Parameter(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
-
-        gru = new GRU(2, 1);
-
-        gru.setParam(Nd4j.create(
-                new double[][]{
-                        {1, 1},
-                        {0, 0},
-                        {3.5, 3.5}
-                }
-        ), GRU.WEIGHT_IH);
-        gru.setParam(Nd4j.create(
-                new double[][]{
-                        {1},
-                        {1},
-                        {1}
-                }
-        ), GRU.WEIGHT_HH);
-        gru.setParam(Nd4j.create(new double[]{
-                1, 0, 3
-        }).transpose(), GRU.BIAS_IH);
-        gru.setParam(Nd4j.create(new double[]{
-                1, 2, 0
-        }).transpose(), RNNAuto.BIAS_HH);
-
-
-//        lstm
-        lstm = new LSTM(2, 1);
-
-        lstm.setParam(Nd4j.create(
-                new double[][]{
-                        {1, 1},
-                        {0, 0},
-                        {3.5, 3.5},
-                        {2, 0}
-                }
-        ), LSTM.WEIGHT_IH);
-        lstm.setParam(Nd4j.create(
-                new double[][]{
-                        {1},
-                        {1},
-                        {1},
-                        {2}
-                }
-        ), LSTM.WEIGHT_HH);
-        lstm.setParam(Nd4j.create(new double[]{
-                1, 0, 3, 0
-        }).transpose(), LSTM.BIAS_IH);
-        lstm.setParam(Nd4j.create(new double[]{
-                1, 2, 0, 2
-        }).transpose(), LSTM.BIAS_HH);
-
-    }
-
-    @Test
-    public void testLSTM() {
-
-        Parameter[] parameters = lstm.parameters();
-
-        assert parameters.length == 16;
-
-        Variable input = new Variable(Nd4j.create(new double[][][]{
-                {{1, 1},
-                        {0.5, 0.4},
-                        {1, 0.1}},
-                {{1, 1.9},
-                        {0, 1.9},
-                        {1, 1.9}}}), true);
-        Constant h0 = new Constant(Nd4j.create(new double[][]{
-                {1.5},
-                {1.6},
-                {1.1}}));
-        Constant c0 = new Constant(Nd4j.create(new double[][]{
-                {0.5},
-                {-1.6},
-                {10.1}}));
-
-        Tensor result = lstm.forward(input, h0, c0);
-        System.out.println(result);
-        assert result.data.equalsWithEps(Nd4j.create(new double[][][]
-                {{{0.9009},
-                        {-0.5132},
-                        {0.9980}},
-
-                        {{0.9807},
-                                {0.3375},
-                                {0.9975}}}), 1e-3);
-        System.out.println(lstm.h_n.data);
-        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[]
-                {0.9807, 0.3375, 0.9975}
-        ), 1e-3);
-
-        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[]{
-                2.4011, 0.5037, 11.1411
-        }), 1e-3);
-        result.sum().backward();
-        System.out.println(input.grad);
-        input.grad.equalsWithEps(Nd4j.create(new double[][][]
-                {{{2.5423e-03, 8.8714e-04},
-                        {1.1854e-02, 1.4254e-02},
-                        {4.0624e-03, 0.0000e+00}},
-
-                        {{6.0070e-03, 9.6868e-05},
-                                {2.0306e-01, 1.8000e-02},
-                                {4.9530e-03, 0.0000e+00}}}
-        ), 1e-3);
-
-    }
-
-    @Test
-    public void testGRU() {
-        Variable input = new Variable(Nd4j.create(new double[][][]{
-                {{1, 1},
-                        {0.5, 0.4},
-                        {1, 0.1}},
-                {{1, 1.9},
-                        {0, 1.9},
-                        {1, 1.9}}}), true);
-        Constant h0 = new Constant(Nd4j.create(new double[][]{
-                {1.5},
-                {1.6},
-                {1.1}}));
-        Parameter[] parameters = gru.parameters();
-
-        assert parameters.length == 12;
-
-        Tensor result = gru.forward(input, h0);
-
-        assert result.data.equalsWithEps(Nd4j.create(
-                new double[][][]
-                        {{{1.4853},
-                                {1.5840},
-                                {1.0957}},
-
-                                {{1.4709},
-                                        {1.5683},
-                                        {1.0915}}}
-        ), 1e-3);
-
-        System.out.println(result);
-        result.sum().backward();
-        System.out.println(input.grad);
-
-        assert input.grad.equalsWithEps(Nd4j.create(new double[][][]
-                {{{0.0000e+00, 0.0000e+00},
-                        {1.3305e-07, 1.3305e-07},
-                        {1.4170e-07, 1.4170e-07}},
-
-                        {{0.0000e+00, 0.0000e+00},
-                                {0.0000e+00, 0.0000e+00},
-                                {0.0000e+00, 0.0000e+00}}}), 1e-3);
     }
 
     @Test
     public void testRNNAuto() {
-
         assert rnn.parameters().length == 4;
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
