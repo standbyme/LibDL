@@ -86,19 +86,19 @@ public class LSTM extends RNNBase {
     }
 
     public void setParam(INDArray param, int param_type) {
-        Parameter[] params = null;
+        Parameter[] paramList = null;
         switch (param_type){
             case WEIGHT_HH:
-                params = new Parameter[]{gu_weight_hh, gf_weight_hh, weight_hh, gro_weight_hh};
+                paramList = new Parameter[]{gu_weight_hh, gf_weight_hh, weight_hh, gro_weight_hh};
                 break;
             case WEIGHT_IH:
-                params = new Parameter[]{gu_weight_ih, gf_weight_ih, weight_ih, gro_weight_ih};
+                paramList = new Parameter[]{gu_weight_ih, gf_weight_ih, weight_ih, gro_weight_ih};
                 break;
             case BIAS_HH:
-                params = new Parameter[]{gu_bias_hh, gf_bias_hh, bias_hh, gro_bias_hh};
+                paramList = new Parameter[]{gu_bias_hh, gf_bias_hh, bias_hh, gro_bias_hh};
                 break;
             case BIAS_IH:
-                params = new Parameter[]{gu_bias_ih, gf_bias_ih, bias_ih, gro_bias_ih};
+                paramList = new Parameter[]{gu_bias_ih, gf_bias_ih, bias_ih, gro_bias_ih};
         }
 
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
@@ -108,8 +108,8 @@ public class LSTM extends RNNBase {
 
         for (int i = 0; i < 4; i++) {
             indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
-            assert params != null;
-            params[i].data = param.get(indices);
+            assert paramList != null;
+            paramList[i].data = param.get(indices);
         }
     }
 

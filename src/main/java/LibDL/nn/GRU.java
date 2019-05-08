@@ -69,19 +69,19 @@ public class GRU extends RNNBase {
     }
 
     public void setParam(INDArray param, int param_type) {
-        Parameter[] params = null;
+        Parameter[] paramList = null;
         switch (param_type){
             case WEIGHT_HH:
-                params = new Parameter[]{gro_weight_hh, gu_weight_hh, weight_hh};
+                paramList = new Parameter[]{gro_weight_hh, gu_weight_hh, weight_hh};
                 break;
             case WEIGHT_IH:
-                params = new Parameter[]{gro_weight_ih, gu_weight_ih, weight_ih};
+                paramList = new Parameter[]{gro_weight_ih, gu_weight_ih, weight_ih};
                 break;
             case BIAS_HH:
-                params = new Parameter[]{gro_bias_hh, gu_bias_hh, bias_hh};
+                paramList = new Parameter[]{gro_bias_hh, gu_bias_hh, bias_hh};
                 break;
             case BIAS_IH:
-                params = new Parameter[]{gro_bias_ih, gu_bias_ih, bias_ih};
+                paramList = new Parameter[]{gro_bias_ih, gu_bias_ih, bias_ih};
         }
 
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
@@ -91,8 +91,8 @@ public class GRU extends RNNBase {
 
         for (int i = 0; i < 3; i++) {
             indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
-            assert params != null;
-            params[i].data = param.get(indices);
+            assert paramList != null;
+            paramList[i].data = param.get(indices);
         }
     }
 
