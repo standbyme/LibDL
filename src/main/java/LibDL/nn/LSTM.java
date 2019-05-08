@@ -1,10 +1,61 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 
 public class LSTM extends RNNAuto {
+    // Layer configurations
+
+
+    // Layer parameters
+    public Parameter weight_ih;
+    public Parameter weight_hh;
+    public Parameter bias_ih;
+    public Parameter bias_hh;
+
+    //update gate params
+    Parameter gu_weight_ih;
+    Parameter gu_weight_hh;
+    Parameter gu_bias_ih;
+    Parameter gu_bias_hh;
+
+    //reset(GRU)/output(LSTM) gate params
+    Parameter gro_weight_ih;
+    Parameter gro_weight_hh;
+    Parameter gro_bias_ih;
+    Parameter gro_bias_hh;
+
+    //forget(LSTM) gate params
+    Parameter gf_weight_ih;
+    Parameter gf_weight_hh;
+    Parameter gf_bias_ih;
+    Parameter gf_bias_hh;
+
     public LSTM(int inputSize, int hiddenSize) {
         super(inputSize, hiddenSize, false, false, TYPE_LSTM);
+        weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
+        bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+
+        gu_weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        gu_weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
+        gu_bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        gu_bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+
+        gro_weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        gro_weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
+        gro_bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        gro_bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+
+        gf_weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        gf_weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
+        gf_bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        gf_bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
     }
 
     public Tensor c_n;
@@ -33,6 +84,34 @@ public class LSTM extends RNNAuto {
             c_n = prev_cell = new_cell;
         }
         return outList;
+    }
+
+    public void setParam(INDArray param, int param_type) {
+        Parameter[] params = null;
+        switch (param_type){
+            case WEIGHT_HH:
+                params = new Parameter[]{gu_weight_hh, gf_weight_hh, weight_hh, gro_weight_hh};
+                break;
+            case WEIGHT_IH:
+                params = new Parameter[]{gu_weight_ih, gf_weight_ih, weight_ih, gro_weight_ih};
+                break;
+            case BIAS_HH:
+                params = new Parameter[]{gu_bias_hh, gf_bias_hh, bias_hh, gro_bias_hh};
+                break;
+            case BIAS_IH:
+                params = new Parameter[]{gu_bias_ih, gf_bias_ih, bias_ih, gro_bias_ih};
+        }
+
+        INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
+        for (int i = 1; i < indices.length; i++) {
+            indices[i] = NDArrayIndex.all();
+        }
+
+        for (int i = 0; i < 4; i++) {
+            indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
+            assert params != null;
+            params[i].data = param.get(indices);
+        }
     }
 
 

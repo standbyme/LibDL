@@ -21,25 +21,6 @@ public class RNNAuto extends Module {
     public Parameter bias_ih;
     public Parameter bias_hh;
 
-    //update gate params
-    Parameter gu_weight_ih;
-    Parameter gu_weight_hh;
-    Parameter gu_bias_ih;
-    Parameter gu_bias_hh;
-
-    //reset(GRU)/output(LSTM) gate params
-    Parameter gro_weight_ih;
-    Parameter gro_weight_hh;
-    Parameter gro_bias_ih;
-    Parameter gro_bias_hh;
-
-    //forget(LSTM) gate params
-    Parameter gf_weight_ih;
-    Parameter gf_weight_hh;
-    Parameter gf_bias_ih;
-    Parameter gf_bias_hh;
-
-    Parameter[] real_parameters;
     protected Variable h0;
     protected Variable c0;
 
@@ -53,13 +34,10 @@ public class RNNAuto extends Module {
 
     protected int rnn_type;
 
-    static public int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
+    public static final int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
             WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3,
             PARAM = 0, OUTPUT = 1, RESET = 1, UPDATE = 2, FORGET = 3;
 
-    static protected int pos(int gate_type, int param_type) {
-        return gate_type * 4 + param_type;
-    }
 
     public RNNAuto(int inputSize, int hiddenSize) {
         this(inputSize, hiddenSize, false, false, TYPE_RNN);
@@ -75,78 +53,26 @@ public class RNNAuto extends Module {
         this.batch_first = batch_first;
         this.rnn_type = type;
 
-        this.real_parameters = new_params(type);
-        update_references();
+        weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+        weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
+        bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
+        bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+
         resetParameters();
     }
 
-    private static int[][] pytorch_data_order = {
-            {}, {PARAM}, {},
-            {RESET, UPDATE, PARAM},
-            {UPDATE, FORGET, PARAM, OUTPUT}
-    };
-
-
     public void setParam(INDArray param, int param_type) {
-        int[] p = pytorch_data_order[rnn_type];
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();
         }
-        int j = 0;
-        for (int i : p) {
-            indices[0] = NDArrayIndex.interval(j * hiddenSize, j * hiddenSize + hiddenSize);
-            j++;
-            real_parameters[pos(i, param_type)].data = param.get(indices);
-        }
-        update_references();
-    }
 
-    private void update_references() {
-        weight_hh = real_parameters[pos(PARAM, WEIGHT_HH)];
-        weight_ih = real_parameters[pos(PARAM, WEIGHT_IH)];
-        bias_hh = real_parameters[pos(PARAM, BIAS_HH)];
-        bias_ih = real_parameters[pos(PARAM, BIAS_IH)];
-
-        if (rnn_type == TYPE_GRU) {
-            gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
-            gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
-            gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
-            gu_bias_ih = real_parameters[pos(UPDATE, BIAS_IH)];
-
-            gro_weight_hh = real_parameters[pos(RESET, WEIGHT_HH)];
-            gro_weight_ih = real_parameters[pos(RESET, WEIGHT_IH)];
-            gro_bias_hh = real_parameters[pos(RESET, BIAS_HH)];
-            gro_bias_ih = real_parameters[pos(RESET, BIAS_IH)];
-
-        } else if (rnn_type == TYPE_LSTM) {
-            gu_weight_hh = real_parameters[pos(UPDATE, WEIGHT_HH)];
-            gu_weight_ih = real_parameters[pos(UPDATE, WEIGHT_IH)];
-            gu_bias_hh = real_parameters[pos(UPDATE, BIAS_HH)];
-            gu_bias_ih = real_parameters[pos(UPDATE, BIAS_IH)];
-
-            gro_weight_hh = real_parameters[pos(OUTPUT, WEIGHT_HH)];
-            gro_weight_ih = real_parameters[pos(OUTPUT, WEIGHT_IH)];
-            gro_bias_hh = real_parameters[pos(OUTPUT, BIAS_HH)];
-            gro_bias_ih = real_parameters[pos(OUTPUT, BIAS_IH)];
-
-            gf_weight_hh = real_parameters[pos(FORGET, WEIGHT_HH)];
-            gf_weight_ih = real_parameters[pos(FORGET, WEIGHT_IH)];
-            gf_bias_hh = real_parameters[pos(FORGET, BIAS_HH)];
-            gf_bias_ih = real_parameters[pos(FORGET, BIAS_IH)];
+        for (int i = 0; i < 4; i++) {
+            indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
+            param.get(indices);
         }
     }
 
-    protected Parameter[] new_params(int gate_count) {
-        Parameter[] parameters = new Parameter[4 * gate_count];
-        for (int i = 0; i < gate_count; i++) {
-            parameters[i * 4 + 0] = new Parameter(Nd4j.create(hiddenSize, inputSize));
-            parameters[i * 4 + 1] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-            parameters[i * 4 + 2] = new Parameter(Nd4j.create(1, hiddenSize));
-            parameters[i * 4 + 3] = new Parameter(Nd4j.create(1, hiddenSize));
-        }
-        return parameters;
-    }
 
     protected Tensor calculate_gate(Tensor input, Tensor last,
                                     Tensor w_ih, Tensor w_hh,
