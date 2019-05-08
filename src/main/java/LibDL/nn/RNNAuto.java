@@ -80,7 +80,10 @@ public class RNNAuto extends Module {
 
 
     public void setParam(INDArray param, int param_type) {
-        int[] p = {1, 2, 0};
+        int[] p = null;
+        if (rnn_type == TYPE_GRU) p = new int[]{1, 2, 0};
+        else if (rnn_type == TYPE_LSTM) p = new int[]{0, 1, 2, 3};
+        else p = new int[]{0};
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();

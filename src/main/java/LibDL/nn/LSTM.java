@@ -26,9 +26,11 @@ public class LSTM extends RNNAuto {
                     calculate_gate(currIn, prevHidden, gro_weight_ih, gro_weight_hh, gro_bias_hh, gro_bias_ih, null)
             );
 
-            prev_cell = f_t.mul(prev_cell).add(i_t.mul(currOut));
+            Tensor new_cell = f_t.mul(prev_cell).add(i_t.mul(currOut));
 
             prevHidden = outList[i] = o_t.mul(Tensor.tanh(prev_cell));
+
+            prev_cell = new_cell;
         }
         return outList;
     }
