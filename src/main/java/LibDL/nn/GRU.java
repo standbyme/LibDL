@@ -24,6 +24,7 @@ public class GRU extends RNNAuto {
 
             outList[i] = u.mul(prevHidden).add(Tensor.ones(u.sizes()).sub(u).mul(currOut));
             prevHidden = outList[i];
+            h_n = prevHidden;
         }
         return outList;
     }

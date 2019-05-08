@@ -84,12 +84,17 @@ public class RNNAutoTest {
         }).transpose(), LSTM.BIAS_IH);
         lstm.setParam(Nd4j.create(new double[]{
                 1, 2, 0, 2
-        }).transpose(), RNNAuto.BIAS_HH);
+        }).transpose(), LSTM.BIAS_HH);
 
     }
 
     @Test
     public void testLSTM() {
+
+        Parameter[] parameters = lstm.parameters();
+
+        assert parameters.length == 16;
+
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{1, 1},
                         {0.5, 0.4},
@@ -108,8 +113,34 @@ public class RNNAutoTest {
 
         Tensor result = lstm.forward(input, h0, c0);
         System.out.println(result);
+        assert result.data.equalsWithEps(Nd4j.create(new double[][][]
+                {{{0.9009},
+                        {-0.5132},
+                        {0.9980}},
+
+                        {{0.9807},
+                                {0.3375},
+                                {0.9975}}}), 1e-3);
+        System.out.println(lstm.h_n.data);
+        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[]
+                {0.9807, 0.3375, 0.9975}
+        ), 1e-3);
+
+        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[]{
+                2.4011, 0.5037, 11.1411
+        }), 1e-3);
         result.sum().backward();
         System.out.println(input.grad);
+        input.grad.equalsWithEps(Nd4j.create(new double[][][]
+                {{{2.5423e-03, 8.8714e-04},
+                        {1.1854e-02, 1.4254e-02},
+                        {4.0624e-03, 0.0000e+00}},
+
+                        {{6.0070e-03, 9.6868e-05},
+                                {2.0306e-01, 1.8000e-02},
+                                {4.9530e-03, 0.0000e+00}}}
+        ), 1e-3);
+
     }
 
     @Test
@@ -126,6 +157,8 @@ public class RNNAutoTest {
                 {1.6},
                 {1.1}}));
         Parameter[] parameters = gru.parameters();
+
+        assert parameters.length == 12;
 
         Tensor result = gru.forward(input, h0);
 
@@ -156,8 +189,8 @@ public class RNNAutoTest {
 
     @Test
     public void testRNNAuto() {
-        RNNAuto new_rnn = new LSTM(3, 5);
 
+        assert rnn.parameters().length == 4;
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
                         {-0.8522, 0.5896, 0.5357},
@@ -167,16 +200,6 @@ public class RNNAutoTest {
                         {1.0905, 0.5851, -0.4907},
                         {1.0333, -0.2276, -0.1532}}}
         ), true);
-        Variable new_input = new Variable(Nd4j.create(new double[][][]{
-                {{0.0053, -0.4601, -0.5414},
-                        {-0.8522, 0.5896, 0.5357},
-                        {-1.4926, 1.1163, -0.1855}},
-
-                {{0.2956, 1.4636, 0.6051},
-                        {1.0905, 0.5851, -0.4907},
-                        {1.0333, -0.2276, -0.1532}}}
-        ), true);
-
         Constant h0 = new Constant(Nd4j.create(new double[][]{
                 {0.4765, 0.3493, -0.8491, 0.7070, 0.6665},
                 {-0.3468, -0.0986, -0.5787, -0.6640, 0.5776},
@@ -192,7 +215,6 @@ public class RNNAutoTest {
                         {-0.5072, -0.5500, -0.3009, -0.1026, 0.4916}}});
 
         Tensor result = rnn.forward(input, h0);
-        Tensor test_result = new_rnn.forward(new_input, h0, new Variable(Nd4j.onesLike(h0.data)));
         assert result.data.equalsWithEps(output, 1e-3);
 
         result.grad = Nd4j.create(new double[][][]{{
@@ -205,19 +227,8 @@ public class RNNAutoTest {
                         {-4.8295e-01, -2.3305e+00, -1.2397e+00, 1.6851e+00, 1.8875e-01}}}
         );
 
-        test_result.grad = Nd4j.create(new double[][][]{{
-                {1.1837e+00, 2.8680e-02, 5.9473e-01, -6.3787e-01, -9.8196e-01},
-                {-1.5350e+00, 7.6189e-01, 1.3230e+00, -4.2295e-01, 5.3208e-01},
-                {-1.4129e+00, -2.3161e+00, -2.5905e-02, 1.8038e+00, -7.0832e-01}},
-
-                {{-1.7072e+00, -3.1917e+00, 1.1541e+00, -1.9135e+00, 2.3066e-01},
-                        {-3.6231e-03, 3.9820e-01, 4.9735e-01, -1.5231e+00, -2.8920e-03},
-                        {-4.8295e-01, -2.3305e+00, -1.2397e+00, 1.6851e+00, 1.8875e-01}}}
-        );
 
         result.backward();
-
-        test_result.backward();
 
         INDArray inputGradient = Nd4j.create(new double[][][]{
                 {{-0.0317, 0.5793, -0.3325},

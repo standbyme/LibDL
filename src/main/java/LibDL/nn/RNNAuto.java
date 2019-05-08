@@ -43,6 +43,8 @@ public class RNNAuto extends Module {
     protected Variable h0;
     protected Variable c0;
 
+    public Tensor h_n;
+
     //use ReLU instead of tanh
     protected boolean relu;
 
@@ -81,9 +83,10 @@ public class RNNAuto extends Module {
 
     public void setParam(INDArray param, int param_type) {
         int[] p = null;
-        if (rnn_type == TYPE_GRU) p = new int[]{1, 2, 0};
-        else if (rnn_type == TYPE_LSTM) p = new int[]{0, 1, 2, 3};
-        else p = new int[]{0};
+        // the order of params in pytorch
+        if (rnn_type == TYPE_GRU) p = new int[]{RESET, UPDATE, PARAM};
+        else if (rnn_type == TYPE_LSTM) p = new int[]{UPDATE, FORGET, PARAM, OUTPUT};
+        else p = new int[]{PARAM};
         INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
         for (int i = 1; i < indices.length; i++) {
             indices[i] = NDArrayIndex.all();
@@ -183,8 +186,7 @@ public class RNNAuto extends Module {
 
             currOut = compute_current(currOut);
 
-            outList[i] = currOut;
-            prevHidden = currOut;
+            outList[i] = prevHidden = h_n = currOut;
         }
         return outList;
     }
