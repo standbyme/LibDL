@@ -7,27 +7,24 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-public class GRU extends RNNAuto {
-    // Layer configurations
-
-
+public class GRU extends RNNBase {
     // Layer parameters
-    public Parameter weight_ih;
-    public Parameter weight_hh;
-    public Parameter bias_ih;
-    public Parameter bias_hh;
+    private Parameter weight_ih;
+    private Parameter weight_hh;
+    private Parameter bias_ih;
+    private Parameter bias_hh;
 
     //update gate params
-    Parameter gu_weight_ih;
-    Parameter gu_weight_hh;
-    Parameter gu_bias_ih;
-    Parameter gu_bias_hh;
+    private Parameter gu_weight_ih;
+    private Parameter gu_weight_hh;
+    private Parameter gu_bias_ih;
+    private Parameter gu_bias_hh;
 
-    //reset(GRU)/output(LSTM) gate params
-    Parameter gro_weight_ih;
-    Parameter gro_weight_hh;
-    Parameter gro_bias_ih;
-    Parameter gro_bias_hh;
+    //reset gate params
+    private Parameter gro_weight_ih;
+    private Parameter gro_weight_hh;
+    private Parameter gro_bias_ih;
+    private Parameter gro_bias_hh;
 
     public GRU(int inputSize, int hiddenSize) {
         super(inputSize, hiddenSize, false, false, TYPE_GRU);
