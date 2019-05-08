@@ -7,6 +7,7 @@ import org.nd4j.linalg.factory.Nd4j;
 
 
 abstract public class RNNBase extends Module {
+    public static final int WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3;
 
     // Layer configurations
     protected long inputSize;
@@ -18,17 +19,12 @@ abstract public class RNNBase extends Module {
     //not implemented
     protected boolean batch_first;
 
-    protected int rnn_type;
-
+    public enum RNNType {TYPE_RNN, TYPE_LSTM, TYPE_GRU}
+    protected RNNType rnn_type;
 
     public Tensor h_n;
 
-
-    public static final int TYPE_RNN = 1, TYPE_LSTM = 4, TYPE_GRU = 3,
-            WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3;
-
-
-    public RNNBase(int inputSize, int hiddenSize, boolean relu, boolean batch_first, int type) {
+    public RNNBase(int inputSize, int hiddenSize, boolean relu, boolean batch_first, RNNType type) {
         assert !batch_first;//batch_first not implemented
 
         this.inputSize = inputSize;
@@ -38,29 +34,6 @@ abstract public class RNNBase extends Module {
         this.batch_first = batch_first;
         this.rnn_type = type;
     }
-
-    protected Tensor calculate_gate(Tensor input, Tensor last,
-                                    Tensor w_ih, Tensor w_hh,
-                                    Tensor b_hh, Tensor b_ih,
-                                    Tensor r_gate) {
-        //r_gate is only for GRU
-        if (r_gate == null) {
-            return input.mm(w_ih.transpose())
-                    .add(last.mm(w_hh.transpose()))
-                    .addVector(b_hh).addVector(b_ih);
-        } else {
-            Tensor rlast = last.mm(w_hh.transpose()).addVector(b_hh).mul(r_gate);
-            return input.mm(w_ih.transpose())
-                    .add(rlast)
-                    .addVector(b_ih);
-        }
-    }
-
-
-    protected Tensor compute_current(Tensor tensor) {
-        return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
-    }
-
 
     public Tensor forward(Tensor input) {
         return forward(input, new Variable(Nd4j.zeros(input.size(1), hiddenSize)), null);
@@ -87,6 +60,30 @@ abstract public class RNNBase extends Module {
         return output.reshape(seqLen, batchSize, hiddenSize);
     }
 
+    protected abstract Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen,
+                                         Tensor prev_cell);
+
+    protected Tensor calculate_gate(Tensor input, Tensor last,
+                                    Tensor w_ih, Tensor w_hh,
+                                    Tensor b_hh, Tensor b_ih,
+                                    Tensor r_gate) {
+        //r_gate is only for GRU
+        if (r_gate == null) {
+            return input.mm(w_ih.transpose())
+                    .add(last.mm(w_hh.transpose()))
+                    .addVector(b_hh).addVector(b_ih);
+        } else {
+            Tensor rlast = last.mm(w_hh.transpose()).addVector(b_hh).mul(r_gate);
+            return input.mm(w_ih.transpose())
+                    .add(rlast)
+                    .addVector(b_ih);
+        }
+    }
+
+
+    protected Tensor compute_current(Tensor tensor) {
+        return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);
+    }
 
     @Override
     public String toString() {
@@ -94,5 +91,4 @@ abstract public class RNNBase extends Module {
                 "(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
     }
 
-    protected abstract Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell);
 }

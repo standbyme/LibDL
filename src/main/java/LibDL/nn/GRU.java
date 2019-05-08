@@ -7,6 +7,8 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
+import static LibDL.nn.RNNBase.RNNType.TYPE_GRU;
+
 public class GRU extends RNNBase {
     // Layer parameters
     private Parameter weight_ih;

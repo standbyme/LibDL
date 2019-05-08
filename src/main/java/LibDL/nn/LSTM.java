@@ -7,6 +7,8 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
+import static LibDL.nn.RNNBase.RNNType.TYPE_LSTM;
+
 public class LSTM extends RNNBase {
     // Layer parameters
     private Parameter weight_ih;
@@ -32,6 +34,8 @@ public class LSTM extends RNNBase {
     private Parameter gf_bias_ih;
     private Parameter gf_bias_hh;
 
+    public Tensor c_n;
+
     public LSTM(int inputSize, int hiddenSize) {
         super(inputSize, hiddenSize, false, false, TYPE_LSTM);
         weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
@@ -54,8 +58,6 @@ public class LSTM extends RNNBase {
         gf_bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
         gf_bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
     }
-
-    public Tensor c_n;
 
     @Override
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell) {

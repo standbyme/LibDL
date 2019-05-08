@@ -4,11 +4,10 @@ import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.INDArrayIndex;
-import org.nd4j.linalg.indexing.NDArrayIndex;
+
+import static LibDL.nn.RNNBase.RNNType.TYPE_RNN;
 
 public class RNNAuto extends RNNBase {
-
     // Layer parameters
     public Parameter weight_ih;
     public Parameter weight_hh;
@@ -26,20 +25,7 @@ public class RNNAuto extends RNNBase {
         resetParameters();
     }
 
-    public void setParam(INDArray param, int param_type) {
-        INDArrayIndex[] indices = new INDArrayIndex[param.rank()];
-        for (int i = 1; i < indices.length; i++) {
-            indices[i] = NDArrayIndex.all();
-        }
-
-        for (int i = 0; i < 4; i++) {
-            indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
-            param.get(indices);
-        }
-    }
-
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell) {
-
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
             Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, null);
@@ -49,6 +35,22 @@ public class RNNAuto extends RNNBase {
             outList[i] = prevHidden = h_n = currOut;
         }
         return outList;
+    }
+
+    public void setParam(INDArray param, int param_type) {
+        switch (param_type){
+            case WEIGHT_HH:
+                weight_hh.data = param;
+                break;
+            case WEIGHT_IH:
+                weight_ih.data = param;
+                break;
+            case BIAS_HH:
+                bias_hh.data = param;
+                break;
+            case BIAS_IH:
+                bias_ih.data = param;
+        }
     }
 
     private void resetParameters() {
