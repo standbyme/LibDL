@@ -6,7 +6,6 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class GRUTest {
@@ -36,7 +35,7 @@ public class GRUTest {
         }).transpose(), GRU.BIAS_IH);
         gru.setParam(Nd4j.create(new double[]{
                 1, 2, 0
-        }).transpose(), RNNAuto.BIAS_HH);
+        }).transpose(), GRU.BIAS_HH);
 
     }
 

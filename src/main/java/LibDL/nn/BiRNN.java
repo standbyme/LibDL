@@ -17,8 +17,8 @@ public class BiRNN extends Module {
     private long hiddenSize;
 
     // core
-    private RNN fwd;
-    private RNN bwd;
+    private RNNBase fwd;
+    private RNNBase bwd;
 
 
     public BiRNN(int inputSize, int hiddenSize) {

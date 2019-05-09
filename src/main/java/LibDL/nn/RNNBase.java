@@ -55,7 +55,7 @@ abstract public class RNNBase extends Module {
 
         outList = rnn_impl(input, outList, prevHidden, seqLen, c0);
 
-        Tensor output = new Concat(outList);
+        Tensor output = new Concat(0, outList);
 
         return output.reshape(seqLen, batchSize, hiddenSize);
     }
