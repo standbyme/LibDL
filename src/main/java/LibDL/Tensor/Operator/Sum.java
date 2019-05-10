@@ -23,6 +23,9 @@ public class Sum extends OperatorTensor {
     public Sum(Tensor tensor, int... dimensions) {
 
         this.dim = dimensions;
+        if (this.dim == null || this.dim.length == 0)
+            this.dim = Nd4j.linspace(0, tensor.data.rank() - 1,
+                    tensor.data.rank()).toIntVector();
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
@@ -42,12 +45,7 @@ public class Sum extends OperatorTensor {
                 })
         };
 
-        Supplier<INDArray> forward = () -> {
-            if (this.dim == null)
-                this.dim = Nd4j.linspace(0, tensor.data.rank() - 1,
-                        tensor.data.rank()).toIntVector();
-            return tensor.data.sum(dim);
-        };
+        Supplier<INDArray> forward = () -> tensor.data.sum(dim);
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 

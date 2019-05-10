@@ -18,16 +18,18 @@ public class ConcatTest {
         Variable data2 = new Variable(Nd4j.create(new double[][]{
                 {3, 4, 6},
                 {6, 7, 8},
+                {2, 5, 8}
         }), true);
 
 
-        Tensor result = new Concat(data1, data2);
+        Tensor result = new Concat(0, data1, data2);
 
         assertEquals(result.data, Nd4j.create(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 6},
                 {6, 7, 8},
+                {2, 5, 8}
         }));
 
         // backward
@@ -36,6 +38,7 @@ public class ConcatTest {
                 {2, 5, 1},
                 {3, 6, 3},
                 {5, 3, 4},
+                {6, 6, 6}
         });
 
         result.backward();
@@ -47,6 +50,7 @@ public class ConcatTest {
         assertEquals(data2.grad, Nd4j.create(new double[][]{
                 {3, 6, 3},
                 {5, 3, 4},
+                {6, 6, 6}
         }));
 
     }

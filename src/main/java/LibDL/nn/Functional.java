@@ -1,8 +1,6 @@
 package LibDL.nn;
 
-import LibDL.Tensor.Operator.Exp;
-import LibDL.Tensor.Operator.Log;
-import LibDL.Tensor.Operator.Tanh;
+import LibDL.Tensor.Operator.ReLU;
 import LibDL.Tensor.Tensor;
 
 public class Functional {
@@ -15,24 +13,20 @@ public class Functional {
     }
 
 
-    public static Tensor exp(Tensor tensor) {
-        return new Exp(tensor);
-    }
-
-    public static Tensor log(Tensor tensor) {
-        return new Log(tensor);
-    }
-
-    public static Tensor tanh(Tensor tensor) {
-        return new Tanh(tensor);
-    }
-
     public static Tensor dropout(Tensor input, double p, boolean train) {
         return Dropout.dropout_impl(input, p, train, false, false);
     }
 
     public static Tensor dropout(Tensor input, double p) {
         return dropout(input, p, true);
+    }
+
+    public static Tensor sigmoid(Tensor input) {
+        return Tensor.ones(input.sizes()).div(Tensor.exp(input.mul(-1)).add(1));
+    }
+
+    public static Tensor relu(Tensor input) {
+        return new ReLU(input);
     }
 
 }

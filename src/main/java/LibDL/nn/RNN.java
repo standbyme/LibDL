@@ -2,112 +2,62 @@ package LibDL.nn;
 
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
-import org.nd4j.linalg.activations.IActivation;
-import org.nd4j.linalg.activations.impl.ActivationTanH;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import static org.nd4j.linalg.indexing.NDArrayIndex.all;
-import static org.nd4j.linalg.indexing.NDArrayIndex.point;
+import static LibDL.nn.RNNBase.RNNType.TYPE_RNN;
 
-public class RNN extends Tensor {
-
-    // Layer configurations
-    private long inputSize;
-    private long hiddenSize;
-    // TODO: fix hard-coding here
-    private IActivation activation = new ActivationTanH();
-
+public class RNN extends RNNBase {
     // Layer parameters
-    Parameter weight_ih;
-    Parameter weight_hh;
-    Parameter bias_ih;
-    Parameter bias_hh;
-
-    // Input
-    Tensor input;
-    Variable h0;
-
-    // Output
-    private Variable hidden;
+    public Parameter weight_ih;
+    public Parameter weight_hh;
+    public Parameter bias_ih;
+    public Parameter bias_hh;
 
     public RNN(int inputSize, int hiddenSize) {
-        super();
-        this.inputSize = inputSize;
-        this.hiddenSize = hiddenSize;
+        super(inputSize, hiddenSize, false, false, TYPE_RNN);
 
         weight_hh = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-        weight_ih = new Parameter(Nd4j.create(inputSize, hiddenSize));
+        weight_ih = new Parameter(Nd4j.create(hiddenSize, inputSize));
         bias_hh = new Parameter(Nd4j.create(1, hiddenSize));
         bias_ih = new Parameter(Nd4j.create(1, hiddenSize));
+
+        resetParameters();
     }
 
-    public void setInput(Tensor input, Variable h0) {
-        this.input = input;
-        this.h0 = h0;
-    }
+    protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell) {
+        for (int i = 0; i < seqLen; i++) {
+            Tensor currIn = input.get(i);
+            Tensor currOut = calculate_gate(currIn, prevHidden, weight_ih, weight_hh, bias_hh, bias_ih, null);
 
-    public void forward() {
-        data = forwardHelper();
-    }
+            currOut = compute_current(currOut);
 
-    @Override
-    public void backward() {
-        backwardHelper(grad);
-        input.backward();
-    }
-
-
-    INDArray forwardHelper() {
-        hidden = new Variable(Nd4j.create(input.data.shape()[0], input.data.shape()[1], hiddenSize), true);
-        INDArray prevHidden = h0.data;
-        long times = input.data.size(0);
-
-        for (long i = 0; i < times; i++) {
-            INDArray currIn = input.data.get(point(i), all(), all());
-            INDArray currOut = hidden.data.get(point(i), all(), all());
-            currOut.assign(currIn.mmul(weight_ih.data.transpose())
-                    .add(prevHidden.mmul(weight_hh.data.transpose()))
-                    .addRowVector(bias_hh.data)
-                    .addRowVector(bias_ih.data)
-            );
-            activation.getActivation(currOut, true);
-            prevHidden = currOut;
+            outList[i] = prevHidden = h_n = currOut;
         }
-
-        return hidden.data;
+        return outList;
     }
 
-    void backwardHelper(INDArray epsilon) {
-        input.grad = Nd4j.emptyLike(input.data);
-        weight_hh.grad = Nd4j.zerosLike(weight_hh.data);
-        weight_ih.grad = Nd4j.zerosLike(weight_ih.data);
-        bias_hh.grad = Nd4j.zerosLike(bias_hh.data);
-        bias_ih.grad = Nd4j.zerosLike(bias_ih.data);
-
-        INDArray dzNext = null;
-        for (long i = input.data.size(0) - 1; i >= 0; i--) {
-            INDArray epsCurrent = epsilon.get(point(i), all(), all());
-            INDArray hiddenCurrent = hidden.data.get(point(i), all(), all());
-            INDArray inCurrent = input.data.get(point(i), all(), all());
-            INDArray hiddenPrevious = (i == 0) ? h0.data : hidden.data.get(point(i - 1), all(), all());
-            INDArray epsOutCurrent = input.grad.get(point(i), all(), all());
-
-            if (dzNext != null)
-                epsCurrent.addi(dzNext.mmul(weight_hh.data));
-
-            INDArray dzCurrent = epsCurrent.mul(hiddenCurrent.mul(hiddenCurrent).mul(-1).add(1));
-
-            epsOutCurrent.assign(dzCurrent.mmul(weight_ih.data));
-
-            weight_ih.grad.addi(dzCurrent.transpose().mmul(inCurrent));
-            weight_hh.grad.addi(dzCurrent.transpose().mmul(hiddenPrevious));
-            bias_hh.grad.addi(dzCurrent.sum(0));
-            bias_ih.grad.addi(dzCurrent.sum(0));
-
-            dzNext = dzCurrent;
+    public void setParam(INDArray param, int param_type) {
+        switch (param_type){
+            case WEIGHT_HH:
+                weight_hh.data = param;
+                break;
+            case WEIGHT_IH:
+                weight_ih.data = param;
+                break;
+            case BIAS_HH:
+                bias_hh.data = param;
+                break;
+            case BIAS_IH:
+                bias_ih.data = param;
         }
+    }
+
+    private void resetParameters() {
+        double stdv = 1.0 / Math.sqrt(this.hiddenSize);
+        for (Parameter weight : this.parameters())
+            if (weight != null)
+                WeightInit.uniform(weight.data, -stdv, stdv);
     }
 
 }

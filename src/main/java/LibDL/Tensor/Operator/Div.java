@@ -14,8 +14,8 @@ public class Div extends OperatorTensor {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(dividend, () -> grad.div(divisor.data)),
-                new OperandInfo(divisor, () -> dividend.data.mul(grad).mul(-1.0)
-                        .div(divisor.data.mul(divisor.data)))
+                new OperandInfo(divisor, () -> dividend.data.mul(grad).muli(-1.0)
+                        .divi(divisor.data.mul(divisor.data)))
         };
 
         Supplier<INDArray> forward = () -> dividend.data.div(divisor.data);

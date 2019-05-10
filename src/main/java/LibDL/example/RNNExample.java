@@ -17,11 +17,11 @@ public class RNNExample {
     private static final List<Character> LEARNSTRING_CHARS_LIST = new ArrayList<>();
 
     static class Model extends Module {
-        private RNNAuto rnn;
+        private RNN rnn;
         private Dense output;
 
         Model(int inputSize, int hiddenSize) {
-            rnn = new RNNAuto(inputSize, hiddenSize);
+            rnn = new RNN(inputSize, hiddenSize);
             output = new Dense(hiddenSize, hiddenSize);
         }
 
