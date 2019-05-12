@@ -4,6 +4,7 @@ import LibDL.Tensor.OperandInfo;
 import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -21,9 +22,10 @@ public class Max extends OperatorTensor {
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
                     INDArray zeros = Nd4j.toFlattened(Nd4j.zerosLike(tensor.data));
-                    INDArray indices = Nd4j.linspace(0, argmax.size(0) - 1, argmax.size(0));
-                    indices = indices.mul(tensor.data.size(1)).add(argmax.transpose());
-                    zeros.put(new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.indices(indices.data().asLong())}, grad);
+                    INDArray indices = Nd4j.linspace(0, argmax.size(0) - 1, argmax.size(0),
+                            DataType.LONG);
+                    indices = indices.mul(tensor.data.size(1)).add(argmax);
+                    zeros.put(new INDArrayIndex[]{NDArrayIndex.indices(indices.data().asLong())}, grad);
                     return zeros.reshape(tensor.data.shape());
                 }),
         };

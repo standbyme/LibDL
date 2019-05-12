@@ -4,6 +4,7 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import LibDL.nn.*;
 import LibDL.optim.RMSProp;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.indexaccum.IMax;
 import org.nd4j.linalg.factory.Nd4j;
@@ -43,8 +44,8 @@ public class RNNExample {
         int seqlen = LEARNSTRING.length;
         int features = LEARNSTRING_CHARS_LIST.size();
 
-        INDArray input = Nd4j.zeros(seqlen, 1, LEARNSTRING_CHARS_LIST.size());
-        INDArray label = Nd4j.zeros(seqlen);
+        INDArray input = Nd4j.zeros(DataType.DOUBLE, seqlen, 1, LEARNSTRING_CHARS_LIST.size());
+        INDArray label = Nd4j.zeros(DataType.DOUBLE, seqlen);
         // loop through our sample-sentence
         int samplePos = 0;
         for (char currentChar : LEARNSTRING) {
@@ -82,7 +83,7 @@ public class RNNExample {
 
     private static String tensor2str(INDArray input) {
         StringBuilder res = new StringBuilder();
-        INDArray characterIdx = Nd4j.getExecutioner().exec(new IMax(input), input.rank()-1);
+        INDArray characterIdx = Nd4j.exec(new IMax(input, input.rank()-1));
         for(int i = 0; i < characterIdx.length(); i++) {
             res.append(LEARNSTRING_CHARS_LIST.get(characterIdx.getInt((i))));
         }

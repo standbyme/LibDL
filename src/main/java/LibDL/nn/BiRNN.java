@@ -68,7 +68,7 @@ public class BiRNN extends Module {
         }
 
         private INDArray reverse(INDArray input) {
-            INDArray rev = Nd4j.emptyLike(input);
+            INDArray rev = Nd4j.zerosLike(input);
             long times = input.size(0);
             for (long i = 0; i < times; i++) {
                 rev.get(point(i), all(), all()).assign(input.get(point(times - 1 - i), all(), all()));

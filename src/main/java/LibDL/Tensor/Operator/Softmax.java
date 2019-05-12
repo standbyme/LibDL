@@ -67,7 +67,7 @@ public class Softmax extends OperatorTensor {
                         dout = dout.reshape(size, lastDim);
                         INDArray result = Nd4j.zeros(size, lastDim);
                         for (long i = 0; i < size; i++) {
-                            result.putRow(i, dout.getRow(i).mmul(Softmax.DjSi(out.getRow(i))));
+                            result.putRow(i, dout.getRow(i, true).mmul(Softmax.DjSi(out.getRow(i))));
                         }
                         result = result.reshape(__shape);
                         result.permutei(rearrange);

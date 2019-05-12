@@ -10,7 +10,9 @@ import LibDL.optim.RMSProp;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
 import LibDL.utils.data.Dataset;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.ops.transforms.Transforms;
 import vision.datasets.MNIST;
 
@@ -19,6 +21,8 @@ import java.util.Arrays;
 public class MNISTExample {
 
     public static void main(String[] args) {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
+
         Dataset mnist_train = new MNIST("resource/MNIST/", true).reshapeData(784);
         Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
@@ -47,7 +51,7 @@ public class MNISTExample {
                 loss.backward();
                 optim.step();
                 if (cnt % 50 == 0) {
-                    System.out.println("CNT: " + cnt + " " + loss.data.getRow(0));
+                    System.out.println("CNT: " + cnt + " " + loss.data.sum());
                 }
                 cnt++;
             }
@@ -55,7 +59,7 @@ public class MNISTExample {
 
         Tensor result = nn.forward(new Constant(mnist_test.reshapeData(784).data));
 
-        INDArray out = MNIST.revertOneHot(result.data);
+        INDArray out = MNIST.revertOneHot(result.data).castTo(DataType.DOUBLE);
 
         int rightCnt = Arrays.stream(Transforms.abs(out.sub(mnist_test.target)).toDoubleVector())
                 .filter(i -> i < 1e-6).toArray().length;

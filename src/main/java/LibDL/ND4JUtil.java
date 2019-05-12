@@ -1,36 +1,32 @@
 package LibDL;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.api.ops.TransformOp;
+import org.nd4j.linalg.api.ops.impl.transforms.strict.TanhDerivative;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
 public class ND4JUtil {
-    private static INDArray exec(TransformOp op) {
-        if (op.x().isCleanedUp()) throw new IllegalStateException("NDArray already freed");
-        return Nd4j.getExecutioner().execAndReturn(op);
-    }
-
     public static INDArray pow(INDArray x, int exponent) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Pow(x, x.dup(), exponent));
+        return Transforms.pow(x, exponent);
     }
 
     public static INDArray Exp(INDArray x) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Exp(x.dup()));
+        return Transforms.exp(x);
     }
 
     public static INDArray ReLU(INDArray x) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear(x.dup()));
+        return Transforms.relu(x);
     }
 
     public static INDArray Log(INDArray x) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Log(x.dup()));
+        return Transforms.log(x);
     }
 
     public static INDArray Step(INDArray x) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.Step(x.dup()));
+        return Transforms.step(x);
     }
 
     public static INDArray TanhDerivative(INDArray x) {
-        return exec(new org.nd4j.linalg.api.ops.impl.transforms.TanhDerivative(x.dup()));
+        return Nd4j.exec(new TanhDerivative(x, x.ulike()));
     }
 }

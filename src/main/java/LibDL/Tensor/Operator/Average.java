@@ -14,14 +14,14 @@ public class Average extends OperatorTensor {
     public Average(Tensor tensor) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> {
-                    return grad.transpose().div((double) tensor.data.size(1)).repeat(1, tensor.data.size(1));
-                }),
+                new OperandInfo(tensor, () ->
+                        grad.div((double) tensor.data.size(1)).reshape(-1, 1)
+                                .repeat(1, tensor.data.size(1))),
         };
 
         Supplier<INDArray> forward = () -> {
             // returns average value of every row
-            return tensor.data.mean(1).transpose();
+            return tensor.data.mean(1);
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);

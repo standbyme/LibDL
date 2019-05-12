@@ -15,9 +15,9 @@ public class SoftmaxTest {
         Softmax result;
         INDArray target;
 
-        data_to_forward = new Constant(Nd4j.create(new double[]{0.3, 2.9, 4.0})); // 2D test
+        data_to_forward = new Constant(Nd4j.create(new double[][]{{0.3, 2.9, 4.0}})); // 2D test
         result = new Softmax(data_to_forward, 1);
-        target = Nd4j.create(new double[]{0.01821127347648143768, 0.24519184231758117676, 0.73659694194793701172});
+        target = Nd4j.create(new double[][]{{0.01821127347648143768, 0.24519184231758117676, 0.73659694194793701172}});
         assertEquals(target, result.data); // 1.4901161193847656E-8
 
         data_to_forward = new Constant(Nd4j.create(new double[][][]{

@@ -35,10 +35,10 @@ public class LSTMTest {
         ), LSTM.WEIGHT_HH);
         lstm.setParam(Nd4j.create(new double[]{
                 1, 0, 3, 0
-        }).transpose(), LSTM.BIAS_IH);
+        }), LSTM.BIAS_IH);
         lstm.setParam(Nd4j.create(new double[]{
                 1, 2, 0, 2
-        }).transpose(), LSTM.BIAS_HH);
+        }), LSTM.BIAS_HH);
     }
 
     @Test
@@ -75,12 +75,12 @@ public class LSTMTest {
                                 {0.3375},
                                 {0.9975}}}), 1e-3);
         System.out.println(lstm.h_n.data);
-        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[]
-                {0.9807, 0.3375, 0.9975}
+        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[][]
+                {{0.9807}, {0.3375}, {0.9975}}
         ), 1e-3);
 
-        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[]{
-                2.4011, 0.5037, 11.1411
+        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[][]{
+                {2.4011}, {0.5037}, {11.1411}
         }), 1e-3);
         result.sum().backward();
         System.out.println(input.grad);

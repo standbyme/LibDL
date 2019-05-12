@@ -40,7 +40,7 @@ public class ImageWrite {
      * @return
      */
     public static INDArray toMatrix(BufferedImage image, int channel) {
-        if (!(channel == 1 || channel == 3 || channel == 4)) return Nd4j.create();
+        if (!(channel == 1 || channel == 3 || channel == 4)) return Nd4j.create(0);
         int row = image.getHeight();
         int col = image.getWidth();
         INDArray res = channel == 1 ? Nd4j.create(row, col) : Nd4j.create(channel, row, col);

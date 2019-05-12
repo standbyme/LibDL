@@ -17,8 +17,8 @@ public class FunctionalTest {
         sigmoid.backward();
         System.out.println(input.grad);
 
-        assert input.grad.equalsWithEps(Nd4j.create(new double[][]{
+        assert input.grad.equalsWithEps(Nd4j.create(new double[]
                 {4.5396e-5, 0.0004, 0.0038, 0.0333, 0.1863, 0.1863, 0.0333, 0.0038, 0.0004, 4.5396e-5}
-        }), 0.01);
+        ), 0.01);
     }
 }
