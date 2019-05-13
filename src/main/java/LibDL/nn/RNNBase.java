@@ -112,7 +112,7 @@ abstract public class RNNBase extends Module {
 
         for (int layer = 0; layer < numLayers; layer++) {
             outList = rnn_impl(output, outList, prevHidden, seqLen, c0, layer);
-            output = new Concat(outList).reshape(seqLen, batchSize, hiddenSize);
+            output = new Concat(0, outList).reshape(seqLen, batchSize, hiddenSize);
         }
 
         return output;
