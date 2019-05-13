@@ -34,7 +34,7 @@ abstract public class RNNBase extends Module {
             this.value = value;
         }
 
-        public int getValue() {
+        public int gateSize() {
             return value;
         }
     }
@@ -54,18 +54,18 @@ abstract public class RNNBase extends Module {
     }
 
     protected void init_param() {
-        weight_hh = new Parameter[rnn_type.getValue()];
-        weight_ih = new Parameter[rnn_type.getValue()];
-        bias_hh = new Parameter[rnn_type.getValue()];
-        bias_ih = new Parameter[rnn_type.getValue()];
+        weight_hh = new Parameter[rnn_type.gateSize()];
+        weight_ih = new Parameter[rnn_type.gateSize()];
+        bias_hh = new Parameter[rnn_type.gateSize()];
+        bias_ih = new Parameter[rnn_type.gateSize()];
         double stdv = 1.0 / Math.sqrt(this.hiddenSize);
-        for (int i = 0; i < rnn_type.getValue(); i++) {
+        for (int i = 0; i < rnn_type.gateSize(); i++) {
             weight_hh[i] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
             weight_ih[i] = new Parameter(Nd4j.create(hiddenSize, inputSize));
             bias_hh[i] = new Parameter(Nd4j.create(1, hiddenSize));
             bias_ih[i] = new Parameter(Nd4j.create(1, hiddenSize));
         }
-        for (int i = 0; i < rnn_type.getValue(); i++) {
+        for (int i = 0; i < rnn_type.gateSize(); i++) {
             WeightInit.uniform(weight_hh[i].data, -stdv, stdv);
             WeightInit.uniform(weight_ih[i].data, -stdv, stdv);
             WeightInit.uniform(bias_hh[i].data, -stdv, stdv);
@@ -73,7 +73,7 @@ abstract public class RNNBase extends Module {
         }
     }
 
-    public Tensor h_n;
+    public Tensor[] h_n;
 
     public RNNBase(int inputSize, int hiddenSize,
                    int numLayers, boolean bias,
@@ -89,6 +89,8 @@ abstract public class RNNBase extends Module {
         this.relu = relu;
         this.batch_first = batch_first;
         this.rnn_type = type;
+
+        this.h_n = new Tensor[numLayers];
         init_param();
     }
 
