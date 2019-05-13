@@ -40,7 +40,7 @@ public class GRUTest {
     }
 
     @Test
-    public void testGRU() {
+    public void test() {
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{1, 1},
                         {0.5, 0.4},

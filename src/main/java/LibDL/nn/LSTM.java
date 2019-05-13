@@ -10,12 +10,13 @@ import static LibDL.nn.RNNBase.RNNType.TYPE_LSTM;
 
 public class LSTM extends RNNBase {
 
-    public Tensor c_n;
+    public Tensor[] c_n;
 
     public LSTM(int inputSize, int hiddenSize, int numLayers) {
         super(inputSize, hiddenSize, numLayers,
                 true, false, false,
                 0, false, TYPE_LSTM);
+        c_n=new Tensor[numLayers];
     }
 
     @Override
@@ -38,8 +39,9 @@ public class LSTM extends RNNBase {
 
             Tensor new_cell = f_t.mul(prev_cell).add(i_t.mul(g_t));
 
-            h_n = prevHidden = outList[i] = o_t.mul(Tensor.tanh(new_cell));
-            c_n = prev_cell = new_cell;
+
+            h_n [currLayer]= prevHidden = outList[i] = o_t.mul(Tensor.tanh(new_cell));
+            c_n [currLayer] = prev_cell = new_cell;
         }
         return outList;
     }
@@ -67,7 +69,7 @@ public class LSTM extends RNNBase {
                 indices[i] = NDArrayIndex.all();
             }
 
-            for (int i = 0; i < rnn_type.getValue(); i++) {
+            for (int i = 0; i < rnn_type.gateSize(); i++) {
                 indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
                 assert paramList != null;
                 paramList[i].data = param.get(indices);

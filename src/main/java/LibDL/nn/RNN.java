@@ -5,11 +5,11 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 
 import static LibDL.nn.RNNBase.RNNType.TYPE_RNN;
 
-public class RNNAuto extends RNNBase {
+public class RNN extends RNNBase {
     // Layer parameters
 
 
-    public RNNAuto(int inputSize, int hiddenSize, int numLayers) {
+    public RNN(int inputSize, int hiddenSize, int numLayers) {
         super(inputSize, hiddenSize, numLayers,
                 true, false, false,
                 0, false, TYPE_RNN);
@@ -26,7 +26,7 @@ public class RNNAuto extends RNNBase {
 
             currOut = compute_current(currOut);
 
-            outList[i] = prevHidden = h_n = currOut;
+            outList[i] = prevHidden = h_n[currLayer] = currOut;
         }
         return outList;
     }

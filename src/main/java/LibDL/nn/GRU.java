@@ -33,7 +33,7 @@ public class GRU extends RNNBase {
 
             outList[i] = u.mul(prevHidden).add(Tensor.ones(u.sizes()).sub(u).mul(currOut));
             prevHidden = outList[i];
-            h_n = prevHidden;
+            h_n [currLayer]= prevHidden;
         }
         return outList;
     }
@@ -61,7 +61,7 @@ public class GRU extends RNNBase {
                 indices[i] = NDArrayIndex.all();
             }
 
-            for (int i = 0; i < rnn_type.getValue(); i++) {
+            for (int i = 0; i < rnn_type.gateSize(); i++) {
                 indices[0] = NDArrayIndex.interval(i * hiddenSize, i * hiddenSize + hiddenSize);
                 assert paramList != null;
                 paramList[i].data = param.get(indices);

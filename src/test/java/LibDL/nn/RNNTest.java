@@ -8,34 +8,34 @@ import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class RNNAutoTest {
+public class RNNTest {
 
-    private static RNNAuto rnn = null;
+    private static RNN rnn = null;
 
     @BeforeClass
     public static void initRNN() {
-        rnn = new RNNAuto(3, 5, 1);
-        rnn.setParam(RNNAuto.WEIGHT_HH, Nd4j.create(new double[][]{
+        rnn = new RNN(3, 5, 1);
+        rnn.setParam(RNN.WEIGHT_HH, Nd4j.create(new double[][]{
                 {-0.2759, -0.2183, 0.4454, -0.0331, 0.0015},
                 {-0.4196, -0.1691, -0.1807, 0.3347, -0.2393},
                 {-0.3233, 0.4190, -0.3819, -0.1739, -0.2363},
                 {-0.0749, 0.1831, 0.1638, 0.1701, 0.4200},
                 {0.4375, -0.1900, -0.3810, -0.2224, -0.4320}}));
 
-        rnn.setParam(RNNAuto.WEIGHT_IH, Nd4j.create(new double[][]{
+        rnn.setParam(RNN.WEIGHT_IH, Nd4j.create(new double[][]{
                 {-0.0862, 0.1885, 0.1464},
                 {-0.0782, -0.0145, -0.2172},
                 {0.1067, 0.0100, -0.4008},
                 {-0.0921, -0.1040, 0.1249},
                 {0.0167, -0.1631, 0.1717}}));
 
-        rnn.setParam(RNNAuto.BIAS_HH, Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
+        rnn.setParam(RNN.BIAS_HH, Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
-        rnn.setParam(RNNAuto.BIAS_IH, Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
+        rnn.setParam(RNN.BIAS_IH, Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
     }
 
     @Test
-    public void testRNNAuto() {
+    public void test() {
         assert rnn.parameters().length == 4;
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},

@@ -41,7 +41,7 @@ public class LSTMTest {
     }
 
     @Test
-    public void testLSTM() {
+    public void test() {
 
         Parameter[] parameters = lstm.parameters();
 
@@ -73,12 +73,12 @@ public class LSTMTest {
                         {{0.9807},
                                 {0.3375},
                                 {0.9975}}}), 1e-3);
-        System.out.println(lstm.h_n.data);
-        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[]
+        System.out.println(lstm.h_n[0].data);
+        assert lstm.h_n[0].data.equalsWithEps(Nd4j.create(new double[]
                 {0.9807, 0.3375, 0.9975}
         ), 1e-3);
 
-        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[]{
+        assert lstm.c_n[0].data.equalsWithEps(Nd4j.create(new double[]{
                 2.4011, 0.5037, 11.1411
         }), 1e-3);
         result.sum().backward();
