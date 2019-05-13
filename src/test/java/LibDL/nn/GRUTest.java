@@ -6,7 +6,6 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class GRUTest {
@@ -15,28 +14,28 @@ public class GRUTest {
     @BeforeClass
     public static void initRNN() {
 
-        gru = new GRU(2, 1);
+        gru = new GRU(2, 1, 1);
 
-        gru.setParam(Nd4j.create(
+        gru.setParam(GRU.WEIGHT_IH, Nd4j.create(
                 new double[][]{
                         {1, 1},
                         {0, 0},
                         {3.5, 3.5}
                 }
-        ), GRU.WEIGHT_IH);
-        gru.setParam(Nd4j.create(
+        ));
+        gru.setParam(GRU.WEIGHT_HH, Nd4j.create(
                 new double[][]{
                         {1},
                         {1},
                         {1}
                 }
-        ), GRU.WEIGHT_HH);
-        gru.setParam(Nd4j.create(new double[]{
+        ));
+        gru.setParam(GRU.BIAS_IH, Nd4j.create(new double[]{
                 1, 0, 3
-        }).transpose(), GRU.BIAS_IH);
-        gru.setParam(Nd4j.create(new double[]{
+        }).transpose());
+        gru.setParam(GRU.BIAS_HH, Nd4j.create(new double[]{
                 1, 2, 0
-        }).transpose(), RNNAuto.BIAS_HH);
+        }).transpose());
 
     }
 
@@ -58,6 +57,7 @@ public class GRUTest {
         assert parameters.length == 12;
 
         Tensor result = gru.forward(input, h0);
+        System.out.println(result);
 
         assert result.data.equalsWithEps(Nd4j.create(
                 new double[][][]
