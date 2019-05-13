@@ -7,13 +7,13 @@ import static LibDL.nn.RNNBase.RNNType.TYPE_RNN;
 public class RNN extends RNNBase {
     // Layer parameters
 
-    public RNN(int inputSize, int hiddenSize, int numLayers){
-        this(inputSize,hiddenSize,numLayers,true,0);
+    public RNN(int inputSize, int hiddenSize, int numLayers) {
+        this(inputSize, hiddenSize, numLayers, false, true, 0);
     }
 
-    public RNN(int inputSize, int hiddenSize, int numLayers, boolean bias, double dropout) {
+    public RNN(int inputSize, int hiddenSize, int numLayers, boolean relu, boolean bias, double dropout) {
         super(inputSize, hiddenSize, numLayers,
-                bias, false, false,
+                bias, relu, false,
                 dropout, false, TYPE_RNN);
     }
 

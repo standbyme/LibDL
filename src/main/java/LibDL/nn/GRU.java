@@ -6,13 +6,13 @@ import static LibDL.nn.RNNBase.RNNType.TYPE_GRU;
 
 public class GRU extends RNNBase {
 
-    public GRU(int inputSize, int hiddenSize, int numLayers){
-        this(inputSize,hiddenSize,numLayers,true,0);
+    public GRU(int inputSize, int hiddenSize, int numLayers) {
+        this(inputSize, hiddenSize, numLayers, false, true, 0);
     }
 
-    public GRU(int inputSize, int hiddenSize, int numLayers, boolean bias, double dropout) {
+    public GRU(int inputSize, int hiddenSize, int numLayers, boolean relu, boolean bias, double dropout) {
         super(inputSize, hiddenSize, numLayers,
-                bias, false, false,
+                bias, relu, false,
                 dropout, false, TYPE_GRU);
     }
 
