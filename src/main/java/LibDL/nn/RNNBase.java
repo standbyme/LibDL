@@ -159,6 +159,16 @@ abstract public class RNNBase extends Module {
         return result;
     }
 
+    //A shortcut
+    protected Tensor calculate_gate(Tensor input, Tensor last,
+                                    int currLayer, int param_type,
+                                    Tensor r_gate) {
+        return calculate_gate(input, last,
+                weight_ih[pm(currLayer, param_type)],
+                weight_hh[pm(currLayer, param_type)],
+                bias_hh[pm(currLayer, param_type)],
+                bias_ih[pm(currLayer, param_type)], r_gate);
+    }
 
     protected Tensor compute_current(Tensor tensor) {
         return relu ? Functional.relu(tensor) : Tensor.tanh(tensor);

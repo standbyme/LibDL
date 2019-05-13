@@ -18,11 +18,7 @@ public class RNN extends RNNBase {
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell, int currLayer) {
         for (int i = 0; i < seqLen; i++) {
             Tensor currIn = input.get(i);
-            Tensor currOut = calculate_gate(currIn, prevHidden,
-                    weight_ih[pm(currLayer, PARAM_I)],
-                    weight_hh[pm(currLayer, PARAM_I)],
-                    bias_hh[pm(currLayer, PARAM_I)],
-                    bias_ih[pm(currLayer, PARAM_I)], null);
+            Tensor currOut = calculate_gate(currIn, prevHidden,currLayer, PARAM_I, null);
 
             currOut = compute_current(currOut);
 
