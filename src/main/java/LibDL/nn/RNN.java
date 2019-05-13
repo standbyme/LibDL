@@ -31,22 +31,5 @@ public class RNN extends RNNBase {
         return outList;
     }
 
-    public void setParam(int param_type, INDArray... param) {
-        for (int currLayer = 0; currLayer < numLayers; currLayer++) {
-            switch (param_type) {
-                case WEIGHT_HH:
-                    weight_hh[pm(currLayer, PARAM_I)].data = param[currLayer];
-                    break;
-                case WEIGHT_IH:
-                    weight_ih[pm(currLayer, PARAM_I)].data = param[currLayer];
-                    break;
-                case BIAS_HH:
-                    bias_hh[pm(currLayer, PARAM_I)].data = param[currLayer];
-                    break;
-                case BIAS_IH:
-                    bias_ih[pm(currLayer, PARAM_I)].data = param[currLayer];
-            }
-        }
-    }
 
 }
