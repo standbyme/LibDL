@@ -37,6 +37,7 @@ dependencies {
     compile 'net.sourceforge.jdistlib:jdistlib:0.4.5'
     compile 'org.slf4j:slf4j-api:1.7.26'
     compile 'org.slf4j:slf4j-simple:1.7.26'
+    compileOnly 'org.jetbrains:annotations:17.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'log4j:log4j:1.2.16'
     testCompile 'org.apache.logging.log4j:log4j-core:2.8.2'
