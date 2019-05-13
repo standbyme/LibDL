@@ -8,9 +8,14 @@ public class LSTM extends RNNBase {
 
     public Tensor[] c_n;
 
+
     public LSTM(int inputSize, int hiddenSize, int numLayers) {
+        this(inputSize, hiddenSize, numLayers, true, 0);
+    }
+
+    public LSTM(int inputSize, int hiddenSize, int numLayers, boolean bias, double dropout) {
         super(inputSize, hiddenSize, numLayers,
-                true, false, false,
+                bias, false, false,
                 0, false, TYPE_LSTM);
         c_n = new Tensor[numLayers];
     }
