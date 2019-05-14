@@ -13,15 +13,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Module {
+    @NotNull
     private OrderedDict<String, Tensor> buffers_;
+    @NotNull
     private OrderedDict<String, Module> children_;
     private boolean is_training_ = true;
     @Nullable
     private String name_;
+    @NotNull
     private OrderedDict<String, Tensor> parameters_;
 
     public Module() {
-        buffers_ = new OrderedDict<>("Parameter");
+        parameters_ = new OrderedDict<>("Parameter");
         buffers_ = new OrderedDict<>("Buffer");
         children_ = new OrderedDict<>("Submodule");
     }
@@ -30,7 +33,7 @@ public class Module {
         this.name_ = name;
     }
 
-    private void extend(Collection<Tensor> collection, OrderedDict<String, Tensor> dict) {
+    private void extend(@NotNull Collection<Tensor> collection, OrderedDict<String, Tensor> dict) {
         collection.addAll(dict.values());
     }
 
@@ -50,11 +53,11 @@ public class Module {
     }
 
 
-    private void apply_to_submodules(BiConsumer<String, Module> function) {
+    private void apply_to_submodules(@NotNull BiConsumer<String, Module> function) {
         apply_to_submodules(function, "");
     }
 
-    private void apply_to_submodules(BiConsumer<String, Module> function, String name_prefix) {
+    private void apply_to_submodules(@NotNull BiConsumer<String, Module> function, @NotNull String name_prefix) {
         children_.forEach((key, value) -> {
             var qualified_name = join_name(name_prefix, key);
             function.accept(qualified_name, value);
@@ -62,6 +65,10 @@ public class Module {
         });
     }
 
+
+    Collection<Tensor> parameters() {
+        return parameters(true);
+    }
 
     Collection<Tensor> parameters(boolean recurse) {
         if (!recurse) return parameters_.values();
@@ -81,16 +88,16 @@ public class Module {
         return result;
     }
 
-    private void apply(Consumer<Module> function) {
+    private void apply(@NotNull Consumer<Module> function) {
         function.accept(this);
         apply_to_submodules((s, module) -> function.accept(module));
     }
 
-    private void apply(BiConsumer<String, Module> function) {
+    private void apply(@NotNull BiConsumer<String, Module> function) {
         apply(function, "");
     }
 
-    private void apply(BiConsumer<String, Module> function, String name_prefix) {
+    private void apply(@NotNull BiConsumer<String, Module> function, @NotNull String name_prefix) {
         function.accept(name_prefix, this);
         apply_to_submodules(function, name_prefix);
     }
@@ -121,7 +128,7 @@ public class Module {
         return result;
     }
 
-    OrderedDict<String, Module> named_modules(String name_prefix, boolean include_self) {
+    OrderedDict<String, Module> named_modules(@NotNull String name_prefix, boolean include_self) {
         OrderedDict<String, Module> result = new OrderedDict<>();
         if (include_self) {
             apply(result::put, name_prefix);
@@ -167,11 +174,11 @@ public class Module {
         return true;
     }
 
-    Tensor register_parameter(String name, Tensor tensor) {
+    Tensor register_parameter(@NotNull String name, @NotNull Tensor tensor) {
         return register_parameter(name, tensor, true);
     }
 
-    private Tensor register_parameter(String name, Tensor tensor, boolean requires_grad) {
+    private Tensor register_parameter(@NotNull String name, @NotNull Tensor tensor, boolean requires_grad) {
         assert !name.isEmpty();
         assert name.indexOf('.') == -1;
 
@@ -180,7 +187,7 @@ public class Module {
         return tensor;
     }
 
-    Tensor register_buffer(String name, Tensor tensor) {
+    Tensor register_buffer(@NotNull String name, @NotNull Tensor tensor) {
         assert !name.isEmpty();
         assert name.indexOf('.') == -1;
 
@@ -188,7 +195,7 @@ public class Module {
         return tensor;
     }
 
-    void pretty_print(OutputStream stream) throws IOException {
+    void pretty_print(@NotNull OutputStream stream) throws IOException {
         stream.write(name().getBytes());
     }
 

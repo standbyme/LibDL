@@ -17,8 +17,7 @@ public class Tensor {
     }
 
     public Tensor set_requires_grad(boolean requires_grad) {
-        assert false;
-        return null;
+        return new Tensor();
     }
 
     public boolean defined() {
