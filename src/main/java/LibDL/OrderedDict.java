@@ -1,9 +1,17 @@
 package LibDL;
 
-public class OrderedDict<K,V> {
-    public OrderedDict(String key_description) {
+import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
+
+public class OrderedDict<K extends Comparable, V> extends LinkedHashMap<K, V> {
+    public OrderedDict() {
+        this("Key");
+    }
+
+    public OrderedDict(@NotNull String key_description) {
         this.key_description_ = key_description;
     }
 
-    String key_description_ = "Key";
+    private String key_description_;
 }

@@ -48,7 +48,7 @@ dependencies {
 group = 'LibDL'
 version = '1.0'
 description = 'LibDL'
-sourceCompatibility = '1.11'
+sourceCompatibility = '11'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
