@@ -1,13 +1,17 @@
 package LibDL.nn;
 
-import LibDL.Tensor.*;
+import LibDL.Tensor.OperandInfo;
 import LibDL.Tensor.Operator.Concat;
+import LibDL.Tensor.OperatorInfo;
+import LibDL.Tensor.OperatorTensor;
+import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.function.Supplier;
 
-import static org.nd4j.linalg.indexing.NDArrayIndex.*;
+import static org.nd4j.linalg.indexing.NDArrayIndex.all;
+import static org.nd4j.linalg.indexing.NDArrayIndex.point;
 
 
 public class BiRNN extends Module {
@@ -15,18 +19,23 @@ public class BiRNN extends Module {
     // Layer configurations
     private long inputSize;
     private long hiddenSize;
+    private long numLayer;
 
     // core
     private RNNBase fwd;
     private RNNBase bwd;
 
-
     public BiRNN(int inputSize, int hiddenSize) {
+        this(inputSize, hiddenSize, 1);
+    }
+
+    public BiRNN(int inputSize, int hiddenSize, int numLayer) {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
+        this.numLayer = numLayer;
 
-        fwd = new RNN(inputSize, hiddenSize);
-        bwd = new RNN(inputSize, hiddenSize);
+        fwd = new RNN(inputSize, hiddenSize, numLayer);
+        bwd = new RNN(inputSize, hiddenSize, numLayer);
     }
 
     private Tensor forward(Tensor input, Tensor h0) {

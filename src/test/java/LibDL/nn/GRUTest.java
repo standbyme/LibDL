@@ -14,33 +14,33 @@ public class GRUTest {
     @BeforeClass
     public static void initRNN() {
 
-        gru = new GRU(2, 1);
+        gru = new GRU(2, 1, 1);
 
-        gru.setParam(Nd4j.create(
+        gru.setParam(GRU.WEIGHT_IH, Nd4j.create(
                 new double[][]{
                         {1, 1},
                         {0, 0},
                         {3.5, 3.5}
                 }
-        ), GRU.WEIGHT_IH);
-        gru.setParam(Nd4j.create(
+        ));
+        gru.setParam(GRU.WEIGHT_HH, Nd4j.create(
                 new double[][]{
                         {1},
                         {1},
                         {1}
                 }
-        ), GRU.WEIGHT_HH);
-        gru.setParam(Nd4j.create(new double[]{
+        ));
+        gru.setParam(GRU.BIAS_IH, Nd4j.create(new double[]{
                 1, 0, 3
-        }).transpose(), GRU.BIAS_IH);
-        gru.setParam(Nd4j.create(new double[]{
+        }).transpose());
+        gru.setParam(GRU.BIAS_HH, Nd4j.create(new double[]{
                 1, 2, 0
-        }).transpose(), GRU.BIAS_HH);
+        }).transpose());
 
     }
 
     @Test
-    public void testGRU() {
+    public void test() {
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{1, 1},
                         {0.5, 0.4},
@@ -57,6 +57,7 @@ public class GRUTest {
         assert parameters.length == 12;
 
         Tensor result = gru.forward(input, h0);
+        System.out.println(result);
 
         assert result.data.equalsWithEps(Nd4j.create(
                 new double[][][]

@@ -44,9 +44,18 @@ public abstract class Module {
         return str.toString();
     }
 
+    private static List<Field> listAllFields(Object obj) {
+        List<Field> fieldList = new ArrayList<Field>();
+        Class tmpClass = obj.getClass();
+        while (tmpClass != null) {
+            fieldList.addAll(Arrays.asList(tmpClass.getDeclaredFields()));
+            tmpClass = tmpClass.getSuperclass();
+        }
+        return fieldList;
+    }
+
     private Map<String, Module> getSubModules() {
-        Class<? extends Module> cls = this.getClass();
-        Field[] fields = cls.getDeclaredFields();
+        List<Field> fields = listAllFields(this);
         Map<String, Module> modules = new LinkedHashMap<>();
         int unnamedCount = 0;
         for (Field f : fields) {
@@ -73,8 +82,7 @@ public abstract class Module {
     }
 
     private Collection<Parameter> getParameters() {
-        Class<? extends Module> cls = this.getClass();
-        Field[] fields = cls.getDeclaredFields();
+        List<Field> fields = listAllFields(this);
         List<Parameter> parameters = new ArrayList<>();
         for (Field f : fields) {
             f.setAccessible(true);
@@ -87,6 +95,8 @@ public abstract class Module {
 
             if (value instanceof Parameter) {
                 parameters.add((Parameter) value);
+            } else if (value instanceof Parameter[]) {
+                Collections.addAll(parameters, (Parameter[]) value);
             }
         }
         return parameters;
