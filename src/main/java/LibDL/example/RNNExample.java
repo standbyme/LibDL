@@ -2,14 +2,19 @@ package LibDL.example;
 
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
-import LibDL.nn.*;
+import LibDL.nn.Dense;
+import LibDL.nn.Functional;
+import LibDL.nn.Module;
+import LibDL.nn.RNN;
 import LibDL.optim.RMSProp;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.indexaccum.IMax;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class RNNExample {
 
@@ -22,7 +27,7 @@ public class RNNExample {
         private Dense output;
 
         Model(int inputSize, int hiddenSize) {
-            rnn = new RNN(inputSize, hiddenSize);
+            rnn = new RNN(inputSize, hiddenSize, 1);
             output = new Dense(hiddenSize, hiddenSize);
         }
 

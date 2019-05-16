@@ -6,7 +6,6 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class LSTMTest {
@@ -15,34 +14,34 @@ public class LSTMTest {
 
     @BeforeClass
     public static void initRNN() {
-        lstm = new LSTM(2, 1);
+        lstm = new LSTM(2, 1, 1);
 
-        lstm.setParam(Nd4j.create(
+        lstm.setParam(LSTM.WEIGHT_IH, Nd4j.create(
                 new double[][]{
                         {1, 1},
                         {0, 0},
                         {3.5, 3.5},
                         {2, 0}
                 }
-        ), LSTM.WEIGHT_IH);
-        lstm.setParam(Nd4j.create(
+        ));
+        lstm.setParam(LSTM.WEIGHT_HH, Nd4j.create(
                 new double[][]{
                         {1},
                         {1},
                         {1},
                         {2}
                 }
-        ), LSTM.WEIGHT_HH);
-        lstm.setParam(Nd4j.create(new double[]{
+        ));
+        lstm.setParam(LSTM.BIAS_IH, Nd4j.create(new double[]{
                 1, 0, 3, 0
-        }), LSTM.BIAS_IH);
-        lstm.setParam(Nd4j.create(new double[]{
+        }).transpose());
+        lstm.setParam(LSTM.BIAS_HH, Nd4j.create(new double[]{
                 1, 2, 0, 2
-        }), LSTM.BIAS_HH);
+        }).transpose());
     }
 
     @Test
-    public void testLSTM() {
+    public void test() {
 
         Parameter[] parameters = lstm.parameters();
 
@@ -74,13 +73,13 @@ public class LSTMTest {
                         {{0.9807},
                                 {0.3375},
                                 {0.9975}}}), 1e-3);
-        System.out.println(lstm.h_n.data);
-        assert lstm.h_n.data.equalsWithEps(Nd4j.create(new double[][]
-                {{0.9807}, {0.3375}, {0.9975}}
+        System.out.println(lstm.h_n[0].data);
+        assert lstm.h_n[0].data.equalsWithEps(Nd4j.create(new double[]
+                {0.9807, 0.3375, 0.9975}
         ), 1e-3);
 
-        assert lstm.c_n.data.equalsWithEps(Nd4j.create(new double[][]{
-                {2.4011}, {0.5037}, {11.1411}
+        assert lstm.c_n[0].data.equalsWithEps(Nd4j.create(new double[]{
+                2.4011, 0.5037, 11.1411
         }), 1e-3);
         result.sum().backward();
         System.out.println(input.grad);

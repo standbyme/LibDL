@@ -14,28 +14,28 @@ public class RNNTest {
 
     @BeforeClass
     public static void initRNN() {
-        rnn = new RNN(3, 5);
-        rnn.setParam(Nd4j.create(new double[][]{
+        rnn = new RNN(3, 5, 1);
+        rnn.setParam(RNN.WEIGHT_HH, Nd4j.create(new double[][]{
                 {-0.2759, -0.2183, 0.4454, -0.0331, 0.0015},
                 {-0.4196, -0.1691, -0.1807, 0.3347, -0.2393},
                 {-0.3233, 0.4190, -0.3819, -0.1739, -0.2363},
                 {-0.0749, 0.1831, 0.1638, 0.1701, 0.4200},
-                {0.4375, -0.1900, -0.3810, -0.2224, -0.4320}}), RNN.WEIGHT_HH);
+                {0.4375, -0.1900, -0.3810, -0.2224, -0.4320}}));
 
-        rnn.setParam(Nd4j.create(new double[][]{
+        rnn.setParam(RNN.WEIGHT_IH, Nd4j.create(new double[][]{
                 {-0.0862, 0.1885, 0.1464},
                 {-0.0782, -0.0145, -0.2172},
                 {0.1067, 0.0100, -0.4008},
                 {-0.0921, -0.1040, 0.1249},
-                {0.0167, -0.1631, 0.1717}}), RNN.WEIGHT_IH);
+                {0.0167, -0.1631, 0.1717}}));
 
-        rnn.setParam(Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}), RNN.BIAS_HH);
+        rnn.setParam(RNN.BIAS_HH, Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
 
-        rnn.setParam(Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}), RNN.BIAS_IH);
+        rnn.setParam(RNN.BIAS_IH, Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
     }
 
     @Test
-    public void testRNNAuto() {
+    public void test() {
         assert rnn.parameters().length == 4;
         Variable input = new Variable(Nd4j.create(new double[][][]{
                 {{0.0053, -0.4601, -0.5414},
@@ -99,9 +99,9 @@ public class RNNTest {
         INDArray biasGradient = Nd4j.create(new double[]{-2.8803, -5.3557, 1.3418, -2.3531, -0.6663});
 
         assert input.grad.equalsWithEps(inputGradient, 1e-3);
-        assert rnn.weight_ih.grad.equalsWithEps(weightGradient_ih, 1e-3);
-        assert rnn.weight_hh.grad.equalsWithEps(weightGradient_hh, 1e-3);
-        assert rnn.bias_ih.grad.equalsWithEps(biasGradient, 1e-3);
-        assert rnn.bias_hh.grad.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.weight_ih[0].grad.equalsWithEps(weightGradient_ih, 1e-3);
+        assert rnn.weight_hh[0].grad.equalsWithEps(weightGradient_hh, 1e-3);
+        assert rnn.bias_ih[0].grad.equalsWithEps(biasGradient, 1e-3);
+        assert rnn.bias_hh[0].grad.equalsWithEps(biasGradient, 1e-3);
     }
 }
