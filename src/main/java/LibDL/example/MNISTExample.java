@@ -51,7 +51,7 @@ public class MNISTExample {
                 loss.backward();
                 optim.step();
                 if (cnt % 50 == 0) {
-                    System.out.println("CNT: " + cnt + " " + loss.data.sum());
+                    System.out.println("CNT: " + cnt + " " + loss.data);
                 }
                 cnt++;
             }
