@@ -5,16 +5,21 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
+import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 
 public class Sum extends OperatorTensor {
 
     private int[] dim;
+
+    private static INDArray temp = Nd4j.zeros(1);
 
     public Sum(Tensor tensor) {
         this(tensor, null);
@@ -38,7 +43,38 @@ public class Sum extends OperatorTensor {
                     }
                     INDArray ret = Nd4j.ones(shape);
                     ret.put(indices, grad);
-                    return ret.broadcast(tensor.data.shape());
+
+                    long[] shape_i = tensor.data.shape();
+                    long[] shape_t = temp.shape();
+
+                    if (shape_t.length != shape_i.length) {
+                        temp = Nd4j.zerosLike(tensor.data);
+                    }else {
+                        int n = shape_t.length;
+                        long[] expension = Arrays.copyOf(shape_t, n);
+                        for (int i = 0; i < n; i++) {
+                            if (shape_t[i] < shape_i[0]) {
+                                expension[i] = shape_i[i];
+                                temp = Nd4j.zeros(expension);
+                                shape_t = temp.shape();
+                            }
+                        }
+                    }
+
+                    INDArray result = temp.get(
+                            NDArrayIndex.interval(0, 1, shape_i[0]),
+                            NDArrayIndex.interval(0, 1, shape_i[1]),
+                            NDArrayIndex.interval(0, 1, shape_i[2]),
+                            NDArrayIndex.interval(0, 1, shape_i[3]),
+                            NDArrayIndex.interval(0, 1, shape_i[4]));
+
+                    Nd4j.getExecutioner().execAndReturn(new BroadcastCopyOp(tensor.data, ret, result, 0, 1, 3, 4));
+                    return result;
+//                    INDArray result = Nd4j.zerosLike(tensor.data);
+//                    Nd4j.getExecutioner().exec(new BroadcastCopyOp(tensor.data, ret, result, 0, 1, 3, 4));
+//                    return result;
+
+//                    return ret.broadcast(tensor.data.shape());
                 })
         };
 
