@@ -89,6 +89,8 @@ public class Unfold extends OperatorTensor {
                     assert input.data.rank() == 4;
                     INDArray data = input.data;
                     long[] shape = data.shape();
+                    int _filter_h = (filter_h - 1) * dilation[0] + 1;
+                    int _filter_w = (filter_w - 1) * dilation[1] + 1;
 
                     INDArray zeros = Nd4j.zeros(shape[0], shape[1], shape[2] + this.padding[0] * 2, shape[3] + this.padding[1] * 2);
                     INDArray result = zeros.dup();
@@ -100,8 +102,8 @@ public class Unfold extends OperatorTensor {
                                     .reshape(shape[0], shape[1], filter_h, filter_w);
                             zeros.put(new INDArrayIndex[]{
                                     NDArrayIndex.all(), NDArrayIndex.all(),
-                                    NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + filter_h * dilation[0]),
-                                    NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + filter_w * dilation[1])
+                                    NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + _filter_h),
+                                    NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + _filter_w)
                             }, column);
                             result.addi(zeros);
                             zeros.muli(0);
@@ -152,8 +154,8 @@ public class Unfold extends OperatorTensor {
                 for (long j = 0; j < amount_w; j++) {
                     INDArray column = Nd4j.toFlattened(data.get(
                             NDArrayIndex.all(), NDArrayIndex.all(),
-                            NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + filter_h * dilation[0]),
-                            NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + filter_w * dilation[1])));
+                            NDArrayIndex.interval(i * stride[0], dilation[0], i * stride[0] + _filter_h),
+                            NDArrayIndex.interval(j * stride[1], dilation[1], j * stride[1] + _filter_w)));
                     result.put(new INDArrayIndex[]{
                                     NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i * amount_w + j)},
                             column.reshape(shape[0], 1, output_h));

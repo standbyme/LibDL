@@ -32,10 +32,10 @@ public class GRUTest {
         ));
         gru.setParam(GRU.BIAS_IH, Nd4j.create(new double[]{
                 1, 0, 3
-        }).transpose());
+        }));
         gru.setParam(GRU.BIAS_HH, Nd4j.create(new double[]{
                 1, 2, 0
-        }).transpose());
+        }));
 
     }
 

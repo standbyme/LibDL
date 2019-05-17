@@ -1,7 +1,6 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Variable;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -11,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 public class Conv2dTest {
 
     @Test
-    @Ignore("conv2D is broken")
     public void testConv2d() {
         Variable input = new Variable(Nd4j.linspace(1, 192, 192).reshape(2, 2, 8, 6), true);
         Conv2d conv2d = new Conv2d.Builder(2, 4, 3, 2)

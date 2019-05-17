@@ -29,9 +29,9 @@ public class RNNTest {
                 {-0.0921, -0.1040, 0.1249},
                 {0.0167, -0.1631, 0.1717}}));
 
-        rnn.setParam(RNN.BIAS_HH, Nd4j.create(new double[][]{{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}}));
+        rnn.setParam(RNN.BIAS_HH, Nd4j.create(new double[]{-0.1757, -0.2823, -0.3362, -0.1846, -0.0046}));
 
-        rnn.setParam(RNN.BIAS_IH, Nd4j.create(new double[][]{{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}}));
+        rnn.setParam(RNN.BIAS_IH, Nd4j.create(new double[]{-0.1291, -0.2665, -0.0902, 0.3374, 0.2181}));
     }
 
     @Test
