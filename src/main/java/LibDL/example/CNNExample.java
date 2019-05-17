@@ -3,7 +3,6 @@ package LibDL.example;
 import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
 import LibDL.nn.*;
-import LibDL.optim.RMSProp;
 import LibDL.optim.SGD;
 import LibDL.utils.Pair;
 import LibDL.utils.data.DataLoader;
@@ -24,7 +23,7 @@ public class CNNExample {
                 new Conv2d.Builder(8, 16, 5).build(),
                 new ReLU(),
                 new MaxPool2d.Builder(2).build(),
-                new Reshape(60, 4 * 4 * 16),
+                new Reshape(-1, 4 * 4 * 16),
                 new Dense(4 * 4 * 16, 100),
                 new ReLU(),
                 new Dense(100, 10)
@@ -33,7 +32,7 @@ public class CNNExample {
 
         SGD optimizer = new SGD(nn.parameters(), 0.01f, 0.50f);
 
-        DataLoader dataLoader = new DataLoader(mnist_train, 60, false, false);
+        DataLoader dataLoader = new DataLoader(mnist_train, 64, false, false);
         int cnt = 0;
         for (Pair batch : dataLoader) {
             optimizer.zero_grad();
@@ -46,20 +45,35 @@ public class CNNExample {
             if (cnt % 10 == 0) {
                 System.out.println("batch: " + cnt + " " + loss.data.getRow(0));
             }
+            if (cnt == 100)
+                break;
         }
 
-        dataLoader = new DataLoader(mnist_test, 60, false, false);
+        int batch_size = 64;
+        dataLoader = new DataLoader(mnist_test, batch_size, false, false);
         double l = 0.0;
         cnt = 0;
+        INDArray argMax;
+        double correct = 0;
+        double sum = 0;
         for (Pair batch : dataLoader) {
             Tensor predict = nn.forward(new Constant(((INDArray) batch.first).div(255)));
             Tensor target = new Constant((INDArray) batch.second);
             Tensor loss = Functional.cross_entropy(predict, target);
+            argMax = predict.data.argMax(1);
+            for (int i = 0; i < batch_size; i++) {
+                if (argMax.getInt(i) == target.data.getInt(i))
+                    correct++;
+            }
+            sum += batch_size;
             l += loss.data.sumNumber().doubleValue();
             cnt++;
             System.out.println(cnt + "\taverage loss: " + l /  cnt);
+            if (cnt == 10)
+                break;
         }
         System.out.println("\n\naverage loss: " + l /  cnt);
+        System.out.println("accuracy: " + correct / sum * 100 + "%");
     }
 
 }

@@ -1,5 +1,6 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Constant;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import org.junit.Test;
@@ -16,8 +17,8 @@ public class MaxPool2dTest {
         INDArray grad;
         private Tensor core;
 
-        MaxPool(int[] kernel, int[] padding, int[] stride, int[] dilation, boolean ceil_mode) {
-            super(kernel, stride, padding, dilation, false, ceil_mode);
+        MaxPool(int[] kernel, int[] padding, int[] stride, int[] dilation, boolean return_indices, boolean ceil_mode) {
+            super(kernel, stride, padding, dilation, return_indices, ceil_mode);
         }
 
         void backward() {
@@ -32,7 +33,7 @@ public class MaxPool2dTest {
     }
 
     @Test
-    public void testFxB_1() {
+    public void testFxB_1() { // input.rank = 4
         Parameter input = new Parameter(Nd4j.create(new double[][][][]{
         {{{0.85760289431, 0.10939466953, 0.85843050480, 0.26982629299, 0.62550449371, 0.09610939026},
           {0.17679738998, 0.67760735750, 0.25037705898, 0.43509531021, 0.82201671600, 0.70972394943},
@@ -63,7 +64,7 @@ public class MaxPool2dTest {
         int[] padding = new int[]{2, 1};
         int[] stride = new int[]{2, 2};
         int[] dilation = new int[]{1, 2};
-        MaxPool m = new MaxPool(kernel, padding, stride, dilation, true);
+        MaxPool m = new MaxPool(kernel, padding, stride, dilation, true, true);
         INDArray expected = Nd4j.create(new double[][][][]{
          {{{0.67760735750, 0.67760735750, 0.70972394943, 0.70972394943},
            {0.67760735750, 0.95986038446, 0.95986038446, 0.95380902290},
@@ -89,6 +90,30 @@ public class MaxPool2dTest {
         m.apply(input);
         assertEquals(expected, m.data); // forward
 
+        INDArray indices = m.getIndices();
+        expected = Nd4j.create(new double[][][][]{
+         {{{ 7,  7, 11, 11},
+           { 7, 21, 21, 17},
+           {25, 21, 21, 17},
+           {25, 27, 27, 29}},
+ 
+          {{ 1,  9,  9,  5},
+           { 1,  9,  9, 23},
+           {25, 25, 23, 23},
+           {25, 25, 29, 29}}},
+ 
+ 
+         {{{ 7,  7,  9, 11},
+           { 7,  7,  9, 23},
+           {25, 25, 23, 23},
+           {25, 25, 27, 29}},
+ 
+          {{ 7,  7, 11, 11},
+           {19, 21, 11, 11},
+           {19, 21, 21, 23},
+           {25, 25, 29, 29}}}});
+        assertEquals(expected, indices); // indices
+        
         m.grad = Nd4j.onesLike(expected);
         expected = Nd4j.create(new double[][][][]{
         {{{0., 0., 0., 0., 0., 0.},
@@ -122,7 +147,7 @@ public class MaxPool2dTest {
     }
 
     @Test
-    public void testFxB_2() {
+    public void testFxB_2() { // input.rank = 3
         Parameter input = new Parameter(Nd4j.create(new double[][][]{
         {{0.07220691442, 0.35587656498, 0.23982948065, 0.61415344477, 0.55812442303, 0.31694912910},
          {0.13199204206, 0.90173310041, 0.46112990379, 0.36129945517, 0.58894073963, 0.37620204687},
@@ -139,7 +164,7 @@ public class MaxPool2dTest {
         int[] kernel = new int[]{3, 2};
         int[] padding = new int[]{1, 1};
         int[] dilation = new int[]{1, 2};
-        MaxPool m = new MaxPool(kernel, padding, null, dilation, false);
+        MaxPool m = new MaxPool(kernel, padding, null, dilation, true, false);
         INDArray expected = Nd4j.create(new double[][][]{
          {{0.90173310041, 0.90173310041, 0.61415344477},
           {0.80105620623, 0.84797459841, 0.92736989260}},
@@ -149,6 +174,14 @@ public class MaxPool2dTest {
         });
         m.apply(input);
         assertEquals(expected, m.data); // forward
+
+        expected = Nd4j.create(new double[][][]{
+         {{ 7,  7,  3},
+          {13, 21, 29}},
+
+         {{ 7,  7, 11},
+          {13, 27, 29}}});
+        assertEquals(expected, m.getIndices()); // indices
 
         m.grad = Nd4j.onesLike(expected);
         expected = Nd4j.create(new double[][][]{
@@ -167,5 +200,66 @@ public class MaxPool2dTest {
 
         m.backward();
         assertEquals(expected, input.grad); // backward
+    }
+
+    @Test
+    public void test_indices_bounds() {
+        INDArray expected;
+        Constant input = new Constant(Nd4j.create(new double[][][][]{
+                {{{0.85760289431, 0.10939466953, 0.85843050480, 0.26982629299, 0.62550449371, 0.09610939026},
+                        {0.17679738998, 0.67760735750, 0.25037705898, 0.43509531021, 0.82201671600, 0.70972394943},
+                        {0.17422419786, 0.05760312080, 0.74634593725, 0.78309071064, 0.21100550890, 0.95380902290},
+                        {0.69289308786, 0.67006665468, 0.64152646065, 0.95986038446, 0.00145006180, 0.03418111801},
+                        {0.66757696867, 0.18683743477, 0.80234009027, 0.59361076355, 0.96187639236, 0.87805980444},
+                        {0.42402505875, 0.81990993023, 0.27899426222, 0.94029527903, 0.46053683758, 0.68332993984}},
+
+                        {{0.38274306059, 0.84132134914, 0.63801217079, 0.47751510143, 0.52250540257, 0.07235097885},
+                                {0.66757696867, 0.18683743477, 0.80234009027, 0.59361076355, 0.96187639236, 0.87805980444},
+                                {0.45938086510, 0.78479874134, 0.87718999386, 0.97757166624, 0.74299085140, 0.06357353926},
+                                {0.72143417597, 0.32026904821, 0.03381329775, 0.43738287687, 0.53528118134, 0.19836145639},
+                                {0.66757696867, 0.18683743477, 0.80234009027, 0.59361076355, 0.96187639236, 0.87805980444},
+                                {0.45515608788, 0.67990231514, 0.72660797834, 0.40084981918, 0.87803542614, 0.73002701998}}},
+
+
+                {{{0.96807599068, 0.20126074553, 0.55673658848, 0.16356456280, 0.37554764748, 0.12618112564},
+                        {0.65478944778, 0.93803137541, 0.62376236916, 0.82834708691, 0.33317613602, 0.61170923710},
+                        {0.66757696867, 0.18683743477, 0.80234009027, 0.59361076355, 0.96187639236, 0.87805980444},
+                        {0.76422744989, 0.32103037834, 0.57074761391, 0.53542238474, 0.58305853605, 0.69739687443},
+                        {0.87522250414, 0.79247862101, 0.31276941299, 0.59642326832, 0.42463284731, 0.70016121864},
+                        {0.60951882601, 0.82771182060, 0.43113881350, 0.28816616535, 0.77435439825, 0.23495066166}},
+
+                        {{0.06559526920, 0.54102885723, 0.99433815479, 0.15551984310, 0.50109368563, 0.54513239861},
+                                {0.66757696867, 0.18683743477, 0.80234009027, 0.59361076355, 0.96187639236, 0.87805980444},
+                                {0.70499020815, 0.55954426527, 0.08247303963, 0.09517431259, 0.40239906311, 0.99235343933},
+                                {0.10607933998, 0.11930948496, 0.92454195023, 0.04945206642, 0.07512003183, 0.66846406460},
+                                {0.77760791779, 0.86575335264, 0.11929547787, 0.98303240538, 0.97934460640, 0.84111016989},
+                                {0.26015138626, 0.43998754025, 0.36860340834, 0.07615023851, 0.82280582190, 0.60298824310}}}
+        }));
+        int[] kernel = new int[]{2, 2};
+        int[] padding = new int[]{0, 0};
+        int[] stride = new int[]{3, 3};
+        int[] dilation = new int[]{1, 1};
+        MaxPool m = new MaxPool(kernel, padding, stride, dilation, true, true);
+        m.apply(input);
+        expected = Nd4j.create(new double[][][][]{
+         {{{ 0, 10, -1},
+           {18, 28, -1},
+           {-1, -1, -1}},
+ 
+          {{ 1, 10, -1},
+           {18, 28, -1},
+           {-1, -1, -1}}},
+ 
+ 
+         {{{ 0,  9, -1},
+           {24, 27, -1},
+           {-1, -1, -1}},
+ 
+          {{ 6, 10, -1},
+           {25, 27, -1},
+           {-1, -1, -1}}}});
+        assertEquals(expected, m.getIndices());
+
+
     }
 }

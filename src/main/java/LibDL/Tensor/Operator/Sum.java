@@ -44,8 +44,7 @@ public class Sum extends OperatorTensor {
 
         Supplier<INDArray> forward = () -> {
             if (this.dim == null)
-                this.dim = Nd4j.linspace(0, tensor.data.rank() - 1,
-                        tensor.data.rank()).toIntVector();
+                this.dim = Nd4j.linspace(0, tensor.data.rank() - 1, tensor.data.rank()).toIntVector();
             return tensor.data.sum(dim);
         };
 

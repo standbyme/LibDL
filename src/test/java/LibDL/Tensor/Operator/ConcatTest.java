@@ -56,12 +56,12 @@ public class ConcatTest {
         INDArray a = Nd4j.linspace(1, 6, 6).reshape(1, 2, 3);
         Variable input = new Variable(a, true);
         Concat concat = new Concat(input, 3, 1);
-        assertEquals(Nd4j.create(new double[][][] {{
+        assertEquals(Nd4j.create(new double[][][] {{ // forward
                 {1, 2, 3}, {4, 5, 6},{1, 2, 3}, {4, 5, 6},{1, 2, 3}, {4, 5, 6}
         }}), concat.data);
         concat.grad = Nd4j.concat(1, a, a, a);
         concat.backward();
-        assertEquals(Nd4j.create(new double[][][]{
+        assertEquals(Nd4j.create(new double[][][]{ // backward
                 {
                     { 3,  6,  9}, {12, 15, 18}
                 }

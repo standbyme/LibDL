@@ -69,10 +69,16 @@ public class Max extends OperatorTensor {
                 }),
         };
 
-        Supplier<INDArray> forward = () -> input.data.max(dimension);
+        Supplier<INDArray> forward = () -> {
+            argMax = input.data.argMax(dimension);
+            return input.data.max(dimension);
+        };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
-
         setOperatorInfo(operatorInfo);
+    }
+
+    public INDArray getArgMax() {
+        return argMax;
     }
 }
