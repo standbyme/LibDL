@@ -32,7 +32,8 @@ public class CNNExample {
 
         SGD optimizer = new SGD(nn.parameters(), 0.01f, 0.50f);
 
-        DataLoader dataLoader = new DataLoader(mnist_train, 64, false, false);
+        int batch_size = 64;
+        DataLoader dataLoader = new DataLoader(mnist_train, batch_size, false, false);
         int cnt = 0;
         for (Pair batch : dataLoader) {
             optimizer.zero_grad();
@@ -43,36 +44,39 @@ public class CNNExample {
             optimizer.step();
             cnt++;
             if (cnt % 10 == 0) {
-                System.out.println("batch: " + cnt + " " + loss.data.getRow(0));
+                System.out.println("batch: " + cnt + "\t"+ batch_size * cnt + "/60000\tloss:" + loss.data.getRow(0));
             }
-            if (cnt == 100)
-                break;
         }
+        System.out.println("========== Training Done ===========\n");
 
-        int batch_size = 64;
+        batch_size = 64;
         dataLoader = new DataLoader(mnist_test, batch_size, false, false);
         double l = 0.0;
         cnt = 0;
         INDArray argMax;
         double correct = 0;
         double sum = 0;
+        long n;
         for (Pair batch : dataLoader) {
             Tensor predict = nn.forward(new Constant(((INDArray) batch.first).div(255)));
             Tensor target = new Constant((INDArray) batch.second);
             Tensor loss = Functional.cross_entropy(predict, target);
             argMax = predict.data.argMax(1);
-            for (int i = 0; i < batch_size; i++) {
+            n = argMax.size(0);
+            for (int i = 0; i < n; i++) {
                 if (argMax.getInt(i) == target.data.getInt(i))
                     correct++;
             }
-            sum += batch_size;
+            sum += n;
+//            INDArray temp = Transforms.abs(argMax.subi(target.data)).muli(-1).subi(1);
+//            temp.addi(Transforms.abs(temp)).divi(2);
+//            correct += temp.sumNumber().doubleValue();
+//            sum += temp.size(0);
             l += loss.data.sumNumber().doubleValue();
             cnt++;
             System.out.println(cnt + "\taverage loss: " + l /  cnt);
-            if (cnt == 10)
-                break;
         }
-        System.out.println("\n\naverage loss: " + l /  cnt);
+        System.out.println("\n========== Testing Done ==========\naverage loss: " + l /  cnt);
         System.out.println("accuracy: " + correct / sum * 100 + "%");
     }
 
