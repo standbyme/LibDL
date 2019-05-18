@@ -1,9 +1,11 @@
 package LibDL.example;
 
+import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 public class BenchmarkExample {
@@ -12,36 +14,17 @@ public class BenchmarkExample {
 //        INDArray a = Nd4j.rand(new int[]{64, 25 * 50, 24 * 24});
 //        INDArray b = Nd4j.rand(new int[]{ 1, 25 * 50, 1});
 //        INDArray c = Nd4j.zerosLike(a);
-//        a = Nd4j.rand(new int[]{2, 4, 3});
-//        b = Nd4j.rand(new int[]{ 1, 4, 1});
-//        test();
-//        test1(a, b);
-//        test2(a, b);
+
         Thread.sleep(4000);
-        for (int i = 1; i <= 1000000; i++) {
+        for (int i = 1; i <= 20000; i++) {
 //            compareBroadcast();
-            compToFlattened();
+//            compToFlattened();
+            comFloatPointer();
             System.out.println(i);
         }
         System.exit(0);
 
-//        for (int i = 0; i < 20; i++) {
-//            f5(a, b);
-//        }
-//        for (int i = 0; i < 20; i++) {
-//            f1(a, b);
-//        }
-//        for (int i = 0; i < 20; i++) {
-//            f2(a, b);
-//        }
-//        for (int i = 0; i < 20; i++) {
-//            f3(a, b);
-//        }
-//        for (int i = 0; i < 20; i++) {
-//            f4(a, b);
-//        }
 
-//        test(a, b);
     }
     private static void f1(INDArray a, INDArray b) {
         a.mul(b.broadcast(a.shape()));
@@ -197,5 +180,38 @@ public class BenchmarkExample {
     }
     private static void flattened(INDArray a) {
         INDArray b = Nd4j.toFlattened(a);
+    }
+
+    private static void comFloatPointer() {
+        INDArray X = Nd4j.rand(new int[]{64, 25, 576});
+        INDArray x = X.dup();
+
+        floatPointer_Unfold1(x);
+        floatPointer_Unfold2(x);
+    }
+
+    private static void floatPointer_Unfold1(INDArray x) {
+        INDArray y = Nd4j.zerosLike(x);
+
+        for (int i = 0; i < 576; i++) {
+            INDArrayIndex[] indArrayIndices = new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i)};
+            y.put(indArrayIndices, x.get(indArrayIndices));
+        }
+
+        assert x.equals(y);
+    }
+    private static void floatPointer_Unfold2(INDArray x) {
+        INDArray y = Nd4j.zerosLike(x);
+        float[] f = new float[64 * 25];
+        FloatPointer floatPointerX = (FloatPointer) x.data().pointer();
+        FloatPointer floatPointerY = (FloatPointer) y.data().pointer();
+        int len = f.length;
+        for (int i = 0; i < 576; i++) {
+            floatPointerX.position(i * len).get(f, 0, len);
+            floatPointerY.position(i * len).put(f, 0, len);
+        }
+        floatPointerX.position(0);
+        floatPointerY.position(0);
+        assert x.equals(y);
     }
 }

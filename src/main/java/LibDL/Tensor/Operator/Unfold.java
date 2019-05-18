@@ -156,7 +156,7 @@ public class Unfold extends OperatorTensor {
                             NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1]+filter_w*dilation[1])));
                     result.put(new INDArrayIndex[] {
                                     NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j)},
-                            column.reshape(shape[0], 1, output_h));
+                            column.reshape(shape[0], output_h, 1));
                 }
             }
             return result;
