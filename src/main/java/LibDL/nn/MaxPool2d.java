@@ -32,6 +32,9 @@ public class MaxPool2d extends Module {
         dilation = builder.dilation;
         return_indices = builder.return_indices;
         ceil_mode = builder.ceil_mode;
+
+        assert padding[0] * 2 <= kernel_size[0];
+        assert padding[1] * 2 <= kernel_size[1];
     }
 
     public MaxPool2d(int[] kernel_size,
@@ -46,6 +49,9 @@ public class MaxPool2d extends Module {
         if(stride == null) {
             this.stride = kernel_size;
         }
+
+        assert padding[0] * 2 <= kernel_size[0];
+        assert padding[1] * 2 <= kernel_size[1];
     }
 
     @Override
