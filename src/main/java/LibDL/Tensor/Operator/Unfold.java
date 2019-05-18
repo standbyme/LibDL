@@ -34,8 +34,12 @@ public class Unfold extends OperatorTensor {
         padding = builder.padding;
         dilation = builder.dilation;
 
+        assert input.data.rank() == 4;                      // [batches, channels, height, weight]
+
         int filter_h = kernel_size[0];
-        int filter_w = kernel_size[1];
+        int filter_w = kernel_size[1];                      // kernel sizes
+        int _filter_h = (filter_h - 1) * dilation[0] + 1;
+        int _filter_w = (filter_w - 1) * dilation[1] + 1;   // real filter sizes with dilation
 
         OperandInfo[] operandInfos = {
 
@@ -86,11 +90,8 @@ public class Unfold extends OperatorTensor {
 //                }),
                 new OperandInfo(input, () -> {
 
-                    assert input.data.rank() == 4;
                     INDArray data = input.data;
                     long[] shape = data.shape();
-                    int _filter_h = (filter_h - 1) * dilation[0] + 1;
-                    int _filter_w = (filter_w - 1) * dilation[1] + 1;
 
                     INDArray zeros = Nd4j.zeros(shape[0], shape[1], shape[2] + this.padding[0] * 2, shape[3] + this.padding[1] * 2);
                     INDArray result = zeros.dup();
@@ -122,7 +123,6 @@ public class Unfold extends OperatorTensor {
 
         Supplier<INDArray> forward = () -> {
 
-            assert input.data.rank() == 4;
             INDArray data = input.data;
             long[] shape = data.shape();
 
@@ -140,8 +140,6 @@ public class Unfold extends OperatorTensor {
             input_w = shape[3];
             long channel = shape[1];
 
-            int _filter_h = (filter_h - 1) * dilation[0] + 1;
-            int _filter_w = (filter_w - 1) * dilation[1] + 1;
             amount_h = (input_h - _filter_h) / stride[0] + 1;
             amount_w = (input_w - _filter_w) / stride[1] + 1;
 

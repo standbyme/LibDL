@@ -19,13 +19,14 @@ public class NLLLoss extends OperatorTensor {
         Tensor input = builder.input;
         Tensor target = builder.target;
 
+        long rows = input.data.rows();
+        long cols = input.data.columns();
+        INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.data).reshape(1, rows);
+
         OperandInfo[] operandInfos = {
                 new OperandInfo(input, () -> {
-                    long rows = input.data.rows();
-                    long cols = input.data.columns();
-                    INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.data);
                     INDArray result = Nd4j.zeros(rows * cols)
-                            .put(indices.reshape(1, -1), Nd4j.onesLike(indices)).reshape(rows, cols).muli(-1);
+                            .put(indices, Nd4j.valueArrayOf(1, rows, -1)).reshape(rows, cols);
                     if (reduction.equals("none")) {
                         return null;
                     } else if (reduction.equals("sum")) {
@@ -38,10 +39,8 @@ public class NLLLoss extends OperatorTensor {
         };
 
         Supplier<INDArray> forward = () -> {
-            long rows = input.data.rows();
-            long cols = input.data.columns();
-            INDArray indices = Nd4j.linspace(0, cols * (rows - 1), rows).addi(target.data);
-            INDArray result = input.data.reshape(rows * cols).get(indices.reshape(1, -1)).muli(-1);
+            // Be careful this get return NOT a view
+            INDArray result = input.data.reshape(rows * cols).get(indices).muli(-1);
             if (reduction.equals("none")) {
                 return result.reshape(rows);
             } else if (reduction.equals("sum")) {
