@@ -16,7 +16,7 @@ public class BenchmarkExample {
 //        INDArray c = Nd4j.zerosLike(a);
 
         Thread.sleep(4000);
-        for (int i = 1; i <= 20000; i++) {
+        for (int i = 1; i <= 1000; i++) {
 //            compareBroadcast();
 //            compToFlattened();
             comFloatPointer();
@@ -188,6 +188,7 @@ public class BenchmarkExample {
 
         floatPointer_Unfold1(x);
         floatPointer_Unfold2(x);
+        floatPointer_Unfold3(x);
     }
 
     private static void floatPointer_Unfold1(INDArray x) {
@@ -212,6 +213,23 @@ public class BenchmarkExample {
         }
         floatPointerX.position(0);
         floatPointerY.position(0);
+        assert x.equals(y);
+    }
+    private static void floatPointer_Unfold3(INDArray x) {
+        INDArray y = Nd4j.zerosLike(x);
+        float[] f = new float[64 * 25];
+        FloatPointer floatPointerX;
+        FloatPointer floatPointerY;
+        int len = f.length;
+        INDArrayIndex[] indArrayIndices = new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.all(), null};
+        for (int i = 0; i < 576; i++) {
+            indArrayIndices[2] = NDArrayIndex.point(i);
+            floatPointerX = (FloatPointer) x.get(indArrayIndices).data().pointer();
+            floatPointerY = (FloatPointer) y.get(indArrayIndices).data().pointer();
+            floatPointerX.get(f, 0, len);
+            floatPointerY.put(f, 0, len);
+        }
+
         assert x.equals(y);
     }
 }

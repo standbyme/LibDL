@@ -4,6 +4,7 @@ import LibDL.Tensor.OperandInfo;
 import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
+import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -146,20 +147,25 @@ public class Unfold extends OperatorTensor {
             output_h = channel * filter_h * filter_w;
             output_w = amount_h * amount_w;
 
-            INDArray result = Nd4j.zeros(shape[0], output_h, output_w);
-
+            INDArray result = Nd4j.zeros(output_w, shape[0] * output_h);
+            FloatPointer floatPointerY = (FloatPointer) result.data().pointer();
+            float[] f = new float[(int) shape[0] * (int) output_h];
             for (long i = 0; i < amount_h; i++) {
                 for (long j = 0; j < amount_w; j++) {
-                    INDArray column = Nd4j.toFlattened(data.get(
+                    ((FloatPointer) data.get(
                             NDArrayIndex.all(), NDArrayIndex.all(),
                             NDArrayIndex.interval(i*stride[0], dilation[0], i*stride[0] + _filter_h),
-                            NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1] + _filter_w)));
-                    result.put(new INDArrayIndex[] {
-                                    NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j)},
-                            column.reshape(shape[0], output_h, 1));
+                            NDArrayIndex.interval(j*stride[1], dilation[1], j*stride[1] + _filter_w))
+                            .reshape(1, f.length).data().pointer()).get(f, 0, f.length);
+                    floatPointerY.position((i * amount_w + j) * f.length).put(f, 0, f.length);
+//                    result.put(new INDArrayIndex[] {
+//                                    NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.point(i*amount_w+j)},
+//                            column.reshape(shape[0], output_h, 1));
                 }
             }
-            return result;
+            floatPointerY.position(0);
+
+            return result.transpose().reshape(shape[0], output_h, output_w);
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);

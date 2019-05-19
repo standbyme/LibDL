@@ -80,7 +80,8 @@ public class MyTest {
         d = Nd4j.toFlattened(c);
         b.putScalar(0, 0, 5);
         d.putScalar(0, 0, 5);
-
+        assert a.getDouble(0, 0) == b.getDouble(0, 0);
+        assert c.getDouble(0, 0) != d.getDouble(0, 0);
     }
 
     @Test
@@ -131,10 +132,10 @@ public class MyTest {
         int len = f.length;
         for (int i = 0; i < 576; i++) {
 
-//            floatPointerX.position(i * len).get(f, 0, len);
-//            floatPointerY.position(i * len).put(f, 0, len);
+            floatPointerX.position(i * len).get(f, 0, len);
+            floatPointerY.position(i * len).put(f, 0, len);
 
-            floatPointerY.position(i * len).put(floatPointerX.position(i * len));
+//            floatPointerY.position(i * len).put(floatPointerX.position(i * len));
 
         }
 

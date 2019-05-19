@@ -5,13 +5,10 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
-import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 
