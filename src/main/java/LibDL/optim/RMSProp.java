@@ -30,9 +30,7 @@ public class RMSProp extends Optimizer {
             Variable param = params[i];
             Sdparams[i].muli(beta).addi
                     (param.grad.mul(param.grad).muli(1.0 - beta));
-            synchronized (param) {
-                param.data.subi(param.grad.mul(alpha).divi(Transforms.sqrt(Sdparams[i]).addi(eps)));
-            }
+            param.data.subi(param.grad.mul(alpha).divi(Transforms.sqrt(Sdparams[i]).addi(eps)));
         }
     }
 }

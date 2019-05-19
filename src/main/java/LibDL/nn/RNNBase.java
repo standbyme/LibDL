@@ -4,6 +4,7 @@ import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
+import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -114,14 +115,14 @@ abstract public class RNNBase extends Module {
     }
 
     public Tensor forward(Tensor input) {
-        return forward(input, new Variable(Nd4j.zeros(input.size(1), hiddenSize)), null);
+        return forward(input, new Variable(Nd4j.randn(input.size(1), hiddenSize)));
     }
 
-    public Tensor forward(Tensor input, Tensor h0) {
-        return forward(input, h0, null);
+    public Tensor forward(Tensor input, @NotNull Tensor h0) {
+        return forward(input, h0, new Variable(Nd4j.randn(input.size(1), hiddenSize)));
     }
 
-    public Tensor forward(Tensor input, Tensor h0, Tensor c0) {
+    public Tensor forward(Tensor input, Tensor h0, @NotNull Tensor c0) {
         int seqLen = (int) input.size(0);
         int batchSize = (int) input.size(1);
         if (h0 == null)

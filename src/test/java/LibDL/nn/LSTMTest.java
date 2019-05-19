@@ -6,7 +6,10 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+
+import java.util.Arrays;
 
 public class LSTMTest {
 
@@ -95,5 +98,12 @@ public class LSTMTest {
 
     }
 
+    @Test
+    public void testShape() {
+        INDArray input = Nd4j.rand(new int[]{12, 50, 100});
+        LSTM ls = new LSTM(100, 200, 1);
+        Tensor out = ls.forward(new Variable(input));
+        System.out.println(Arrays.toString(out.sizes()));
+    }
 
 }

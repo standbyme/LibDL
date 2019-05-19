@@ -72,9 +72,7 @@ public class Adam extends Optimizer {
             INDArray step_size = Transforms.sqrt(bias_correction2).muli(lr)
                     .divi(bias_correction1);
             System.out.println("HEXIE    " + step_size);
-            synchronized (param) {
-                param.data.subi(exp_average_buffers[i].add(exp_average_sq_buffers[i].add(eps).divi(step_size)));
-            }
+            param.data.subi(exp_average_buffers[i].add(exp_average_sq_buffers[i].add(eps).divi(step_size)));
         }
 
     }
