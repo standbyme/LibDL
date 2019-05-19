@@ -1,6 +1,7 @@
 package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
+import org.jetbrains.annotations.NotNull;
 
 import static LibDL.nn.RNNBase.RNNType.TYPE_LSTM;
 
@@ -18,6 +19,18 @@ public class LSTM extends RNNBase {
                 bias, relu, false,
                 0, false, TYPE_LSTM);
         c_n = new Tensor[numLayers];
+    }
+
+    @Override
+    public Tensor forward(Tensor t, Tensor h) {
+        throw new UnsupportedOperationException("Please call forward(inut, h0, c0)");
+    }
+
+    @Override
+    public Tensor forward(@NotNull Tensor input,
+                          @NotNull Tensor h0,
+                          @NotNull Tensor c0) {
+        return super.forward(input, h0, c0);
     }
 
     @Override

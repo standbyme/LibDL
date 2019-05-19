@@ -114,15 +114,23 @@ abstract public class RNNBase extends Module {
         init_param();
     }
 
-    public Tensor forward(Tensor input) {
-        return forward(input, new Variable(Nd4j.randn(input.size(1), hiddenSize)));
+    @Override
+    public Tensor forward(Tensor t) {
+        throw new UnsupportedOperationException("Please call forward(inut, h0)");
     }
 
-    public Tensor forward(Tensor input, @NotNull Tensor h0) {
-        return forward(input, h0, new Variable(Nd4j.randn(input.size(1), hiddenSize)));
+    @Override
+    public Tensor forward(Tensor... tensors) {
+        if (this instanceof LSTM) {
+            return forward(tensors[0], tensors[1], tensors[2]);
+        } else return forward(tensors[0], tensors[1]);
     }
 
-    public Tensor forward(Tensor input, Tensor h0, @NotNull Tensor c0) {
+    protected Tensor forward(@NotNull Tensor input, @NotNull Tensor h0) {
+        return forward(input, h0, null);
+    }
+
+    protected Tensor forward(Tensor input, Tensor h0, Tensor c0) {
         int seqLen = (int) input.size(0);
         int batchSize = (int) input.size(1);
         if (h0 == null)

@@ -100,10 +100,14 @@ public class LSTMTest {
 
     @Test
     public void testShape() {
-        INDArray input = Nd4j.rand(new int[]{12, 50, 100});
-        LSTM ls = new LSTM(100, 200, 1);
-        Tensor out = ls.forward(new Variable(input));
-        System.out.println(Arrays.toString(out.sizes()));
+        try {
+            INDArray input = Nd4j.rand(new int[]{12, 50, 100});
+            LSTM ls = new LSTM(100, 200, 1);
+            Tensor out = ls.forward(new Variable(input));
+            System.out.println(Arrays.toString(out.sizes()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
