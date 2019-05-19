@@ -107,14 +107,14 @@ public class MaxPool2d extends Module {
                     row.subi(this.padding[0]);
                     col.subi(this.padding[1]);
 
-                    Nd4j.getExecutioner().exec(new OldFModOp(row, ih, mod_row_col));
-                    row.addi(row.sub(mod_row_col).mul(-2));
-                    Nd4j.getExecutioner().exec(new OldFModOp(col, iw, mod_row_col));
-                    col.addi(col.sub(mod_row_col).mul(-input_h - 2));
+                    Nd4j.getExecutioner().exec(new OldFModOp(row, ih, mod_row_col)); // for bounds checking
+                    row.addi(row.sub(mod_row_col).mul(-2));                          // for bounds checking
+                    Nd4j.getExecutioner().exec(new OldFModOp(col, iw, mod_row_col)); // for bounds checking
+                    col.addi(col.sub(mod_row_col).mul(-input_h - 2));                // for bounds checking
 
                     n = row.muli(input_w).addi(col);
 
-                    n.addi(1).addi(Transforms.abs(n)).divi(2).subi(1);
+                    n.addi(1).addi(Transforms.abs(n)).divi(2).subi(1);               // for bounds checking
 
                     indices.put(indArrayIndices, n).shape();
                 }
