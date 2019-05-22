@@ -1,27 +1,39 @@
 package LibDL;
 
 public class Tensor {
+
+    private Num num;
+
+    Tensor(Num num) {
+        this.num = num;
+    }
+
     public Tensor grad() {
-        assert false;
         return null;
     }
 
     public Tensor detach() {
-        assert false;
         return null;
     }
 
     public Tensor zero_() {
-        assert false;
         return null;
     }
 
     public Tensor set_requires_grad(boolean requires_grad) {
-        return new Tensor();
+        return null;
     }
 
     public boolean defined() {
-        assert false;
         return false;
+    }
+
+    public int dim() {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return null;
     }
 }
