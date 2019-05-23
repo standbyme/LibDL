@@ -1,5 +1,6 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Tensor;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +20,11 @@ public class LSTM extends RNNBase {
                 bias, relu, false,
                 0, false, TYPE_LSTM);
         c_n = new Tensor[numLayers];
+    }
+
+
+    public Tensor cn() {
+        return new Concat(0, c_n);
     }
 
     @Override

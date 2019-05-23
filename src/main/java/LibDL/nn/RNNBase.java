@@ -3,7 +3,6 @@ package LibDL.nn;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
-import LibDL.Tensor.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -15,9 +14,9 @@ abstract public class RNNBase extends Module {
     public static final int WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3;
 
     // Layer configurations
-    protected long inputSize;
-    protected long hiddenSize;
-    protected long numLayers;
+    protected int inputSize;
+    protected int hiddenSize;
+    protected int numLayers;
 
     //use ReLU instead of tanh
     protected boolean relu;
@@ -64,27 +63,29 @@ abstract public class RNNBase extends Module {
     }
 
     protected void init_param() {
-        weight_hh = new Parameter[rnn_type.gateSize()];
-        weight_ih = new Parameter[rnn_type.gateSize()];
+        weight_hh = new Parameter[rnn_type.gateSize() * numLayers];
+        weight_ih = new Parameter[rnn_type.gateSize() * numLayers];
         if (bias) {
-            bias_hh = new Parameter[rnn_type.gateSize()];
-            bias_ih = new Parameter[rnn_type.gateSize()];
+            bias_hh = new Parameter[rnn_type.gateSize() * numLayers];
+            bias_ih = new Parameter[rnn_type.gateSize() * numLayers];
         }
         double stdv = 1.0 / Math.sqrt(this.hiddenSize);
-        for (int i = 0; i < rnn_type.gateSize(); i++) {
-            weight_hh[i] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-            weight_ih[i] = new Parameter(Nd4j.create(hiddenSize, inputSize));
-            if (bias) {
-                bias_hh[i] = new Parameter(Nd4j.create(1, hiddenSize));
-                bias_ih[i] = new Parameter(Nd4j.create(1, hiddenSize));
+        for (int layer = 0; layer < numLayers; layer++) {
+            for (int i = 0; i < rnn_type.gateSize(); i++) {
+                weight_hh[pm(layer, i)] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
+                weight_ih[pm(layer, i)] = new Parameter(Nd4j.create(hiddenSize, layer == 0 ? inputSize : hiddenSize));
+                if (bias) {
+                    bias_hh[pm(layer, i)] = new Parameter(Nd4j.create(1, hiddenSize));
+                    bias_ih[pm(layer, i)] = new Parameter(Nd4j.create(1, hiddenSize));
+                }
             }
-        }
-        for (int i = 0; i < rnn_type.gateSize(); i++) {
-            WeightInit.uniform(weight_hh[i].data, -stdv, stdv);
-            WeightInit.uniform(weight_ih[i].data, -stdv, stdv);
-            if (bias) {
-                WeightInit.uniform(bias_hh[i].data, -stdv, stdv);
-                WeightInit.uniform(bias_ih[i].data, -stdv, stdv);
+            for (int i = 0; i < rnn_type.gateSize(); i++) {
+                WeightInit.uniform(weight_hh[pm(layer, i)].data, -stdv, stdv);
+                WeightInit.uniform(weight_ih[pm(layer, i)].data, -stdv, stdv);
+                if (bias) {
+                    WeightInit.uniform(bias_hh[pm(layer, i)].data, -stdv, stdv);
+                    WeightInit.uniform(bias_ih[pm(layer, i)].data, -stdv, stdv);
+                }
             }
         }
     }
@@ -133,17 +134,17 @@ abstract public class RNNBase extends Module {
     protected Tensor forward(Tensor input, Tensor h0, Tensor c0) {
         int seqLen = (int) input.size(0);
         int batchSize = (int) input.size(1);
-        if (h0 == null)
-            h0 = new Variable(Nd4j.zeros(batchSize, hiddenSize));
 
         Tensor[] outList = new Tensor[seqLen];
         Tensor output = input;
         Tensor nxt = output;
-        Tensor prevHidden = h0;
 
         for (int layer = 0; layer < numLayers; layer++) {
-            outList = rnn_impl(nxt, outList, prevHidden, seqLen, c0, layer);
-            output = new Concat(0, outList).reshape(seqLen, batchSize, hiddenSize);
+            Tensor prevHidden = h0.get(layer);
+            Tensor prevC = c0;
+            if (c0 != null) prevC = c0.get(layer);
+            outList = rnn_impl(nxt, outList, prevHidden, seqLen, prevC, layer);
+            nxt = output = new Concat(0, outList).reshape(seqLen, batchSize, hiddenSize);
             if (dropout) nxt = Functional.dropout(output, dropout_p);
 
         }
@@ -190,6 +191,9 @@ abstract public class RNNBase extends Module {
                 "(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
     }
 
+    public Tensor hn() {
+        return new Concat(0, h_n);
+    }
 
     public void setParam(int param_type, INDArray... params) {
         Parameter[] paramList = null;
