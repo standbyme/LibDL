@@ -144,4 +144,29 @@ public class MyTest {
 
         assertEquals(x, y);
     }
+
+    @Test
+    public void testPut() {
+        INDArray a = Nd4j.rand(2, 3);
+        a.get(new INDArrayIndex[] {});
+        a.get(a);
+    }
+
+    @Test
+    public void learnFloatPointer() {
+        INDArray v, u, w, a = Nd4j.create(new double[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}});
+        FloatPointer c = (FloatPointer) a.data().addressPointer();
+        Pointer d = a.data().pointer();
+        INDArrayIndex[] indArrayIndices = new INDArrayIndex[]{NDArrayIndex.indices(0, 1, 3), NDArrayIndex.interval(2, 3)};
+        INDArrayIndex[] indArrayIndices1 = new INDArrayIndex[]{NDArrayIndex.interval(0, 2, 3), NDArrayIndex.interval(2, 3)};
+        v = a.get(indArrayIndices);
+        w = a.get(indArrayIndices1);
+        u = a.get(indArrayIndices1);
+        Pointer e = v.data().pointer();
+        FloatPointer f = (FloatPointer) w.data().addressPointer();
+        f.put(new float[]{-1, -1, -2}, 1, 2);
+
+        System.out.println("" + v.data().addressPointer() +"\n"+ u.data().addressPointer() +"\n"+ w.data().addressPointer());
+        System.out.println("" + v.data().pointer() +"\n"+ u.data().pointer() +"\n"+ w.data().pointer());
+    }
 }
