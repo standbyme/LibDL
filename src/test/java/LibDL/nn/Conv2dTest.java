@@ -22,6 +22,7 @@ public class Conv2dTest {
         private int[] kernel_size;
         private int[] stride;
         private int[] padding;
+        private String padding_mode;
         private int[] dilation;
         private int groups;
         private boolean bias;
@@ -33,13 +34,14 @@ public class Conv2dTest {
         private Parameter W;
         private Parameter B;
 
-        Conv(int in_channels, int out_channels, int[] kernel_size, int[] stride, int[] padding, int[] dilation, int groups, boolean bias) {
-            super(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias);
+        Conv(int in_channels, int out_channels, int[] kernel_size, int[] stride, int[] padding, String padding_mode, int[] dilation, int groups, boolean bias) {
+            super(in_channels, out_channels, kernel_size, stride, padding, padding_mode, dilation, groups, bias);
             this.in_channels = in_channels;
             this.out_channels = out_channels;
             this.kernel_size = kernel_size;
             this.stride = stride;
             this.padding = padding;
+            this.padding_mode = padding_mode;
             this.dilation = dilation;
             this.groups = groups;
             this.bias = bias;
@@ -105,13 +107,28 @@ public class Conv2dTest {
         public Tensor forward(Tensor input) {
             int _filter_h = (kernel_size[0] - 1) * dilation[0] + 1;
             int _filter_w = (kernel_size[1] - 1) * dilation[1] + 1;
-            long amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
-            long amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
-            Unfold unfold = new Unfold.Builder(input, kernel_size)
-                    .padding(padding)
-                    .stride(stride)
-                    .dilation(dilation)
-                    .build();
+            long amount_h;
+            long amount_w;
+            Unfold unfold;
+            if(this.padding_mode.equals("circular")) {
+                amount_h = (input.data.shape()[2] + (padding[0] + 1) / 2 + padding[0] / 2 - _filter_h) / stride[0] + 1;
+                amount_w = (input.data.shape()[3] + (padding[1] + 1) / 2 + padding[1] / 2 - _filter_w) / stride[1] + 1;
+                CircularPad2d circularPad2d = new CircularPad2d(input,
+                        (padding[1] + 1) / 2, padding[1] / 2, (padding[0] + 1) / 2, padding[0] / 2);
+                unfold = new Unfold.Builder(circularPad2d, kernel_size)
+                        .padding(0)
+                        .stride(stride)
+                        .dilation(dilation)
+                        .build();
+            } else {
+                amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
+                amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
+                unfold = new Unfold.Builder(input, kernel_size)
+                        .padding(padding)
+                        .stride(stride)
+                        .dilation(dilation)
+                        .build();
+            }
             BroadcastMul broadcastMul = new BroadcastMul(
                     new Concat(unfold, out_channels, 1),
                     new LibDL.Tensor.Operator.Reshape(W, 1, in_channels * out_channels * kernel_size[0] * kernel_size[1], 1),
@@ -131,7 +148,7 @@ public class Conv2dTest {
     public void testConv2d() {
         Variable input = new Variable(Nd4j.linspace(1, 192, 192).reshape(2, 2, 8, 6), true);
         Conv conv2d = new Conv(2, 4, new int[]{3, 2},
-                new int[]{2, 1}, new int[]{1, 1}, new int[]{1, 2}, 2, true);
+                new int[]{2, 1}, new int[]{1, 1}, "zeros", new int[]{1, 2}, 2, true);
         conv2d.setW(Nd4j.create(new double[][][][] {
         {{{-0.14339730144,  0.11298561096},
           {-0.30034396052, -0.20663771033},
