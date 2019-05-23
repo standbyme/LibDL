@@ -16,6 +16,7 @@ public class Conv2d extends Module {
     private int[] kernel_size;
     private int[] stride;
     private int[] padding;
+    private String padding_mode;
     private int[] dilation;
     private int groups;
     private boolean bias;
@@ -29,6 +30,7 @@ public class Conv2d extends Module {
         this.kernel_size = builder.kernel_size;
         this.stride = builder.stride;
         this.padding = builder.padding;
+        padding_mode = builder.padding_mode;
         dilation = builder.dilation;
         groups = builder.groups;
         bias = builder.bias;
@@ -36,12 +38,14 @@ public class Conv2d extends Module {
         init();
     }
 
-    public Conv2d(int in_channels, int out_channels, int[] kernel_size, int[] stride, int[] padding, int[] dilation, int groups, boolean bias) {
+    public Conv2d(int in_channels, int out_channels, int[] kernel_size,
+                  int[] stride, int[] padding, String padding_mode, int[] dilation, int groups, boolean bias) {
         this.in_channels = in_channels;
         this.out_channels = out_channels;
         this.kernel_size = kernel_size;
         this.stride = stride;
         this.padding = padding;
+        this.padding_mode = padding_mode;
         this.dilation = dilation;
         this.groups = groups;
         this.bias = bias;
@@ -82,20 +86,39 @@ public class Conv2d extends Module {
     public Tensor forward(Tensor input) {
         int _filter_h = (kernel_size[0] - 1) * dilation[0] + 1;
         int _filter_w = (kernel_size[1] - 1) * dilation[1] + 1;
-        long amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
-        long amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
-        Unfold unfold = new Unfold.Builder(input, kernel_size)
-                .padding(padding)
-                .stride(stride)
-                .dilation(dilation)
-                .build();
+        long amount_h;
+        long amount_w;
+
+        Unfold unfold;
+        if(this.padding_mode.equals("circular")) {
+            amount_h = (input.data.shape()[2] + (padding[0] + 1) / 2 + padding[0] / 2 - _filter_h) / stride[0] + 1;
+            amount_w = (input.data.shape()[3] + (padding[1] + 1) / 2 + padding[1] / 2 - _filter_w) / stride[1] + 1;
+            CircularPad2d circularPad2d = new CircularPad2d(input,
+                    (padding[1] + 1) / 2, padding[1] / 2, (padding[0] + 1) / 2, padding[0] / 2); // TODO /
+            unfold = new Unfold.Builder(circularPad2d, kernel_size)
+                    .padding(0)
+                    .stride(stride)
+                    .dilation(dilation)
+                    .build();
+        } else {
+            amount_h = (input.data.shape()[2] + padding[0] * 2 - _filter_h) / stride[0] + 1;
+            amount_w = (input.data.shape()[3] + padding[1] * 2 - _filter_w) / stride[1] + 1;
+            unfold = new Unfold.Builder(input, kernel_size)
+                    .padding(padding)
+                    .stride(stride)
+                    .dilation(dilation)
+                    .build();
+        }
+
         BroadcastMul broadcastMul = new BroadcastMul(
                 new Concat(unfold, out_channels, 1),
                 new Reshape(W, 1, in_channels * out_channels * kernel_size[0] * kernel_size[1], 1),
                 in_channels, out_channels, groups);
+
         Sum sum = new Sum(new Reshape(broadcastMul,
                 broadcastMul.data.shape()[0], out_channels,
                 kernel_size[0] * kernel_size[1] * in_channels, amount_h, amount_w), 2);
+
         if (bias) {
             return new AddVector(sum, B, true);
         } else {
@@ -109,6 +132,7 @@ public class Conv2d extends Module {
         private int[] kernel_size;
         private int[] stride = {1, 1};
         private int[] padding = {0, 0};
+        private String padding_mode = "zeros";
         private int[] dilation = {1, 1};
         private int groups = 1;
         private boolean bias = true;
@@ -136,6 +160,14 @@ public class Conv2d extends Module {
                 this.padding = new int[]{padding[0], padding[0]};
             else
                 this.padding = padding;
+            return this;
+        }
+
+        public Builder padding_mode(String padding_mode) {
+            if (padding_mode.equals("circular"))
+                this.padding_mode = "circular";
+            else
+                this.padding_mode = "zeros";
             return this;
         }
 
