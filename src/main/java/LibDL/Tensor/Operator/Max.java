@@ -4,6 +4,7 @@ import LibDL.Tensor.OperandInfo;
 import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
+import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.*;
@@ -61,8 +62,14 @@ public class Max extends OperatorTensor {
 
                     INDArray indices = Nd4j.linspace(0, (size - 1) * shape[input.data.rank() - 1], size);
                     indices.addi(argMax.reshape(1, -1));
-                    zeros.put(new INDArrayIndex[]{NDArrayIndex.all(), NDArrayIndex.indices(indices.data().asLong())},
-                            grad.reshape(1, -1));
+                    float[] g = grad.reshape(1, -1).toFloatVector();
+                    long[] i = indices.toLongVector();
+                    FloatPointer floatPointer = (FloatPointer) zeros.data().pointer();
+                    for (int j = 0; j < g.length; j++) {
+                        floatPointer.position(i[j]).put(g, j, 1);
+                    }
+                    floatPointer.position(0);
+
                     return zeros.reshape(shape).permute(rearrange);
                 }),
         };
