@@ -9,6 +9,8 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
+import java.util.Arrays;
+
 
 abstract public class RNNBase extends Module {
     public static final int WEIGHT_IH = 0, WEIGHT_HH = 1, BIAS_IH = 2, BIAS_HH = 3;
@@ -123,15 +125,32 @@ abstract public class RNNBase extends Module {
     @Override
     public Tensor forward(Tensor... tensors) {
         if (this instanceof LSTM) {
-            return forward(tensors[0], tensors[1], tensors[2]);
-        } else return forward(tensors[0], tensors[1]);
+            return forward_check(tensors[0], tensors[1], tensors[2]);
+        } else return forward_check(tensors[0], tensors[1]);
     }
 
-    protected Tensor forward(@NotNull Tensor input, @NotNull Tensor h0) {
-        return forward(input, h0, null);
+    private void check_input_size(long[] size, long[] target) {
+        if (Arrays.equals(size, target)) return;
+        throw new RuntimeException("Input size mismatch, excepted "
+                + Arrays.toString(target)
+                + ", got "
+                + Arrays.toString(size));
     }
 
-    protected Tensor forward(Tensor input, Tensor h0, Tensor c0) {
+    private Tensor forward_check(@NotNull Tensor input, @NotNull Tensor h0) {
+        check_input_size(h0.sizes(), new long[]{numLayers, input.size(batch_first ? 0 : 1), hiddenSize});
+        return forward_(input, h0, null);
+    }
+
+    private Tensor forward_check(@NotNull Tensor input, @NotNull Tensor h0, @NotNull Tensor c0) {
+        long[] sizes = new long[]{numLayers, input.size(batch_first ? 0 : 1), hiddenSize};
+        check_input_size(h0.sizes(), sizes);
+        check_input_size(c0.sizes(), sizes);
+        return forward_(input, h0, c0);
+    }
+
+
+    protected Tensor forward_(Tensor input, Tensor h0, Tensor c0) {
         int seqLen = (int) input.size(0);
         int batchSize = (int) input.size(1);
 
