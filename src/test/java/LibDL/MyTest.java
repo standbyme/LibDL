@@ -7,10 +7,12 @@ import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastEqualTo;
+import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.api.ops.impl.shape.Broadcast;
 import org.nd4j.linalg.api.ops.impl.transforms.arithmetic.FModOp;
 import org.nd4j.linalg.api.ops.impl.transforms.arithmetic.FloorModOp;
 import org.nd4j.linalg.api.ops.impl.transforms.arithmetic.OldFModOp;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -172,7 +174,22 @@ public class MyTest {
 
     @Test
     public void testBc() {
-        INDArray a = Nd4j.rand(new int[]{2, 12, 24});
-        INDArray b = Nd4j.rand(new int[]{2, 12, 24});
+        INDArray a = Nd4j.rand(new int[]{2, 1, 24});
+        INDArray b = Nd4j.rand(new int[]{1, 3, 1});
+        INDArray c = Nd4j.zeros(2, 3, 24);
+        try {
+            a.mul(b);
+            Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(a, b, c, -1));
+            assert false;
+        }catch (Exception ignored) {
+
+        }
+    }
+    @Test
+    public void testReshape1() {
+        INDArray a = Nd4j.rand(4, 2);
+        System.out.println(a);
+        System.out.println(a.reshape(8,1));
+        a  = new NDArray();
     }
 }
