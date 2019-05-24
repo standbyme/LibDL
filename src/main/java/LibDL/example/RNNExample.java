@@ -88,7 +88,7 @@ public class RNNExample {
 
     private static String tensor2str(INDArray input) {
         StringBuilder res = new StringBuilder();
-        INDArray characterIdx = Nd4j.exec(new IMax(input, input.rank()-1));
+        INDArray characterIdx = input.argMax(input.rank()-1);
         for(int i = 0; i < characterIdx.length(); i++) {
             res.append(LEARNSTRING_CHARS_LIST.get(characterIdx.getInt((i))));
         }
