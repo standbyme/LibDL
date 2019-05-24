@@ -169,4 +169,10 @@ public class MyTest {
         System.out.println("" + v.data().addressPointer() +"\n"+ u.data().addressPointer() +"\n"+ w.data().addressPointer());
         System.out.println("" + v.data().pointer() +"\n"+ u.data().pointer() +"\n"+ w.data().pointer());
     }
+
+    @Test
+    public void testBc() {
+        INDArray a = Nd4j.rand(new int[]{2, 12, 24});
+        INDArray b = Nd4j.rand(new int[]{2, 12, 24});
+    }
 }

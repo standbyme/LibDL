@@ -37,7 +37,7 @@ dependencies {
     compile 'nz.ac.waikato.cms.weka:weka-stable:3.8.2'
     compile 'net.sourceforge.jdistlib:jdistlib:0.4.5'
     compile 'org.slf4j:slf4j-api:1.7.26'
-    compile 'org.slf4j:slf4j-simple:1.7.26'
+//    compile 'org.slf4j:slf4j-simple:1.7.26'
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
     testCompile 'junit:junit:4.12'
