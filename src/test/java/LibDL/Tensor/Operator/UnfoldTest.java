@@ -3,6 +3,7 @@ package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Variable;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -11,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class UnfoldTest {
     @Test
     public void testUnfold() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         Variable input = new Variable(Nd4j.linspace(1, 192, 192).reshape(2, 2, 8, 6), true);
         Unfold m = new Unfold.Builder(input, 2, 3).padding(2, 1).stride(2, 3).dilation(2, 1).build();
         INDArray expected = Nd4j.create(new double[][][]{

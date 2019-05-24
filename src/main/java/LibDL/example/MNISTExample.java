@@ -21,8 +21,6 @@ import java.util.Arrays;
 public class MNISTExample {
 
     public static void main(String[] args) {
-        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
-
         Dataset mnist_train = new MNIST("resource/MNIST/", true).reshapeData(784);
         Dataset mnist_test = new MNIST("resource/MNIST/", false);
 
@@ -59,7 +57,7 @@ public class MNISTExample {
 
         Tensor result = nn.forward(new Constant(mnist_test.reshapeData(784).data));
 
-        INDArray out = MNIST.revertOneHot(result.data).castTo(DataType.DOUBLE);
+        INDArray out = MNIST.revertOneHot(result.data).castTo(DataType.FLOAT);
 
         int rightCnt = Arrays.stream(Transforms.abs(out.sub(mnist_test.target)).toDoubleVector())
                 .filter(i -> i < 1e-6).toArray().length;

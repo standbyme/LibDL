@@ -2,6 +2,7 @@ package LibDL.Tensor.Operator;
 
 import LibDL.Tensor.Variable;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class LogTest {
     @Test
     public void testLog() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         Variable data_to_backward;
         Softmax softmax;
         INDArray target;

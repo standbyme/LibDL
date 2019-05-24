@@ -3,6 +3,7 @@ package LibDL.Tensor.Operator;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.factory.Nd4j;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +22,7 @@ public class BroadcastAddTest {
 
     @Test
     public void testForConv2d() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         Variable input = new Variable(Nd4j.rand(new int[]{2, 4, 3, 3}), true);
         Variable B = new Variable(Nd4j.rand(new int[]{4}), true);
         AddVector addVector = new AddVector(input, B, true);

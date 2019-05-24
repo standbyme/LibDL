@@ -49,8 +49,8 @@ public class RNNExample {
         int seqlen = LEARNSTRING.length;
         int features = LEARNSTRING_CHARS_LIST.size();
 
-        INDArray input = Nd4j.zeros(DataType.DOUBLE, seqlen, 1, LEARNSTRING_CHARS_LIST.size());
-        INDArray label = Nd4j.zeros(DataType.DOUBLE, seqlen);
+        INDArray input = Nd4j.zeros(seqlen, 1, LEARNSTRING_CHARS_LIST.size());
+        INDArray label = Nd4j.zeros(seqlen);
         // loop through our sample-sentence
         int samplePos = 0;
         for (char currentChar : LEARNSTRING) {

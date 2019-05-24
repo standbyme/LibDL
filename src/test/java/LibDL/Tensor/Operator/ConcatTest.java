@@ -3,6 +3,7 @@ package LibDL.Tensor.Operator;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -57,6 +58,7 @@ public class ConcatTest {
 
     @Test
     public void testForwardInConv() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         INDArray a = Nd4j.linspace(1, 6, 6).reshape(1, 2, 3);
         Variable input = new Variable(a, true);
         Concat concat = new Concat(input, 3, 1);

@@ -7,6 +7,7 @@ import LibDL.nn.Functional;
 import LibDL.nn.ReLU;
 import LibDL.nn.Sequential;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.stream.IntStream;
@@ -15,6 +16,7 @@ public class RMSPropTest {
 
     @Test
     public void testRMSProp() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         Constant data = new Constant(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
         Constant target = new Constant(Nd4j.create(new double[][]{{7.0}, {10.0}, {8.0}, {5.0}}));
 

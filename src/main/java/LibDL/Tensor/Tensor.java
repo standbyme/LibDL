@@ -20,10 +20,6 @@ public abstract class Tensor {
         return this;
     }
 
-    static {
-        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
-    }
-
     @Override
     public String toString() {
         return "tensor(" + data + ", grad_fn=<" + tensorName + ">)";

@@ -14,8 +14,8 @@ import org.nd4j.linalg.factory.Nd4j;
 public class XORExample {
 
     public static void main(String[] args) {
-        Variable data = new Constant(Nd4j.create(new double[][]{{1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}}));
-        Variable target = new Constant(Nd4j.create(new double[][]{{1.0}, {0.0}, {1.0}, {0.0}}));
+        Variable data = new Constant(Nd4j.create(new float[][]{{1, 0}, {1, 1}, {0, 1}, {0, 0}}));
+        Variable target = new Constant(Nd4j.create(new float[][]{{1}, {0}, {1}, {0}}));
 
         Sequential nn = new Sequential(new Dense(2, 5), new ReLU(), new Dense(5, 1));
 

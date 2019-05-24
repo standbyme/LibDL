@@ -6,6 +6,7 @@ import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class GRUTest {
@@ -13,7 +14,7 @@ public class GRUTest {
 
     @BeforeClass
     public static void initRNN() {
-
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         gru = new GRU(2, 1, 1);
 
         gru.setParam(GRU.WEIGHT_IH, Nd4j.create(

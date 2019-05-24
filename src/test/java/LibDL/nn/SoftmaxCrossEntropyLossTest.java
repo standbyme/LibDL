@@ -4,6 +4,7 @@ import LibDL.Tensor.Constant;
 import LibDL.Tensor.Tensor;
 import LibDL.Tensor.Variable;
 import org.junit.Test;
+import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.factory.Nd4j;
 
 import static org.junit.Assert.assertEquals;
@@ -11,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class SoftmaxCrossEntropyLossTest {
     @Test
     public void testCEL() {
+        Nd4j.setDefaultDataTypes(DataType.DOUBLE, DataType.DOUBLE);
         Variable x = new Variable(Nd4j.create(new double[][]{{1, 2, 3}, {1, 2, 3}, {1, 2, 3}}), true);
         SoftmaxCrossEntropyLoss cel = new SoftmaxCrossEntropyLoss(new Constant(Nd4j.create(new double[]{1, 0, 2}).reshape(3)));
         Tensor loss = cel.forward(x);
