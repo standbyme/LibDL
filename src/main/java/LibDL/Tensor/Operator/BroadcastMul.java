@@ -4,6 +4,7 @@ import LibDL.Tensor.OperandInfo;
 import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
+import LibDL.utils.INDArrayPointer;
 import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * */
 public class BroadcastMul extends OperatorTensor {
 
-    private static INDArray temp = Nd4j.zeros(1);
+    private static INDArrayPointer temp = new INDArrayPointer("broadcastMul");
 
     /**
      * @param input tensor of shape(N, size*in_channel*out_channel, L)
@@ -33,7 +34,7 @@ public class BroadcastMul extends OperatorTensor {
         assert weight.data.rank() == 3;
         OperandInfo[] operandInfos = new OperandInfo[] {
                 new OperandInfo(input, () -> {
-                    INDArray temp = expandAndReturnTemp(grad.shape());
+                    INDArray temp = BroadcastMul.temp.expandAndReturnTemp(grad.shape());
                     Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(grad, weight.data, temp, 1));
                     return temp;
                 }),
@@ -78,7 +79,7 @@ public class BroadcastMul extends OperatorTensor {
         };
 
         Supplier<INDArray> forward = () -> {
-            INDArray result = expandAndReturnTemp(input.data.shape());
+            INDArray result = temp.expandAndReturnTemp(input.data.shape());
             Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(input.data, weight.data, result, 1));
             return result;
         };
@@ -89,33 +90,5 @@ public class BroadcastMul extends OperatorTensor {
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
         setOperatorInfo(operatorInfo);
-    }
-
-    private INDArray expandAndReturnTemp(long[] shape_i) {
-        long[] shape_t = temp.shape();
-
-        if (shape_t.length != shape_i.length) {
-            System.out.print(Arrays.toString(temp.shape()) + " >>> ");
-            temp = Nd4j.zeros(shape_i); // TODO
-            System.out.println("new:" + "temp:shape:" + Arrays.toString(temp.shape()));
-            shape_t = temp.shape();
-        }else {
-            int n = shape_t.length;
-            long[] expension = Arrays.copyOf(shape_t, n);
-            for (int i = 0; i < n; i++) {
-                if (shape_t[i] < shape_i[i]) {
-                    expension[i] = shape_i[i];
-                    System.out.print(Arrays.toString(temp.shape()) + " >>> ");
-                    temp = Nd4j.zeros(expension);
-                    System.out.println("new:" + i + "temp:shape:" + Arrays.toString(temp.shape()));
-                    shape_t = temp.shape();
-                }
-            }
-        }
-        INDArrayIndex[] indArrayIndices = new INDArrayIndex[shape_t.length];
-        for (int i = 0; i < shape_t.length; i++) {
-            indArrayIndices[i] = NDArrayIndex.interval(0, 1, shape_i[i]);
-        }
-        return temp.get(indArrayIndices);
     }
 }

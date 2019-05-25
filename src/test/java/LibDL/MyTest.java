@@ -5,6 +5,7 @@ import org.bytedeco.javacpp.Pointer;
 import org.junit.Test;
 import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.api.ops.impl.accum.Sum;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastEqualTo;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
@@ -18,6 +19,7 @@ import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class MyTest {
 
@@ -36,17 +38,7 @@ public class MyTest {
         assertEquals(Nd4j.create(new double[][]{{0, -2.1, -1}}), c);
     }
 
-    @Test
-    public void testIntDiv() {
-        INDArray a = Nd4j.create(new double[][]{{1, 2.1, 3}});//.reshape(3, 1);
 
-//        Nd4j.setDataType(DataBuffer.Type.INT);
-        INDArray b = Nd4j.create(new double[][]{{1}});
-
-        INDArray c = a.dup();
-        Nd4j.getExecutioner().execAndReturn(new OldFModOp(a, b, c));
-        System.out.println(c);
-    }
     @Test
     public void testBroadcast() {
         INDArray a = Nd4j.create(new double[][]{{1, 0, 13}, {1, 0, 13}});//.reshape(3, 1);
@@ -104,7 +96,7 @@ public class MyTest {
 
         Pointer df = d.get(NDArrayIndex.all(), NDArrayIndex.indices(0, 2)).data().pointer();
 
-        assertEquals(a, b);
+        assert ! a.equals(b);
     }
 
     @Test
@@ -191,5 +183,14 @@ public class MyTest {
         System.out.println(a);
         System.out.println(a.reshape(8,1));
         a  = new NDArray();
+    }
+
+    @Test
+    public void testSumOp() {
+        INDArray a = Nd4j.rand(new int[]{5, 5, 5});
+        INDArray c = Nd4j.zeros(5).reshape(5);
+        System.out.println(a.sum(c, 0, 2));
+        Nd4j.getExecutioner().execAndReturn(new Sum(a, null ,c, true, true, new int[]{2}));
+        System.out.println(c);
     }
 }

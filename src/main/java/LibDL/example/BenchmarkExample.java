@@ -2,6 +2,7 @@ package LibDL.example;
 
 import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.api.ops.impl.accum.Sum;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastCopyOp;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
@@ -16,10 +17,12 @@ public class BenchmarkExample {
 //        INDArray c = Nd4j.zerosLike(a);
 
         Thread.sleep(4000);
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 20; i++) {
 //            compareBroadcast();
 //            compToFlattened();
-            comFloatPointer();
+//            comFloatPointer();
+//            compSum();
+            compDup();
             System.out.println(i);
         }
         System.exit(0);
@@ -231,5 +234,73 @@ public class BenchmarkExample {
         }
 
         assert x.equals(y);
+    }
+    private static void compSum() {
+        INDArray X = Nd4j.rand(new int[]{64, 200, 500});
+        INDArray Z1 = Nd4j.rand(new int[]{200});
+        INDArray Z2 = Nd4j.rand(new int[]{1, 200});
+
+        INDArray x, z;
+
+        x = X.dup();
+        z = Z1.dup();
+        sum1(x);
+        x = X.dup();
+        z = Z1.dup();
+        sum2(x, z);
+//        x = X.dup();
+//        z = Z1.dup();
+//        sum3(x, Z2);
+        x = X.dup();
+        z = Z1.dup();
+        sum5(x, z);
+        x = X.dup();
+        z = Z1.dup();
+        sum6(x, z);
+        x = X.dup();
+        z = Z1.dup();
+        sum7(x, z);
+        x = X.dup();
+        z = Z1.dup();
+        sum4(x, z);
+    }
+    private static void sum1(INDArray x) {
+        x.sum(0, 2);
+    }
+    private static void sum2(INDArray x, INDArray z) {
+        x.sum(z, 0, 2);
+    }
+    private static void sum3(INDArray x, INDArray z) {
+        x.sum(z, 0, 2);
+    }
+    private static void sum4(INDArray x, INDArray z) {
+        Nd4j.getExecutioner().execAndReturn(new Sum(x, null, z, false, false, new int[]{0, 2}));
+    }
+    private static void sum5(INDArray x, INDArray z) {
+        Nd4j.getExecutioner().execAndReturn(new Sum(x, null, z, false, true, new int[]{0, 2}));
+    }
+    private static void sum6(INDArray x, INDArray z) {
+        Nd4j.getExecutioner().execAndReturn(new Sum(x, null, z, true, false, new int[]{0, 2}));
+    }
+    private static void sum7(INDArray x, INDArray z) {
+        Nd4j.getExecutioner().execAndReturn(new Sum(x, null, z, true, true, new int[]{0, 2}));
+    }
+
+    private static void compDup() {
+        INDArray X = Nd4j.rand(new int[]{64, 200, 500});
+        INDArray Z = Nd4j.rand(new int[]{64, 200, 500});
+
+        INDArray x, z;
+
+        x = X.dup();
+        z = Z.dup();
+        dup1(x, z);
+        dup2(x, z);
+    }
+    private static void dup1(INDArray x, INDArray z) {
+        z = x.dup();
+    }
+    private static void dup2(INDArray x, INDArray z) {
+        Nd4j.getExecutioner().execAndReturn(new BroadcastCopyOp(x, x, z, 0, 1, 2));
     }
 }

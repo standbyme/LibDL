@@ -4,6 +4,7 @@ import LibDL.Tensor.*;
 import LibDL.utils.INDArrayPointer;
 import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.api.ops.impl.accum.Sum;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
@@ -17,7 +18,7 @@ public class Correlation extends OperatorTensor {
     private static INDArrayPointer temp3 = new INDArrayPointer("temp3");
     private static INDArrayPointer temp4 = new INDArrayPointer("temp4");
 
-    Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
+    public Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
 
         assert input.data.rank() == 3;
         assert weight.data.rank() == 3;
@@ -73,19 +74,26 @@ public class Correlation extends OperatorTensor {
                     INDArray rst5 = temp3.expandAndReturnTemp(shape_w);
                     rst5.muli(0);
                     FloatPointer pointerRst5 = (FloatPointer) rst5.data().pointer();
-                    INDArray rst6 = temp4.expandAndReturnTemp(N, sxi / groups, L);
+                    INDArray rst6 = temp1.expandAndReturnTemp(N, sxi / groups, L);
+                    INDArray rst7 = temp4.expandAndReturnTemp(sxi / groups);
                     int len = (int) sxi / groups;
                     float[] floatsRst5 = new float[len];
 
+                    INDArray rst8;
+
                     for (int j = 0; j < oc; j++) {
 
+                        rst8 = input.data.get(NDArrayIndex.all(), NDArrayIndex.interval((j / (oc / groups) * (ic / groups)) * size, ((j / (oc / groups) + 1) * (ic / groups)) * size), NDArrayIndex.all()).dup();
+
                         Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(
-                                input.data.get(NDArrayIndex.all(), NDArrayIndex.interval((j / (oc / groups) * (ic / groups)) * size, ((j / (oc / groups) + 1) * (ic / groups)) * size), NDArrayIndex.all()),
+                                rst8,
                                 grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all()),
-                                rst6,
+                                rst8,
                                 0, 2));
-                        FloatPointer pointerRst6 = (FloatPointer) rst6.sum(0, 2).data().pointer();
-                        pointerRst6.get(floatsRst5, 0, len);
+                        rst8.sum(rst7, 0, 2);
+//                        Nd4j.getExecutioner().execAndReturn(new Sum(rst8, null, rst7, false, false, new int[]{1}));
+                        FloatPointer pointerRst7 = (FloatPointer) rst7.data().pointer();
+                        pointerRst7.get(floatsRst5, 0, len);
                         pointerRst5.position((j * ic + ic / groups * (j / (oc / groups))) * size);
                         pointerRst5.put(floatsRst5, 0, len);
                     }
