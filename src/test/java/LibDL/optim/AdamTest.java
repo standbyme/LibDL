@@ -40,17 +40,6 @@ public class AdamTest {
             loss.backward();
             optimizer.step();
         }
-/*
-tensor({{    0.9990,    0.9990,    0.9990,    0.9990,    0.9990},
- {    0.9990,    0.9990,    0.9990,    0.9990,    0.9990}}, grad_fn=<Parameter>)
-tensor({{    0.9990,    0.9990,    0.9990,    0.9990,    0.9990}}, grad_fn=<Parameter>)
-tensor({0.9990,
- 0.9990,
- 0.9990,
- 0.9990,
- 0.9990}, grad_fn=<Parameter>)
-tensor(0.9990, grad_fn=<Parameter>)
- */
         INDArray[] check = {
                 Nd4j.create(new double[][]{{0.9990, 0.9990, 0.9990, 0.9990, 0.9990},
                         {0.9990, 0.9990, 0.9990, 0.9990, 0.9990}}),
@@ -69,13 +58,6 @@ tensor(0.9990, grad_fn=<Parameter>)
             assert p.data.equalsWithEps(check[i++], 1e-3);
         }
 
-
-//
-//        Tensor pred = nn.forward(data);
-//        System.out.println(pred.data);
-//        IntStream.rangeClosed(0, 3).forEach(i -> {
-//            assert Math.abs(target.data.getInt(i) - pred.data.getDouble(i)) < 0.1;
-//        });
     }
 
 }
