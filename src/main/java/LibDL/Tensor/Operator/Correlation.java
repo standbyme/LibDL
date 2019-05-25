@@ -1,76 +1,21 @@
 package LibDL.Tensor.Operator;
 
-import LibDL.Tensor.OperandInfo;
-import LibDL.Tensor.OperatorInfo;
-import LibDL.Tensor.OperatorTensor;
-import LibDL.Tensor.Tensor;
+import LibDL.Tensor.*;
+import LibDL.utils.INDArrayPointer;
 import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class Correlation extends OperatorTensor {
-
-    static class INDArrayPointer {
-
-        INDArray value;
-        String msg;
-        boolean quiet;
-
-        INDArrayPointer() {
-            this.value = Nd4j.zeros(1);
-            quiet = true;
-        }
-
-        INDArrayPointer(String msg) {
-            this.value = Nd4j.zeros(1);
-            this.msg = msg;
-            quiet = false;
-        }
-
-        INDArray expandAndReturnTemp(long... shape_i) {
-            long[] shape_t = this.value.shape();
-
-            if (shape_t.length != shape_i.length) {
-                if (!quiet)
-                    System.out.print(msg + ":\t" + "rank is too small\t" + Arrays.toString(this.value.shape()) + " >>> ");
-                this.value = Nd4j.zeros(shape_i); // TODO
-                if (!quiet)
-                    System.out.println(Arrays.toString(this.value.shape()));
-                shape_t = this.value.shape();
-            }else {
-                int n = shape_t.length;
-                long[] expension = Arrays.copyOf(shape_t, n);
-                for (int i = 0; i < n; i++) {
-                    if (shape_t[i] < shape_i[i]) {
-                        expension[i] = shape_i[i];
-                        if (!quiet)
-                            System.out.print(msg + ":\t" + "expand along dim " + i + "\t" + Arrays.toString(this.value.shape()) + " >>> ");
-                        this.value = Nd4j.zeros(expension);
-                        if (!quiet)
-                            System.out.println(Arrays.toString(this.value.shape()));
-                        shape_t = this.value.shape();
-                    }
-                }
-            }
-            INDArrayIndex[] indArrayIndices = new INDArrayIndex[shape_t.length];
-            for (int i = 0; i < shape_t.length; i++) {
-                indArrayIndices[i] = NDArrayIndex.interval(0, 1, shape_i[i]);
-            }
-            return this.value.get(indArrayIndices);
-        }
-    }
 
     private static INDArrayPointer temp1 = new INDArrayPointer("temp1");
     private static INDArrayPointer temp2 = new INDArrayPointer("temp2");
     private static INDArrayPointer temp3 = new INDArrayPointer("temp3");
     private static INDArrayPointer temp4 = new INDArrayPointer("temp4");
-    private INDArray test; // TODO delete
 
     Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
 
