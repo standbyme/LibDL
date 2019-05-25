@@ -19,18 +19,29 @@ public class Correlation extends OperatorTensor {
     static class INDArrayPointer {
 
         INDArray value;
+        String msg;
+        boolean quiet;
 
         INDArrayPointer() {
             this.value = Nd4j.zeros(1);
+            quiet = true;
         }
 
-        INDArray expandAndReturnTemp(long[] shape_i) {
+        INDArrayPointer(String msg) {
+            this.value = Nd4j.zeros(1);
+            this.msg = msg;
+            quiet = false;
+        }
+
+        INDArray expandAndReturnTemp(long... shape_i) {
             long[] shape_t = this.value.shape();
 
             if (shape_t.length != shape_i.length) {
-                System.out.print(Arrays.toString(this.value.shape()) + " >>> ");
+                if (!quiet)
+                    System.out.print(msg + ":\t" + "rank is too small\t" + Arrays.toString(this.value.shape()) + " >>> ");
                 this.value = Nd4j.zeros(shape_i); // TODO
-                System.out.println("new:" + "temp:shape:" + Arrays.toString(this.value.shape()));
+                if (!quiet)
+                    System.out.println(Arrays.toString(this.value.shape()));
                 shape_t = this.value.shape();
             }else {
                 int n = shape_t.length;
@@ -38,9 +49,11 @@ public class Correlation extends OperatorTensor {
                 for (int i = 0; i < n; i++) {
                     if (shape_t[i] < shape_i[i]) {
                         expension[i] = shape_i[i];
-                        System.out.print(Arrays.toString(this.value.shape()) + " >>> ");
+                        if (!quiet)
+                            System.out.print(msg + ":\t" + "expand along dim " + i + "\t" + Arrays.toString(this.value.shape()) + " >>> ");
                         this.value = Nd4j.zeros(expension);
-                        System.out.println("new:" + i + "temp:shape:" + Arrays.toString(this.value.shape()));
+                        if (!quiet)
+                            System.out.println(Arrays.toString(this.value.shape()));
                         shape_t = this.value.shape();
                     }
                 }
@@ -53,9 +66,10 @@ public class Correlation extends OperatorTensor {
         }
     }
 
-    private static INDArrayPointer temp0 = new INDArrayPointer();
-    private static INDArrayPointer temp1 = new INDArrayPointer();
-    private static INDArrayPointer temp2 = new INDArrayPointer();
+    private static INDArrayPointer temp1 = new INDArrayPointer("temp1");
+    private static INDArrayPointer temp2 = new INDArrayPointer("temp2");
+    private static INDArrayPointer temp3 = new INDArrayPointer("temp3");
+    private static INDArrayPointer temp4 = new INDArrayPointer("temp4");
     private INDArray test; // TODO delete
 
     Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
@@ -63,6 +77,8 @@ public class Correlation extends OperatorTensor {
         assert input.data.rank() == 3;
         assert weight.data.rank() == 3;
         assert weight.data.shape()[0] == 1 && weight.data.shape()[2] == 1;
+        assert ic % groups == 0;
+        assert oc % groups == 0;
 
         long[] shape_i = input.data.shape();
         long[] shape_w = weight.data.shape();
@@ -71,6 +87,7 @@ public class Correlation extends OperatorTensor {
         long L = shape_i[2];
         long HxW = shape_w[1] / oc / ic;
         long sxi = shape_i[1]; // size * ic
+        long size = sxi / ic;
 
         OperandInfo[] operandInfos = new OperandInfo[]{
                 new OperandInfo(input, () -> {
@@ -80,7 +97,7 @@ public class Correlation extends OperatorTensor {
                     INDArray rst3 = Nd4j.zeros(sxi, N, L);
                     FloatPointer pointerRst3 = (FloatPointer) rst3.data().pointer();
 
-                    INDArray rst4 = temp2.expandAndReturnTemp(new long[]{N, 1, L});
+                    INDArray rst4 = temp2.expandAndReturnTemp(N, 1, L);
                     int len = (int) N * (int) L;
                     FloatPointer pointerRst4;
                     float[] floatsRst4 = new float[len];
@@ -107,7 +124,30 @@ public class Correlation extends OperatorTensor {
                 }),
 
                 new OperandInfo(weight, () -> {
-                   return null;
+
+                    INDArray rst5 = temp3.expandAndReturnTemp(shape_w);
+                    rst5.muli(0);
+                    FloatPointer pointerRst5 = (FloatPointer) rst5.data().pointer();
+                    INDArray rst6 = temp4.expandAndReturnTemp(N, sxi / groups, L);
+                    int len = (int) sxi / groups;
+                    float[] floatsRst5 = new float[len];
+
+                    for (int j = 0; j < oc; j++) {
+
+                        Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(
+                                input.data.get(NDArrayIndex.all(), NDArrayIndex.interval((j / (oc / groups) * (ic / groups)) * size, ((j / (oc / groups) + 1) * (ic / groups)) * size), NDArrayIndex.all()),
+                                grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all()),
+                                rst6,
+                                0, 2));
+                        FloatPointer pointerRst6 = (FloatPointer) rst6.sum(0, 2).data().pointer();
+                        pointerRst6.get(floatsRst5, 0, len);
+                        pointerRst5.position((j * ic + ic / groups * (j / (oc / groups))) * size);
+                        pointerRst5.put(floatsRst5, 0, len);
+                    }
+
+                    pointerRst5.position(0);
+
+                  return rst5;
                 }),
         };
 
