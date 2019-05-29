@@ -3,6 +3,8 @@ package LibDL.TensorImpl;
 import LibDL.Tensor;
 import org.nd4j.autodiff.samediff.SDVariable;
 
+import java.util.Arrays;
+
 public class Nd4jTensor implements Tensor {
 
     private SDVariable value;
@@ -43,6 +45,11 @@ public class Nd4jTensor implements Tensor {
 
     @Override
     public String toString() {
-        return value.getArr().toString();
+
+        return value.getArr().toString()
+                + '\n'
+                + "[ Variable"
+                + Arrays.toString(value.getShape()) +
+                " ]";
     }
 }
