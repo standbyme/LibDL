@@ -1,39 +1,20 @@
 package LibDL;
 
-public class Tensor {
+import LibDL.TensorImpl.Nd4jTensor;
 
-    private Num num;
+public interface Tensor {
+    Nd4jTensor grad();
 
-    Tensor(Num num) {
-        this.num = num;
-    }
+    Nd4jTensor detach();
 
-    public Tensor grad() {
-        return null;
-    }
+    Nd4jTensor zero_();
 
-    public Tensor detach() {
-        return null;
-    }
+    Nd4jTensor set_requires_grad(boolean requires_grad);
 
-    public Tensor zero_() {
-        return null;
-    }
+    boolean defined();
 
-    public Tensor set_requires_grad(boolean requires_grad) {
-        return null;
-    }
-
-    public boolean defined() {
-        return false;
-    }
-
-    public int dim() {
-        return 0;
-    }
+    int dim();
 
     @Override
-    public String toString() {
-        return null;
-    }
+    String toString();
 }
