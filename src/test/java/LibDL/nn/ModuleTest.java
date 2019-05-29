@@ -7,7 +7,7 @@ class Net extends Module {
     private Tensor W;
     private Tensor b;
 
-    public Net(int N, int M) {
+    Net(int N, int M) {
         W = register_parameter("W", ld.randn(new int[]{N, M}));
         b = register_parameter("b", ld.randn(M));
     }

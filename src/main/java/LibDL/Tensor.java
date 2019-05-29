@@ -1,15 +1,13 @@
 package LibDL;
 
-import LibDL.TensorImpl.Nd4jTensor;
-
 public interface Tensor {
-    Nd4jTensor grad();
+    Tensor grad();
 
-    Nd4jTensor detach();
+    Tensor detach();
 
-    Nd4jTensor zero_();
+    Tensor zero_();
 
-    Nd4jTensor set_requires_grad(boolean requires_grad);
+    Tensor set_requires_grad(boolean requires_grad);
 
     boolean defined();
 
