@@ -75,7 +75,7 @@ public class Correlation extends OperatorTensor {
                     rst5.muli(0);
                     FloatPointer pointerRst5 = (FloatPointer) rst5.data().pointer();
                     INDArray rst6 = temp1.expandAndReturnTemp(N, sxi / groups, L);
-                    INDArray rst7 = temp4.expandAndReturnTemp(sxi / groups);
+                    INDArray rst7 = temp4.expandAndReturnTemp(1, sxi / groups, 1);
                     int len = (int) sxi / groups;
                     float[] floatsRst5 = new float[len];
 
@@ -90,7 +90,7 @@ public class Correlation extends OperatorTensor {
                                 grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all()),
                                 rst8,
                                 0, 2));
-                        rst8.sum(rst7, 0, 2);
+                        Nd4j.getExecutioner().exec(new Sum(rst8, null, rst7), 0, 2);
 //                        Nd4j.getExecutioner().execAndReturn(new Sum(rst8, null, rst7, false, false, new int[]{1}));
                         FloatPointer pointerRst7 = (FloatPointer) rst7.data().pointer();
                         pointerRst7.get(floatsRst5, 0, len);
