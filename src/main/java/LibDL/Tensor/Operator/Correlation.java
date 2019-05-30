@@ -6,6 +6,7 @@ import org.bytedeco.javacpp.FloatPointer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.ops.impl.accum.Sum;
 import org.nd4j.linalg.api.ops.impl.broadcast.BroadcastMulOp;
+import org.nd4j.linalg.api.ops.impl.transforms.arithmetic.OldMulOp;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
@@ -17,6 +18,7 @@ public class Correlation extends OperatorTensor {
     private static INDArrayPointer temp2 = new INDArrayPointer("temp2");
     private static INDArrayPointer temp3 = new INDArrayPointer("temp3");
     private static INDArrayPointer temp4 = new INDArrayPointer("temp4");
+    private static INDArrayPointer temp5 = new INDArrayPointer("temp5");
 
     public Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
 
@@ -81,21 +83,19 @@ public class Correlation extends OperatorTensor {
 
                     INDArray rst8;
 
+                    INDArray product = temp5.expandAndReturnTemp(N, 1, L);
+
                     for (int j = 0; j < oc; j++) {
 
-                        rst8 = input.data.get(NDArrayIndex.all(), NDArrayIndex.interval((j / (oc / groups) * (ic / groups)) * size, ((j / (oc / groups) + 1) * (ic / groups)) * size), NDArrayIndex.all()).dup();
+                        for (int i = 0; i < sxi; i++) {
+                            INDArray gr = grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all());
+                            INDArray in = input.data.get(NDArrayIndex.all(), NDArrayIndex.interval(i, i + 1), NDArrayIndex.all());
+                            Nd4j.getExecutioner().execAndReturn(new OldMulOp(gr, in, product));
 
-                        Nd4j.getExecutioner().execAndReturn(new BroadcastMulOp(
-                                rst8,
-                                grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all()),
-                                rst8,
-                                0, 2));
-                        Nd4j.getExecutioner().exec(new Sum(rst8, null, rst7), 0, 2);
-//                        Nd4j.getExecutioner().execAndReturn(new Sum(rst8, null, rst7, false, false, new int[]{1}));
-                        FloatPointer pointerRst7 = (FloatPointer) rst7.data().pointer();
-                        pointerRst7.get(floatsRst5, 0, len);
-                        pointerRst5.position((j * ic + ic / groups * (j / (oc / groups))) * size);
-                        pointerRst5.put(floatsRst5, 0, len);
+                            pointerRst5.position(j * sxi + i);
+                            pointerRst5.put(product.sumNumber().floatValue());
+                        }
+
                     }
 
                     pointerRst5.position(0);
