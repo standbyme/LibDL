@@ -17,7 +17,6 @@ public class Correlation extends OperatorTensor {
     private static INDArrayPointer temp1 = new INDArrayPointer("temp1");
     private static INDArrayPointer temp2 = new INDArrayPointer("temp2");
     private static INDArrayPointer temp3 = new INDArrayPointer("temp3");
-    private static INDArrayPointer temp4 = new INDArrayPointer("temp4");
     private static INDArrayPointer temp5 = new INDArrayPointer("temp5");
 
     public Correlation(Tensor input, Tensor weight, long ah, long aw, int ic, int oc, int groups) {
@@ -76,24 +75,33 @@ public class Correlation extends OperatorTensor {
                     INDArray rst5 = temp3.expandAndReturnTemp(shape_w);
                     rst5.muli(0);
                     FloatPointer pointerRst5 = (FloatPointer) rst5.data().pointer();
-                    INDArray rst6 = temp1.expandAndReturnTemp(N, sxi / groups, L);
-                    INDArray rst7 = temp4.expandAndReturnTemp(1, sxi / groups, 1);
-                    int len = (int) sxi / groups;
-                    float[] floatsRst5 = new float[len];
-
-                    INDArray rst8;
+//                    int len = (int) sxi / groups;
 
                     INDArray product = temp5.expandAndReturnTemp(N, 1, L);
+                    INDArray sum = temp5.expandAndReturnTemp(1, 1, 1);
+                    FloatPointer pointerSum = (FloatPointer) sum.data().pointer();
 
                     for (int j = 0; j < oc; j++) {
 
-                        for (int i = 0; i < sxi; i++) {
-                            INDArray gr = grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all());
-                            INDArray in = input.data.get(NDArrayIndex.all(), NDArrayIndex.interval(i, i + 1), NDArrayIndex.all());
-                            Nd4j.getExecutioner().execAndReturn(new OldMulOp(gr, in, product));
+                        int ic_begin = j / (oc / groups) * (ic / groups);
+                        int ic_end = ic_begin + ic / groups;
+                        long begin = ic_begin * size;
+                        long end = ic_end * size;
 
+                        for (int i = 0; i < sxi; i++) {
                             pointerRst5.position(j * sxi + i);
-                            pointerRst5.put(product.sumNumber().floatValue());
+
+                            if(i >= begin && i < end) {
+                                INDArray gr = grad.reshape(N, oc, L).get(NDArrayIndex.all(), NDArrayIndex.interval(j, j + 1), NDArrayIndex.all());
+                                INDArray in = input.data.get(NDArrayIndex.all(), NDArrayIndex.interval(i, i + 1), NDArrayIndex.all());
+                                Nd4j.getExecutioner().execAndReturn(new OldMulOp(gr, in, product));
+
+                                Nd4j.getExecutioner().execAndReturn(new Sum(product, null, sum));
+                                float s = pointerSum.get(0);
+                                pointerRst5.put(s);
+                            }else {
+                                pointerRst5.put(0.0f);
+                            }
                         }
 
                     }
