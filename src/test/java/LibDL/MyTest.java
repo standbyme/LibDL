@@ -193,4 +193,19 @@ public class MyTest {
         Nd4j.getExecutioner().execAndReturn(new Sum(a, null ,c, true, true, new int[]{2}));
         System.out.println(c);
     }
+    @Test
+    public void testPermute() {
+        INDArray a = Nd4j.rand(new int[]{2, 3,4});
+        float[] floats = new float[24];
+        ((FloatPointer) a.data().pointer()).get(floats, 0, 24);
+        a = a.permute(1, 2, 0);
+        INDArray b = a.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.all());
+        ((FloatPointer) a.data().pointer()).get(floats, 0, 24);
+        ((FloatPointer) b.data().pointer()).get(floats, 0, 24);
+    }
+    @Test
+    public void testMemory() throws InterruptedException {
+        Thread.sleep(11000);
+        INDArray a = Nd4j.rand(10, 10);
+    }
 }
