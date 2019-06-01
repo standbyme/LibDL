@@ -23,5 +23,8 @@ public class ModuleTest {
         for (Tensor p : net.parameters()) {
             System.out.println(p);
         }
+
+        Tensor a = net.forward(ld.ones(new int[]{2, 2}));
+        System.out.println(a);
     }
 }

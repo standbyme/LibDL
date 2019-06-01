@@ -1,6 +1,12 @@
 package LibDL;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Tensor {
+    @NotNull Tensor add(@NotNull Tensor value);
+
+    @NotNull Tensor mm(@NotNull Tensor value);
+
     Tensor grad();
 
     Tensor detach();

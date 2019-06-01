@@ -1,16 +1,30 @@
 package LibDL.TensorImpl;
 
 import LibDL.Tensor;
+import org.jetbrains.annotations.NotNull;
 import org.nd4j.autodiff.samediff.SDVariable;
 
 import java.util.Arrays;
 
 public class Nd4jTensor implements Tensor {
 
-    private SDVariable value;
+    private @NotNull SDVariable variable;
 
-    public Nd4jTensor(SDVariable value) {
-        this.value = value;
+    public @NotNull Nd4jTensor(@NotNull SDVariable variable) {
+        this.variable = variable;
+    }
+
+
+    @Override
+    public @NotNull Tensor add(@NotNull Tensor value) {
+        assert value instanceof Nd4jTensor;
+        return new Nd4jTensor(((Nd4jTensor) value).variable.add(variable));
+    }
+
+    @Override
+    public @NotNull Tensor mm(@NotNull Tensor value) {
+        assert value instanceof Nd4jTensor;
+        return new Nd4jTensor(((Nd4jTensor) value).variable.mmul(variable));
     }
 
     @Override
@@ -46,10 +60,10 @@ public class Nd4jTensor implements Tensor {
     @Override
     public String toString() {
 
-        return value.getArr().toString()
+        return variable.getArr().toString()
                 + '\n'
                 + "[ Variable"
-                + Arrays.toString(value.getShape()) +
+                + Arrays.toString(variable.getShape()) +
                 " ]";
     }
 }
