@@ -108,6 +108,10 @@ public abstract class Tensor {
         return new Sum(this, dim);
     }
 
+    final public Tensor detach() {
+        return new Variable(this.data.dup());
+    }
+
     public static Tensor exp(Tensor tensor) {
         return new Exp(tensor);
     }

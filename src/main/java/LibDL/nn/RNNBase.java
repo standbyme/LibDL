@@ -4,6 +4,7 @@ import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -19,6 +20,7 @@ abstract public class RNNBase extends Module {
     protected int inputSize;
     protected int hiddenSize;
     protected int numLayers;
+    protected int numDirections;
 
     //use ReLU instead of tanh
     protected boolean relu;
@@ -32,23 +34,9 @@ abstract public class RNNBase extends Module {
 
     //not implemented
     protected boolean batch_first;
-    protected boolean bid;
+    protected boolean bidirectional;
 
-    public enum RNNType {
-        TYPE_RNN(1),
-        TYPE_LSTM(4),
-        TYPE_GRU(3);
 
-        private final int value;
-
-        RNNType(int value) {
-            this.value = value;
-        }
-
-        public int gateSize() {
-            return value;
-        }
-    }
 
     protected int PARAM_I = 0, PARAM_F = 1, PARAM_G = 2, PARAM_O = 3;
     protected int PARAM_R = 0, PARAM_Z = 1, PARAM_N = 2;
@@ -61,7 +49,7 @@ abstract public class RNNBase extends Module {
     protected RNNType rnn_type;
 
     protected int pm(int layer, int param_type) {
-        return rnn_type.value * layer + param_type;
+        return rnn_type.gateSize() * layer + param_type;
     }
 
     protected void init_param() {
@@ -75,7 +63,7 @@ abstract public class RNNBase extends Module {
         for (int layer = 0; layer < numLayers; layer++) {
             for (int i = 0; i < rnn_type.gateSize(); i++) {
                 weight_hh[pm(layer, i)] = new Parameter(Nd4j.create(hiddenSize, hiddenSize));
-                weight_ih[pm(layer, i)] = new Parameter(Nd4j.create(hiddenSize, layer == 0 ? inputSize : hiddenSize));
+                weight_ih[pm(layer, i)] = new Parameter(Nd4j.create(hiddenSize, layer == 0 ? inputSize : numDirections * hiddenSize));
                 if (bias) {
                     bias_hh[pm(layer, i)] = new Parameter(Nd4j.create(1, hiddenSize));
                     bias_ih[pm(layer, i)] = new Parameter(Nd4j.create(1, hiddenSize));
@@ -109,6 +97,8 @@ abstract public class RNNBase extends Module {
         this.batch_first = batch_first;
         this.rnn_type = type;
         this.bias = bias;
+        this.bidirectional = bidirectional;
+        this.numDirections = bidirectional ? 2 : 1;
 
         this.dropout = dropout != 0;
         this.dropout_p = dropout;
@@ -130,20 +120,20 @@ abstract public class RNNBase extends Module {
     }
 
     private void check_input_size(long[] size, long[] target) {
-        if (Arrays.equals(size, target)) return;
-        throw new RuntimeException("Input size mismatch, excepted "
+        if (!Arrays.equals(size, target)) throw new RuntimeException("Input size mismatch, excepted "
                 + Arrays.toString(target)
                 + ", got "
                 + Arrays.toString(size));
+
     }
 
     private Tensor forward_check(@NotNull Tensor input, @NotNull Tensor h0) {
-        check_input_size(h0.sizes(), new long[]{numLayers, input.size(batch_first ? 0 : 1), hiddenSize});
+        check_input_size(h0.sizes(), new long[]{numLayers * numDirections, input.size(batch_first ? 0 : 1), hiddenSize});
         return forward_(input, h0, null);
     }
 
     private Tensor forward_check(@NotNull Tensor input, @NotNull Tensor h0, @NotNull Tensor c0) {
-        long[] sizes = new long[]{numLayers, input.size(batch_first ? 0 : 1), hiddenSize};
+        long[] sizes = new long[]{numLayers * numDirections, input.size(batch_first ? 0 : 1), hiddenSize};
         check_input_size(h0.sizes(), sizes);
         check_input_size(c0.sizes(), sizes);
         return forward_(input, h0, c0);
@@ -175,10 +165,10 @@ abstract public class RNNBase extends Module {
                                          Tensor prevHidden, int seqLen,
                                          Tensor prev_cell, int currLayer);
 
-    protected Tensor calculate_gate(Tensor input, Tensor last,
-                                    Tensor w_ih, Tensor w_hh,
-                                    Tensor b_hh, Tensor b_ih,
-                                    Tensor r_gate) {
+    protected Tensor calculate_gate(@NotNull Tensor input, @NotNull Tensor last,
+                                    @NotNull Tensor w_ih, @NotNull Tensor w_hh,
+                                    @Nullable Tensor b_hh, @Nullable Tensor b_ih,
+                                    @Nullable Tensor r_gate) {
         //r_gate is only for GRU
 
         Tensor rlast = last.mm(w_hh.transpose());
