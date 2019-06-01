@@ -3,7 +3,7 @@ package LibDL.nn;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Tensor;
 
-import static LibDL.nn.RNNBase.RNNType.TYPE_LSTM;
+import static LibDL.nn.RNNType.TYPE_LSTM;
 
 public class LSTM extends RNNBase {
 

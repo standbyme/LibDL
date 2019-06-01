@@ -2,7 +2,7 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 
-import static LibDL.nn.RNNBase.RNNType.TYPE_GRU;
+import static LibDL.nn.RNNType.TYPE_GRU;
 
 public class GRU extends RNNBase {
 
