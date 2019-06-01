@@ -20,7 +20,6 @@ abstract public class RNNBase extends Module {
     protected int inputSize;
     protected int hiddenSize;
     protected int numLayers;
-    protected int numDirections;
 
     //use ReLU instead of tanh
     protected boolean relu;
@@ -35,7 +34,7 @@ abstract public class RNNBase extends Module {
     //not implemented
     protected boolean batch_first;
     protected boolean bidirectional;
-
+    protected int numDirections;
 
 
     protected int PARAM_I = 0, PARAM_F = 1, PARAM_G = 2, PARAM_O = 3;
@@ -196,8 +195,10 @@ abstract public class RNNBase extends Module {
 
     @Override
     public String toString() {
-        return getClass().getName() +
-                "(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
+        return rnn_type +
+                "(inputSize=" + inputSize +
+                ", hiddenSize=" + hiddenSize +
+                ", numLayers=" + numLayers + ")";
     }
 
     public Tensor hn() {

@@ -100,7 +100,10 @@ public class BiRNN extends Module {
 
     @Override
     public String toString() {
-        return "BiRNN(inputSize=" + inputSize + ", hiddenSize=" + hiddenSize + ")";
+        return "Bi" + rnnType +
+                "(inputSize=" + inputSize +
+                ", hiddenSize=" + hiddenSize +
+                ", numLayers=" + numLayer + ")";
     }
 
     private class Reverse extends OperatorTensor {

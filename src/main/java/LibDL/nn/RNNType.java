@@ -14,4 +14,13 @@ public enum RNNType {
     public int gateSize() {
         return value;
     }
+
+    public String toString(){
+        switch (value){
+            case 1:return "RNN";
+            case 3:return "GRU";
+            case 4:return "LSTM";
+        }
+        return "RNN";
+    }
 }
