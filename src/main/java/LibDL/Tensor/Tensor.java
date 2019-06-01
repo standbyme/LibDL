@@ -93,7 +93,17 @@ public abstract class Tensor {
     }
 
     final public long size(int i) {
+        if (i < 0) i += dim();
         return this.data.size(i);
+    }
+
+    final public long numel() {
+        long r = 1;
+        long[] s = sizes();
+        for (long i : s) {
+            r *= i;
+        }
+        return r;
     }
 
     final public long dim() {
@@ -110,6 +120,10 @@ public abstract class Tensor {
 
     final public Tensor detach() {
         return new Variable(this.data.dup());
+    }
+
+    final public Tensor index_select(Tensor index) {
+        return new IndexSelect(this, index);
     }
 
     public static Tensor exp(Tensor tensor) {

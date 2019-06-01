@@ -5,6 +5,7 @@ import LibDL.Tensor.OperatorInfo;
 import LibDL.Tensor.OperatorTensor;
 import LibDL.Tensor.Tensor;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.function.Supplier;
 
@@ -19,6 +20,9 @@ public class Reshape extends OperatorTensor {
 
         Supplier<INDArray> forward = () -> {
             from_shape = tensor.data.shape();
+            if (to_shape.length == 1 && to_shape[0] == -1) {
+                return Nd4j.toFlattened(tensor.data);
+            }
             return tensor.data.reshape(to_shape);
         };
 
