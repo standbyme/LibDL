@@ -17,12 +17,14 @@ public class BenchmarkExample {
 //        INDArray c = Nd4j.zerosLike(a);
 
         Thread.sleep(4000);
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 20000; i++) {
 //            compareBroadcast();
 //            compToFlattened();
 //            comFloatPointer();
 //            compSum();
-            compDup();
+//            compDup();
+            INDArray a = Nd4j.rand(10000, 1);
+            compGet(a);
             System.out.println(i);
         }
         System.exit(0);
@@ -302,5 +304,25 @@ public class BenchmarkExample {
     }
     private static void dup2(INDArray x, INDArray z) {
         Nd4j.getExecutioner().execAndReturn(new BroadcastCopyOp(x, x, z, 0, 1, 2));
+    }
+    private static void compGet(INDArray a) {
+        get1(a);
+        get2(a);
+    }
+    private static void get1(INDArray a) {
+        float[] floats = new float[10000];
+
+        for (int i = 0; i < 10000; i++) {
+            floats[i] = 1;
+        }
+        ((FloatPointer) a.data().pointer()).put(floats);
+    }
+    private static void get2(INDArray a) {
+        FloatPointer floatPointer  = (FloatPointer) a.data().pointer();
+        for (int i = 0; i < 10000; i++) {
+            floatPointer.position(i);
+            floatPointer.put(1);
+        }
+        floatPointer.position(0);
     }
 }
