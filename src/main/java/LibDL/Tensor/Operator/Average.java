@@ -11,21 +11,26 @@ import java.util.function.Supplier;
 
 public class Average extends OperatorTensor {
 
-    public Average(Tensor tensor) {
+    public Average(Tensor tensor, int dim) {
 
         OperandInfo[] operandInfos = {
                 new OperandInfo(tensor, () -> {
-                    return grad.transpose().div((double) tensor.data.size(1)).repeat(1, tensor.data.size(1));
+                    return grad.transpose().div((double) tensor.data.size(dim))
+                            .repeat(dim, tensor.data.size(dim));
                 }),
         };
 
         Supplier<INDArray> forward = () -> {
             // returns average value of every row
-            return tensor.data.mean(1).transpose();
+            return tensor.data.mean(dim).transpose();
         };
 
         OperatorInfo operatorInfo = new OperatorInfo(operandInfos, forward);
 
         setOperatorInfo(operatorInfo);
+    }
+
+    public Average(Tensor tensor) {
+        this(tensor, 1);
     }
 }

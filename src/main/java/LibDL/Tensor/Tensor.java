@@ -14,6 +14,10 @@ public abstract class Tensor {
         tensorName = this.getClass().getSimpleName();
     }
 
+    public static Tensor ones_like(Tensor x) {
+        return ones(x.sizes());
+    }
+
     public Tensor withName(String name) {
         tensorName = name;
         return this;
@@ -92,7 +96,12 @@ public abstract class Tensor {
         return new Get(this, i);
     }
 
-    final public long size(int i) {
+    final public Tensor mean(int dim) {
+        return new Average(this, dim);
+    }
+
+
+    public long size(int i) {
         if (i < 0) i += dim();
         return this.data.size(i);
     }
@@ -126,6 +135,10 @@ public abstract class Tensor {
         return new IndexSelect(this, index);
     }
 
+    final public Tensor index_select(int dim, long... index) {
+        return new IndexSelect(this, dim, index);
+    }
+
     public static Tensor exp(Tensor tensor) {
         return new Exp(tensor);
     }
@@ -150,6 +163,10 @@ public abstract class Tensor {
         Tensor r = new Constant(Nd4j.create(shape));
         r.data.assign(number);
         return r;
+    }
+
+    public static Tensor randn(long... shape) {
+        return new Variable(Nd4j.randn(shape));
     }
 
 }
