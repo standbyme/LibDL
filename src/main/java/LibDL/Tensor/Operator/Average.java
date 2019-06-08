@@ -14,10 +14,8 @@ public class Average extends OperatorTensor {
     public Average(Tensor tensor, int dim) {
 
         OperandInfo[] operandInfos = {
-                new OperandInfo(tensor, () -> {
-                    return grad.transpose().div((double) tensor.data.size(dim))
-                            .repeat(dim, tensor.data.size(dim));
-                }),
+                new OperandInfo(tensor, () -> grad.transpose().div((double) tensor.data.size(dim))
+                        .repeat(dim, tensor.data.size(dim))),
         };
 
         Supplier<INDArray> forward = () -> {
