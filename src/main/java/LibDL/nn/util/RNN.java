@@ -27,12 +27,12 @@ public class RNN {
             Arrays.sort(lengths);
             ArrayUtil.reverse(lengths);
             ArrayUtil.reverse(sortedIndices);
-            tensor = tensor.index_select(batch_dim, sortedIndices);
+            tensor = tensor.index_select(1 - batch_dim, sortedIndices);
             return new PackedSequence(tensor, lengths, sortedIndices, batch_dim);
         }
     }
 
-    public static Tensor pad_packed_sequence(PackedSequence packedSequence) {
-        return new Variable(packedSequence.to_original());
+    public static Tensor pad_packed_sequence(PackedSequence packedSequence, PackedSequence original) {
+        return new Variable(packedSequence.to_original(original));
     }
 }

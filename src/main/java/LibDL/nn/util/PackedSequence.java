@@ -10,6 +10,7 @@ import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class PackedSequence extends Tensor {
 
@@ -17,6 +18,7 @@ public class PackedSequence extends Tensor {
     long[] batch_sizes;
     ArrayList<long[]> batch_shape;
     ArrayList<long[]> batch_where;
+    ArrayList<INDArrayIndex[]> batch_put;
     ArrayList<INDArray> arrays;
     INDArrayIndex[] indices;
     int batch_dim;
@@ -35,6 +37,7 @@ public class PackedSequence extends Tensor {
         this.data = Nd4j.empty();
         this.batch_shape = new ArrayList<>();
         this.batch_where = new ArrayList<>();
+        this.batch_put = new ArrayList<>();
         this.arrays = new ArrayList<>();
         this.max_batch_size = 0;
     }
@@ -57,33 +60,45 @@ public class PackedSequence extends Tensor {
         this.batch_dim = batch_dim;
         this.indices = ND4JUtil.construct_indices_array(data_.rank(), batch_dim);
         this.from_none = false;
+        System.out.println(this.data_);
 //        this.data
         work();
     }
 
-    private void copy_at(long batch_sz, long from, long to) {
-        indices[batch_dim] = NDArrayIndex.interval(0, batch_sz);
-        indices[1 - batch_dim] = NDArrayIndex.interval(to + 1, from + 1);
+    private void copy_at(long batch_sz, long from, long to, long new_batch_sz) {
+        indices[batch_dim] = NDArrayIndex.interval(batch_sz, new_batch_sz);
+        indices[1 - batch_dim] = NDArrayIndex.interval(0, from + 1);
         INDArray now_data = this.data_.get(indices);
+        System.out.println("Copy at " + batch_sz + ", " + " from " + from + ", to " + to);
+        System.out.println(now_data);
         this.arrays.add(Nd4j.toFlattened(now_data));
-        batch_where.add(new long[]{to + 1, from + 1});
+        this.batch_put.add(this.indices.clone());
         batch_shape.add(now_data.shape());
 
     }
 
     private void work() {
+        long lst_batch_sz = 0;
 //        long dim_size = this.data_.size(1 - batch_dim);
         int last_same_batch = batch_sizes.length - 1;
         for (int i = batch_sizes.length - 1; i >= 0; ) {
             if (batch_sizes[i] == batch_sizes[last_same_batch]) i--;
             else {
-                copy_at(batch_sizes[i], last_same_batch, i);
-
+                copy_at(lst_batch_sz, last_same_batch, i, batch_sizes[last_same_batch]);
+                lst_batch_sz = batch_sizes[last_same_batch];
                 last_same_batch = i;
             }
         }
-        if (last_same_batch != 0) {
-            copy_at(batch_sizes[0], last_same_batch, -1);
+//        System.out.println("Last same batch "+ last_same_batch);
+//        if (last_same_batch != 0) {
+//            System.out.println("Last one");
+        copy_at(lst_batch_sz, last_same_batch, -1, batch_sizes[last_same_batch]);
+//        }
+
+        this.form();
+
+        for (long[] array : this.batch_where) {
+            System.out.println(Arrays.toString(array));
         }
     }
 
@@ -109,27 +124,35 @@ public class PackedSequence extends Tensor {
         this.arrays.add(Nd4j.toFlattened(array));
 //        this.batch_where.add(new long[]{from, this.data.size(0)});
         this.batch_shape.add(array.shape());
+        this.max_batch_size += array.size(batch_dim);
     }
 
     public void form() {
-        this.data = Nd4j.concat(0, arrays.toArray(new INDArray[]{}));
         long n = 0;
         for (INDArray x : arrays) {
-            batch_where.add(new long[]{n, n + x.size(0)});
-            n += x.size(0);
+            batch_where.add(new long[]{n, n + x.size(1)});
+            n += x.size(1);
         }
+        this.data = Nd4j.concat(1, arrays.toArray(new INDArray[]{}));
+//        System.out.println(Arrays.toString(data.shape()));
     }
 
-    public INDArray from_packed() {
+    private int[] create_batch_shape(int which) {
+        long[] shape = batch_shape.get(which).clone();
+        shape[batch_dim] = max_batch_size;
+        return Arrays.stream(shape).mapToInt(i -> (int) i).toArray();
+    }
+
+    public INDArray from_packed(ArrayList<INDArrayIndex[]> put) {
         INDArray ret = Nd4j.empty();
+        int[] shape = create_batch_shape(0);
+        INDArray narray = Nd4j.zeros(shape);
         for (int i = 0; i < size(); i++) {
-            INDArray now = get(i);
-            long[] shape = batch_shape.get(i);
-            shape[0] = max_batch_size - shape[0];
-            ret = Nd4j.concat(1 - batch_dim, ret,
-                    Nd4j.concat(0, now, Nd4j.zeros(shape)));
+//            INDArray sbarray= this.arrays.get(i);
+//            if(sbarray.isScalar())sbarray
+            narray.put(put.get(i), this.arrays.get(i).reshape(batch_shape.get(i)));
         }
-        return ret;
+        return narray;
     }
 
     private long[] reverse_sorted() {
@@ -137,12 +160,13 @@ public class PackedSequence extends Tensor {
         long j = 0;
         for (long i : sorted_index)
             reversed[(int) i] = j++;
+        System.out.println(Arrays.toString(reversed));
         return reversed;
     }
 
-    public INDArray to_original() {
+    public INDArray to_original(PackedSequence sequence) {
         if (from_none)
-            return from_packed();
+            return from_packed(sequence.batch_put);
         if (this.sorted_index != null)
             return this.data_.get(ND4JUtil.construct_indices_array(
                     this.data_.rank(), 1 - this.batch_dim,
