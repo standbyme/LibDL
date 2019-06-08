@@ -17,6 +17,7 @@ public class PackedSequence extends Tensor {
     long[] batch_sizes;
     ArrayList<long[]> batch_shape;
     ArrayList<long[]> batch_where;
+    ArrayList<INDArray> arrays;
     INDArrayIndex[] indices;
     int batch_dim;
     long max_batch_size;
@@ -34,6 +35,7 @@ public class PackedSequence extends Tensor {
         this.data = Nd4j.empty();
         this.batch_shape = new ArrayList<>();
         this.batch_where = new ArrayList<>();
+        this.arrays = new ArrayList<>();
         this.max_batch_size = 0;
     }
 
@@ -63,8 +65,7 @@ public class PackedSequence extends Tensor {
         indices[batch_dim] = NDArrayIndex.interval(0, batch_sz);
         indices[1 - batch_dim] = NDArrayIndex.interval(to + 1, from + 1);
         INDArray now_data = this.data_.get(indices);
-        this.data = Nd4j.concat(0, this.data,
-                Nd4j.toFlattened(now_data));
+        this.arrays.add(Nd4j.toFlattened(now_data));
         batch_where.add(new long[]{to + 1, from + 1});
         batch_shape.add(now_data.shape());
 
@@ -104,10 +105,19 @@ public class PackedSequence extends Tensor {
     }
 
     public void add(INDArray array) {
-        long from = this.data.size(0);
-        this.data = Nd4j.concat(0, this.data, Nd4j.toFlattened(array));
-        this.batch_where.add(new long[]{from, this.data.size(0)});
+//        long from = this.data.size(0);
+        this.arrays.add(Nd4j.toFlattened(array));
+//        this.batch_where.add(new long[]{from, this.data.size(0)});
         this.batch_shape.add(array.shape());
+    }
+
+    public void form() {
+        this.data = Nd4j.concat(0, arrays.toArray(new INDArray[]{}));
+        long n = 0;
+        for (INDArray x : arrays) {
+            batch_where.add(new long[]{n, n + x.size(0)});
+            n += x.size(0);
+        }
     }
 
     public INDArray from_packed() {
