@@ -7,3 +7,5 @@ gradle
 out
 output
 target
+
+resource/

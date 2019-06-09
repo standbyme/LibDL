@@ -1,8 +1,9 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Tensor;
 
-import static LibDL.nn.RNNBase.RNNType.TYPE_LSTM;
+import static LibDL.nn.RNNType.TYPE_LSTM;
 
 public class LSTM extends RNNBase {
 
@@ -19,6 +20,12 @@ public class LSTM extends RNNBase {
                 0, false, TYPE_LSTM);
         c_n = new Tensor[numLayers];
     }
+
+
+    public Tensor cn() {
+        return new Concat(0, c_n);
+    }
+
 
     @Override
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell, int currLayer) {

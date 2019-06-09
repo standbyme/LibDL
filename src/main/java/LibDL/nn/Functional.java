@@ -1,6 +1,8 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Operator.Log;
 import LibDL.Tensor.Operator.ReLU;
+import LibDL.Tensor.Operator.Softmax;
 import LibDL.Tensor.Tensor;
 
 public class Functional {
@@ -27,6 +29,14 @@ public class Functional {
 
     public static Tensor relu(Tensor input) {
         return new ReLU(input);
+    }
+
+    public static Tensor log_softmax(Tensor input, int dim) {
+        return new Log(new Softmax(input, dim));
+    }
+
+    public static Tensor softmax(Tensor input, int dim) {
+        return (new Softmax(input, dim));
     }
 
 }

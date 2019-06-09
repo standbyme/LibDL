@@ -2,8 +2,6 @@ package LibDL.nn;
 
 import LibDL.Tensor.Tensor;
 
-import static LibDL.nn.RNNBase.RNNType.TYPE_RNN;
-
 public class RNN extends RNNBase {
     // Layer parameters
 
@@ -14,7 +12,7 @@ public class RNN extends RNNBase {
     public RNN(int inputSize, int hiddenSize, int numLayers, boolean relu, boolean bias, double dropout) {
         super(inputSize, hiddenSize, numLayers,
                 bias, relu, false,
-                dropout, false, TYPE_RNN);
+                dropout, false, RNNType.TYPE_RNN);
     }
 
     protected Tensor[] rnn_impl(Tensor input, Tensor[] outList, Tensor prevHidden, int seqLen, Tensor prev_cell, int currLayer) {

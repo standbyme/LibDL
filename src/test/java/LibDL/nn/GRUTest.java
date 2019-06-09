@@ -48,10 +48,10 @@ public class GRUTest {
                 {{1, 1.9},
                         {0, 1.9},
                         {1, 1.9}}}), true);
-        Constant h0 = new Constant(Nd4j.create(new double[][]{
+        Constant h0 = new Constant(Nd4j.create(new double[][][]{{
                 {1.5},
                 {1.6},
-                {1.1}}));
+                {1.1}}}));
         Parameter[] parameters = gru.parameters();
 
         assert parameters.length == 12;
