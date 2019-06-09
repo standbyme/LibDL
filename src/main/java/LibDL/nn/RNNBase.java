@@ -152,8 +152,8 @@ abstract public class RNNBase extends Module {
         for (int i = 0; i < packedSequence.size(); i++) {
             Tensor now = new Constant(packedSequence.get(i));
             Tensor now_h0 = h0.partial(batch_dim, 0, now.size(batch_dim));
-            if (c0 == null) ret.add(forward_(now, now_h0, null));
-            else ret.add(forward_(now, now_h0, c0.partial(batch_dim, 0, now.size(batch_dim))));
+            if (c0 == null) ret.add(forward_(now, now_h0, null).data);
+            else ret.add(forward_(now, now_h0, c0.partial(batch_dim, 0, now.size(batch_dim))).data);
         }
         return ret;
     }
