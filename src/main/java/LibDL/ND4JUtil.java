@@ -61,4 +61,9 @@ public class ND4JUtil {
     public static INDArrayIndex[] construct_indices_array(int rank, int dim, @Nullable INDArrayIndex index) {
         return construct_indices_array_impl(rank, dim, index);
     }
+
+    public static INDArrayIndex[] construct_chop_indices_array(int rank, int dim, long begin, long end) {
+        return construct_indices_array(rank, dim, NDArrayIndex.interval(begin,end));
+    }
+
 }

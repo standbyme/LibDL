@@ -115,6 +115,10 @@ public abstract class Tensor {
         return r;
     }
 
+    final public Tensor partial(int dim, long begin, long end) {
+        return new Get(this, dim, begin, end);
+    }
+
     final public long dim() {
         return data.rank();
     }

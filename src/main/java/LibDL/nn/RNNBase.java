@@ -1,8 +1,10 @@
 package LibDL.nn;
 
+import LibDL.Tensor.Constant;
 import LibDL.Tensor.Operator.Concat;
 import LibDL.Tensor.Parameter;
 import LibDL.Tensor.Tensor;
+import LibDL.nn.util.PackedSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -128,6 +130,8 @@ abstract public class RNNBase extends Module {
 
     private Tensor forward_check(@NotNull Tensor input, @NotNull Tensor h0) {
         check_input_size(h0.sizes(), new long[]{numLayers * numDirections, input.size(batch_first ? 0 : 1), hiddenSize});
+        if (input instanceof PackedSequence)
+            return forward_packed_sequence((PackedSequence) input, h0, null);
         return forward_(input, h0, null);
     }
 
@@ -135,9 +139,24 @@ abstract public class RNNBase extends Module {
         long[] sizes = new long[]{numLayers * numDirections, input.size(batch_first ? 0 : 1), hiddenSize};
         check_input_size(h0.sizes(), sizes);
         check_input_size(c0.sizes(), sizes);
+        if (input instanceof PackedSequence)
+            return forward_packed_sequence((PackedSequence) input, h0, c0);
         return forward_(input, h0, c0);
     }
 
+    protected PackedSequence forward_packed_sequence(@NotNull PackedSequence packedSequence,
+                                                     @NotNull Tensor h0,
+                                                     @Nullable Tensor c0) {
+        int batch_dim = batch_first ? 0 : 1;
+        PackedSequence ret = new PackedSequence(1 - batch_dim);
+        for (int i = 0; i < packedSequence.size(); i++) {
+            Tensor now = new Constant(packedSequence.get(i));
+            Tensor now_h0 = h0.partial(batch_dim, 0, now.size(batch_dim));
+            if (c0 == null) ret.add(forward_(now, now_h0, null));
+            else ret.add(forward_(now, now_h0, c0.partial(batch_dim, 0, now.size(batch_dim))));
+        }
+        return ret;
+    }
 
     protected Tensor forward_(Tensor input, Tensor h0, Tensor c0) {
         int seqLen = (int) input.size(0);

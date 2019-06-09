@@ -21,7 +21,7 @@ public class PackedSequence extends Tensor {
     ArrayList<INDArrayIndex[]> batch_put;
     ArrayList<INDArray> arrays;
     INDArrayIndex[] indices;
-    int batch_dim;
+    int seq_dim;
     long max_batch_size;
     INDArray data_;
     boolean from_none;
@@ -42,23 +42,23 @@ public class PackedSequence extends Tensor {
         this.max_batch_size = 0;
     }
 
-    public PackedSequence(int batch_dim) {
+    public PackedSequence(int seq_dim) {
         this();
-        this.batch_dim = batch_dim;
+        this.seq_dim = seq_dim;
         this.from_none = true;
     }
 
     public PackedSequence(@NotNull Tensor data,
                           @NotNull long[] batch_sizes,
                           @Nullable long[] sorted_index,
-                          int batch_dim) {
+                          int seq_dim) {
         this();
         this.max_batch_size = batch_sizes[0];
         this.sorted_index = sorted_index;
         this.batch_sizes = batch_sizes;
-        this.data_ = data.data.dup(new char[]{'c', 'f'}[batch_dim]);
-        this.batch_dim = batch_dim;
-        this.indices = ND4JUtil.construct_indices_array(data_.rank(), batch_dim);
+        this.data_ = data.data.dup(new char[]{'c', 'f'}[seq_dim]);
+        this.seq_dim = seq_dim;
+        this.indices = ND4JUtil.construct_indices_array(data_.rank(), seq_dim);
         this.from_none = false;
         System.out.println(this.data_);
 //        this.data
@@ -66,8 +66,8 @@ public class PackedSequence extends Tensor {
     }
 
     private void copy_at(long batch_sz, long from, long to, long new_batch_sz) {
-        indices[batch_dim] = NDArrayIndex.interval(batch_sz, new_batch_sz);
-        indices[1 - batch_dim] = NDArrayIndex.interval(0, from + 1);
+        indices[seq_dim] = NDArrayIndex.interval(batch_sz, new_batch_sz);
+        indices[1 - seq_dim] = NDArrayIndex.interval(0, from + 1);
         INDArray now_data = this.data_.get(indices);
         System.out.println("Copy at " + batch_sz + ", " + " from " + from + ", to " + to);
         System.out.println(now_data);
@@ -79,7 +79,7 @@ public class PackedSequence extends Tensor {
 
     private void work() {
         long lst_batch_sz = 0;
-//        long dim_size = this.data_.size(1 - batch_dim);
+//        long dim_size = this.data_.size(1 - seq_dim);
         int last_same_batch = batch_sizes.length - 1;
         for (int i = batch_sizes.length - 1; i >= 0; ) {
             if (batch_sizes[i] == batch_sizes[last_same_batch]) i--;
@@ -111,7 +111,7 @@ public class PackedSequence extends Tensor {
 
     @Override
     public long size(int i) {
-        if (i == batch_dim) return max_batch_size;//max batch size
+        if (i == seq_dim) return max_batch_size;//max batch size
         return super.size(i);
     }
 
@@ -124,7 +124,7 @@ public class PackedSequence extends Tensor {
         this.arrays.add(Nd4j.toFlattened(array));
 //        this.batch_where.add(new long[]{from, this.data.size(0)});
         this.batch_shape.add(array.shape());
-        this.max_batch_size += array.size(batch_dim);
+        this.max_batch_size += array.size(seq_dim);
     }
 
     public void form() {
@@ -139,7 +139,7 @@ public class PackedSequence extends Tensor {
 
     private int[] create_batch_shape(int which) {
         long[] shape = batch_shape.get(which).clone();
-        shape[batch_dim] = max_batch_size;
+        shape[seq_dim] = max_batch_size;
         return Arrays.stream(shape).mapToInt(i -> (int) i).toArray();
     }
 
@@ -169,7 +169,7 @@ public class PackedSequence extends Tensor {
             return from_packed(sequence.batch_put);
         if (this.sorted_index != null)
             return this.data_.get(ND4JUtil.construct_indices_array(
-                    this.data_.rank(), 1 - this.batch_dim,
+                    this.data_.rank(), 1 - this.seq_dim,
                     reverse_sorted()
             ));
         return this.data_;
